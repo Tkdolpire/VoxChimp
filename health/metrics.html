@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module metrics</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">metrics</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:/Users/tyrondolpire/Projects/2026/Nota/health/metrics.py">/Users/tyrondolpire/Projects/2026/Nota/health/metrics.py</a></td></tr></table>
+    <p><span class="code">Data&nbsp;classes&nbsp;for&nbsp;voice&nbsp;health&nbsp;metrics.<br>
+&nbsp;<br>
+Defines&nbsp;the&nbsp;structured&nbsp;data&nbsp;types&nbsp;used&nbsp;throughout&nbsp;the&nbsp;health&nbsp;interpretation&nbsp;system.</span></p>
+<p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="metrics.html#BaselineResult">BaselineResult</a>
+</dt><dt class="heading-text"><a href="metrics.html#DailySummary">DailySummary</a>
+</dt><dt class="heading-text"><a href="metrics.html#TrendResult">TrendResult</a>
+</dt><dt class="heading-text"><a href="metrics.html#VoiceStabilityScore">VoiceStabilityScore</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="BaselineResult">class <strong>BaselineResult</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#BaselineResult">BaselineResult</a>(mean_embedding:&nbsp;List[float]&nbsp;=&nbsp;&amp;lt;factory&amp;gt;,&nbsp;std_embedding:&nbsp;List[float]&nbsp;=&nbsp;&amp;lt;factory&amp;gt;,&nbsp;n_samples:&nbsp;int&nbsp;=&nbsp;0,&nbsp;computed_at:&nbsp;Optional[str]&nbsp;=&nbsp;None,&nbsp;is_valid:&nbsp;bool&nbsp;=&nbsp;False)&nbsp;-&amp;gt;&nbsp;None<br>
+&nbsp;<br>
+Personal&nbsp;voice&nbsp;baseline&nbsp;computed&nbsp;from&nbsp;historical&nbsp;embeddings.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mean_embedding:&nbsp;512-dimensional&nbsp;mean&nbsp;vector<br>
+&nbsp;&nbsp;&nbsp;&nbsp;std_embedding:&nbsp;512-dimensional&nbsp;standard&nbsp;deviation&nbsp;vector<br>
+&nbsp;&nbsp;&nbsp;&nbsp;n_samples:&nbsp;Number&nbsp;of&nbsp;recordings&nbsp;used&nbsp;to&nbsp;compute&nbsp;baseline<br>
+&nbsp;&nbsp;&nbsp;&nbsp;computed_at:&nbsp;ISO&nbsp;timestamp&nbsp;of&nbsp;when&nbsp;baseline&nbsp;was&nbsp;computed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is_valid:&nbsp;Whether&nbsp;baseline&nbsp;meets&nbsp;minimum&nbsp;sample&nbsp;requirements<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="BaselineResult-__eq__"><strong>__eq__</strong></a>(self, other)</dt><dd><span class="code">Return&nbsp;self==value.</span></dd></dl>
+
+<dl><dt><a name="BaselineResult-__init__"><strong>__init__</strong></a>(self, mean_embedding: List[float] = &lt;factory&gt;, std_embedding: List[float] = &lt;factory&gt;, n_samples: int = 0, computed_at: Optional[str] = None, is_valid: bool = False) -&gt; None</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="BaselineResult-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><span class="code">Return&nbsp;repr(self).</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__annotations__</strong> = {'computed_at': typing.Optional[str], 'is_valid': &lt;class 'bool'&gt;, 'mean_embedding': typing.List[float], 'n_samples': &lt;class 'int'&gt;, 'std_embedding': typing.List[float]}</dl>
+
+<dl><dt><strong>__dataclass_fields__</strong> = {'computed_at': Field(name='computed_at',type=typing.Optional[st...appingproxy({}),kw_only=False,_field_type=_FIELD), 'is_valid': Field(name='is_valid',type=&lt;class 'bool'&gt;,defaul...appingproxy({}),kw_only=False,_field_type=_FIELD), 'mean_embedding': Field(name='mean_embedding',type=typing.List[flo...appingproxy({}),kw_only=False,_field_type=_FIELD), 'n_samples': Field(name='n_samples',type=&lt;class 'int'&gt;,defaul...appingproxy({}),kw_only=False,_field_type=_FIELD), 'std_embedding': Field(name='std_embedding',type=typing.List[floa...appingproxy({}),kw_only=False,_field_type=_FIELD)}</dl>
+
+<dl><dt><strong>__dataclass_params__</strong> = _DataclassParams(init=True,repr=True,eq=True,order=False,unsafe_hash=False,frozen=False)</dl>
+
+<dl><dt><strong>__hash__</strong> = None</dl>
+
+<dl><dt><strong>__match_args__</strong> = ('mean_embedding', 'std_embedding', 'n_samples', 'computed_at', 'is_valid')</dl>
+
+<dl><dt><strong>computed_at</strong> = None</dl>
+
+<dl><dt><strong>is_valid</strong> = False</dl>
+
+<dl><dt><strong>n_samples</strong> = 0</dl>
+
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="DailySummary">class <strong>DailySummary</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#DailySummary">DailySummary</a>(date:&nbsp;str,&nbsp;n_recordings:&nbsp;int,&nbsp;avg_similarity:&nbsp;float,&nbsp;stability_score:&nbsp;float)&nbsp;-&amp;gt;&nbsp;None<br>
+&nbsp;<br>
+Summary&nbsp;of&nbsp;voice&nbsp;metrics&nbsp;for&nbsp;a&nbsp;single&nbsp;day.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;date:&nbsp;Date&nbsp;string&nbsp;(YYYY-MM-DD)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;n_recordings:&nbsp;Number&nbsp;of&nbsp;recordings&nbsp;on&nbsp;this&nbsp;day<br>
+&nbsp;&nbsp;&nbsp;&nbsp;avg_similarity:&nbsp;Average&nbsp;cosine&nbsp;similarity&nbsp;to&nbsp;baseline<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stability_score:&nbsp;Calculated&nbsp;stability&nbsp;score&nbsp;for&nbsp;the&nbsp;day<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="DailySummary-__eq__"><strong>__eq__</strong></a>(self, other)</dt><dd><span class="code">Return&nbsp;self==value.</span></dd></dl>
+
+<dl><dt><a name="DailySummary-__init__"><strong>__init__</strong></a>(self, date: str, n_recordings: int, avg_similarity: float, stability_score: float) -&gt; None</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="DailySummary-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><span class="code">Return&nbsp;repr(self).</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__annotations__</strong> = {'avg_similarity': &lt;class 'float'&gt;, 'date': &lt;class 'str'&gt;, 'n_recordings': &lt;class 'int'&gt;, 'stability_score': &lt;class 'float'&gt;}</dl>
+
+<dl><dt><strong>__dataclass_fields__</strong> = {'avg_similarity': Field(name='avg_similarity',type=&lt;class 'float'&gt;...appingproxy({}),kw_only=False,_field_type=_FIELD), 'date': Field(name='date',type=&lt;class 'str'&gt;,default=&lt;da...appingproxy({}),kw_only=False,_field_type=_FIELD), 'n_recordings': Field(name='n_recordings',type=&lt;class 'int'&gt;,def...appingproxy({}),kw_only=False,_field_type=_FIELD), 'stability_score': Field(name='stability_score',type=&lt;class 'float'...appingproxy({}),kw_only=False,_field_type=_FIELD)}</dl>
+
+<dl><dt><strong>__dataclass_params__</strong> = _DataclassParams(init=True,repr=True,eq=True,order=False,unsafe_hash=False,frozen=False)</dl>
+
+<dl><dt><strong>__hash__</strong> = None</dl>
+
+<dl><dt><strong>__match_args__</strong> = ('date', 'n_recordings', 'avg_similarity', 'stability_score')</dl>
+
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TrendResult">class <strong>TrendResult</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#TrendResult">TrendResult</a>(direction:&nbsp;str,&nbsp;slope:&nbsp;float,&nbsp;confidence:&nbsp;float,&nbsp;period_days:&nbsp;int)&nbsp;-&amp;gt;&nbsp;None<br>
+&nbsp;<br>
+Result&nbsp;of&nbsp;trend&nbsp;analysis&nbsp;over&nbsp;a&nbsp;period.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;direction:&nbsp;"improving",&nbsp;"stable",&nbsp;or&nbsp;"declining"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;slope:&nbsp;Rate&nbsp;of&nbsp;change&nbsp;(positive&nbsp;=&nbsp;improving)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;confidence:&nbsp;Statistical&nbsp;confidence&nbsp;in&nbsp;the&nbsp;trend<br>
+&nbsp;&nbsp;&nbsp;&nbsp;period_days:&nbsp;Number&nbsp;of&nbsp;days&nbsp;analyzed<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TrendResult-__eq__"><strong>__eq__</strong></a>(self, other)</dt><dd><span class="code">Return&nbsp;self==value.</span></dd></dl>
+
+<dl><dt><a name="TrendResult-__init__"><strong>__init__</strong></a>(self, direction: str, slope: float, confidence: float, period_days: int) -&gt; None</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="TrendResult-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><span class="code">Return&nbsp;repr(self).</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__annotations__</strong> = {'confidence': &lt;class 'float'&gt;, 'direction': &lt;class 'str'&gt;, 'period_days': &lt;class 'int'&gt;, 'slope': &lt;class 'float'&gt;}</dl>
+
+<dl><dt><strong>__dataclass_fields__</strong> = {'confidence': Field(name='confidence',type=&lt;class 'float'&gt;,def...appingproxy({}),kw_only=False,_field_type=_FIELD), 'direction': Field(name='direction',type=&lt;class 'str'&gt;,defaul...appingproxy({}),kw_only=False,_field_type=_FIELD), 'period_days': Field(name='period_days',type=&lt;class 'int'&gt;,defa...appingproxy({}),kw_only=False,_field_type=_FIELD), 'slope': Field(name='slope',type=&lt;class 'float'&gt;,default=...appingproxy({}),kw_only=False,_field_type=_FIELD)}</dl>
+
+<dl><dt><strong>__dataclass_params__</strong> = _DataclassParams(init=True,repr=True,eq=True,order=False,unsafe_hash=False,frozen=False)</dl>
+
+<dl><dt><strong>__hash__</strong> = None</dl>
+
+<dl><dt><strong>__match_args__</strong> = ('direction', 'slope', 'confidence', 'period_days')</dl>
+
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="VoiceStabilityScore">class <strong>VoiceStabilityScore</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#VoiceStabilityScore">VoiceStabilityScore</a>(score:&nbsp;float,&nbsp;trend:&nbsp;str,&nbsp;confidence:&nbsp;float,&nbsp;message:&nbsp;str)&nbsp;-&amp;gt;&nbsp;None<br>
+&nbsp;<br>
+The&nbsp;primary&nbsp;user-facing&nbsp;metric&nbsp;representing&nbsp;voice&nbsp;pattern&nbsp;stability.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;score:&nbsp;0-100&nbsp;scale,&nbsp;where&nbsp;100&nbsp;is&nbsp;most&nbsp;stable/consistent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trend:&nbsp;"stable",&nbsp;"improving",&nbsp;"declining",&nbsp;or&nbsp;"insufficient_data"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;confidence:&nbsp;0.0-1.0,&nbsp;based&nbsp;on&nbsp;amount&nbsp;of&nbsp;data&nbsp;available<br>
+&nbsp;&nbsp;&nbsp;&nbsp;message:&nbsp;Human-readable&nbsp;interpretation&nbsp;of&nbsp;the&nbsp;score<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="VoiceStabilityScore-__eq__"><strong>__eq__</strong></a>(self, other)</dt><dd><span class="code">Return&nbsp;self==value.</span></dd></dl>
+
+<dl><dt><a name="VoiceStabilityScore-__init__"><strong>__init__</strong></a>(self, score: float, trend: str, confidence: float, message: str) -&gt; None</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="VoiceStabilityScore-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><span class="code">Return&nbsp;repr(self).</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__annotations__</strong> = {'confidence': &lt;class 'float'&gt;, 'message': &lt;class 'str'&gt;, 'score': &lt;class 'float'&gt;, 'trend': &lt;class 'str'&gt;}</dl>
+
+<dl><dt><strong>__dataclass_fields__</strong> = {'confidence': Field(name='confidence',type=&lt;class 'float'&gt;,def...appingproxy({}),kw_only=False,_field_type=_FIELD), 'message': Field(name='message',type=&lt;class 'str'&gt;,default=...appingproxy({}),kw_only=False,_field_type=_FIELD), 'score': Field(name='score',type=&lt;class 'float'&gt;,default=...appingproxy({}),kw_only=False,_field_type=_FIELD), 'trend': Field(name='trend',type=&lt;class 'str'&gt;,default=&lt;d...appingproxy({}),kw_only=False,_field_type=_FIELD)}</dl>
+
+<dl><dt><strong>__dataclass_params__</strong> = _DataclassParams(init=True,repr=True,eq=True,order=False,unsafe_hash=False,frozen=False)</dl>
+
+<dl><dt><strong>__hash__</strong> = None</dl>
+
+<dl><dt><strong>__match_args__</strong> = ('score', 'trend', 'confidence', 'message')</dl>
+
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>List</strong> = typing.List<br>
+<strong>Optional</strong> = typing.Optional</td></tr></table>
+</body></html>

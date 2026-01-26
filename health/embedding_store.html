@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module embedding_store</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">embedding_store</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:/Users/tyrondolpire/Projects/2026/Nota/health/embedding_store.py">/Users/tyrondolpire/Projects/2026/Nota/health/embedding_store.py</a></td></tr></table>
+    <p><span class="code"><a href="#EmbeddingStore">EmbeddingStore</a>&nbsp;-&nbsp;JSON&nbsp;storage&nbsp;for&nbsp;HEAR&nbsp;embeddings<br>
+&nbsp;<br>
+Stores&nbsp;embeddings&nbsp;linked&nbsp;to&nbsp;audio&nbsp;files&nbsp;with&nbsp;metadata&nbsp;for&nbsp;tracking<br>
+which&nbsp;files&nbsp;have&nbsp;been&nbsp;analyzed&nbsp;and&nbsp;retrieving&nbsp;historical&nbsp;data.</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="json.html">json</a><br>
+</td><td class="multicolumn"><a href="logging.html">logging</a><br>
+</td><td class="multicolumn"></td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="embedding_store.html#EmbeddingStore">EmbeddingStore</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="EmbeddingStore">class <strong>EmbeddingStore</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#EmbeddingStore">EmbeddingStore</a>(base_path:&nbsp;Optional[pathlib.Path]&nbsp;=&nbsp;None)<br>
+&nbsp;<br>
+Manages&nbsp;persistent&nbsp;storage&nbsp;of&nbsp;HEAR&nbsp;embeddings.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="EmbeddingStore-__init__"><strong>__init__</strong></a>(self, base_path: Optional[pathlib.Path] = None)</dt><dd><span class="code">Initialize&nbsp;the&nbsp;embedding&nbsp;store.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;base_path:&nbsp;Directory&nbsp;for&nbsp;storing&nbsp;health&nbsp;data.&nbsp;Defaults&nbsp;to&nbsp;~/.nota_health</span></dd></dl>
+
+<dl><dt><a name="EmbeddingStore-get_all_embeddings"><strong>get_all_embeddings</strong></a>(self) -&gt; List[Dict]</dt><dd><span class="code">Get&nbsp;all&nbsp;stored&nbsp;embeddings.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;embedding&nbsp;entries&nbsp;with&nbsp;full&nbsp;metadata</span></dd></dl>
+
+<dl><dt><a name="EmbeddingStore-get_analyzed_files"><strong>get_analyzed_files</strong></a>(self) -&gt; Set[str]</dt><dd><span class="code">Return&nbsp;set&nbsp;of&nbsp;audio&nbsp;file&nbsp;paths&nbsp;that&nbsp;have&nbsp;already&nbsp;been&nbsp;analyzed.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Set&nbsp;of&nbsp;absolute&nbsp;file&nbsp;paths&nbsp;as&nbsp;strings</span></dd></dl>
+
+<dl><dt><a name="EmbeddingStore-get_embedding_count"><strong>get_embedding_count</strong></a>(self) -&gt; int</dt><dd><span class="code">Return&nbsp;the&nbsp;total&nbsp;number&nbsp;of&nbsp;stored&nbsp;embeddings.</span></dd></dl>
+
+<dl><dt><a name="EmbeddingStore-get_embeddings_for_period"><strong>get_embeddings_for_period</strong></a>(self, start_date: datetime.datetime, end_date: datetime.datetime) -&gt; List[Dict]</dt><dd><span class="code">Get&nbsp;embeddings&nbsp;within&nbsp;a&nbsp;date&nbsp;range.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;start_date:&nbsp;Start&nbsp;of&nbsp;period&nbsp;(inclusive)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;end_date:&nbsp;End&nbsp;of&nbsp;period&nbsp;(inclusive)<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;embedding&nbsp;entries&nbsp;within&nbsp;the&nbsp;period</span></dd></dl>
+
+<dl><dt><a name="EmbeddingStore-get_last_analysis_time"><strong>get_last_analysis_time</strong></a>(self) -&gt; Optional[str]</dt><dd><span class="code">Return&nbsp;ISO&nbsp;timestamp&nbsp;of&nbsp;most&nbsp;recent&nbsp;analysis,&nbsp;or&nbsp;None.</span></dd></dl>
+
+<dl><dt><a name="EmbeddingStore-get_unanalyzed_recordings"><strong>get_unanalyzed_recordings</strong></a>(self, audio_dir: pathlib.Path) -&gt; List[str]</dt><dd><span class="code">Return&nbsp;WAV&nbsp;files&nbsp;in&nbsp;audio_dir&nbsp;that&nbsp;haven't&nbsp;been&nbsp;analyzed&nbsp;yet.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;audio_dir:&nbsp;Directory&nbsp;containing&nbsp;audio&nbsp;recordings<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;absolute&nbsp;file&nbsp;paths&nbsp;for&nbsp;unanalyzed&nbsp;WAV&nbsp;files</span></dd></dl>
+
+<dl><dt><a name="EmbeddingStore-store_embedding"><strong>store_embedding</strong></a>(self, audio_file: str, embeddings: List[List[float]], n_chunks: int, duration_seconds: Optional[float] = None)</dt><dd><span class="code">Store&nbsp;embedding&nbsp;entry&nbsp;linked&nbsp;to&nbsp;an&nbsp;audio&nbsp;file.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;audio_file:&nbsp;Path&nbsp;to&nbsp;the&nbsp;source&nbsp;audio&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;embeddings:&nbsp;List&nbsp;of&nbsp;512-dimensional&nbsp;embedding&nbsp;vectors&nbsp;(one&nbsp;per&nbsp;chunk)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;n_chunks:&nbsp;Number&nbsp;of&nbsp;2-second&nbsp;chunks&nbsp;processed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;duration_seconds:&nbsp;Total&nbsp;duration&nbsp;of&nbsp;audio&nbsp;in&nbsp;seconds</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>SCHEMA_VERSION</strong> = 1</dl>
+
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>Dict</strong> = typing.Dict<br>
+<strong>List</strong> = typing.List<br>
+<strong>Optional</strong> = typing.Optional<br>
+<strong>Set</strong> = typing.Set<br>
+<strong>logger</strong> = &lt;Logger Nota.health.store (WARNING)&gt;</td></tr></table>
+</body></html>

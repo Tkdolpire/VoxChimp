@@ -1,0 +1,8 @@
+#!/bin/bash
+# Voice Dictation Menu Bar App Launcher
+# This launches the Python menu bar app without showing a terminal window
+
+cd "/Users/tyrondolpire/Documents/VoiceDictation"
+
+# Use the Python that has all dependencies installed
+exec /Users/tyrondolpire/.pyenv/shims/python3 voice_dictation_menubar.py

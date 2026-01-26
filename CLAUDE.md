@@ -1,8 +1,8 @@
-# Nota - AI Voice Dictation for Medical Notes
+# Notta - AI Voice Dictation for Medical Notes
 
 ## Overview
 
-Nota is a macOS dock application that provides AI-powered voice dictation. Users hold a hotkey (or button) to record speech, and the app transcribes it using Whisper, then automatically pastes the text at the cursor position.
+Notta is a macOS dock application that provides AI-powered voice dictation. Users hold a hotkey (or button) to record speech, and the app transcribes it using Whisper, then automatically pastes the text at the cursor position.
 
 ## Tech Stack
 
@@ -16,13 +16,14 @@ Nota is a macOS dock application that provides AI-powered voice dictation. Users
 ## Project Structure
 
 ```
-nota.py           # Main application (single-file app)
-Nota.spec         # PyInstaller build configuration
+notta.py          # Main application (single-file app)
+Notta.spec        # PyInstaller build configuration
 README.md         # User documentation
 ARCHITECTURE.md   # Technical architecture documentation
 build/            # PyInstaller build artifacts
 dist/             # Built application output
 archive/          # Legacy versions and experiments
+health/           # HEAR health analysis module
 ```
 
 ## Key Features
@@ -31,13 +32,14 @@ archive/          # Legacy versions and experiments
 - **Button recording**: Click and hold the UI button to record
 - **Auto-paste**: Automatically pastes transcribed text at cursor
 - **Grammar fixing**: Basic capitalization and punctuation fixes
-- **History**: Saves transcriptions to ~/.nota_history.json
+- **History**: Saves transcriptions to ~/.notta_history.json
 - **Audio archiving**: Optional saving of audio recordings
 - **Model selection**: Supports tiny/small/medium/large Whisper models
+- **Health Analysis**: HEAR model integration for voice health biomarkers
 
 ## Configuration
 
-Config stored at `~/.nota_config.json`:
+Config stored at `~/.notta_config.json`:
 
 - `whisper_backend`: Model size (tiny/small/medium/large)
 - `auto_paste`: Auto-paste transcribed text (bool)
@@ -49,16 +51,16 @@ Config stored at `~/.nota_config.json`:
 
 ```bash
 # Run directly (requires system Python with PyObjC)
-/usr/bin/python3 nota.py
+/usr/bin/python3 notta.py
 
 # Build macOS app
-/usr/bin/python3 -m PyInstaller Nota.spec --noconfirm
+/usr/bin/python3 -m PyInstaller Notta.spec --noconfirm
 
 # Install to Applications
-cp -R dist/Nota.app /Applications/
+cp -R dist/Notta.app /Applications/
 
 # View logs
-tail -f ~/.nota.log
+tail -f ~/.notta.log
 ```
 
 ## macOS Permissions Required
@@ -113,13 +115,14 @@ self.performSelectorOnMainThread_withObject_waitUntilDone_(
 - Single-file architecture for simplicity
 - Uses threading for non-blocking audio recording
 - Thread-safe state management with locks
-- Comprehensive logging to ~/.nota.log
+- Comprehensive logging to ~/.notta.log
 - UI updates always dispatched to main thread
 
 ## Files Created by App
 
-- `~/.nota_config.json` - Configuration
-- `~/.nota_history.txt` - Simple text history
-- `~/.nota_history.json` - Detailed JSON history
-- `~/.nota.log` - Application logs
-- `~/.nota_audio/` - Audio archive (if enabled)
+- `~/.notta_config.json` - Configuration
+- `~/.notta_history.txt` - Simple text history
+- `~/.notta_history.json` - Detailed JSON history
+- `~/.notta.log` - Application logs
+- `~/.notta_audio/` - Audio archive (if enabled)
+- `~/.notta_health/` - Health embeddings storage

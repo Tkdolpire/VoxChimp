@@ -1,0 +1,16 @@
+# Notta Test Requirements
+# Install with: pip install -r requirements-test.txt
+
+# Testing framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+
+# Coverage reporting
+coverage>=7.0.0
+
+# For async testing if needed
+pytest-asyncio>=0.21.0
+
+# For timing tests
+pytest-timeout>=2.1.0
