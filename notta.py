@@ -42,7 +42,7 @@ from AppKit import (
     NSFont, NSColor, NSBackingStoreBuffered, NSWindowStyleMaskTitled,
     NSWindowStyleMaskClosable, NSWindowStyleMaskMiniaturizable,
     NSApplicationActivationPolicyRegular, NSBezelStyleRounded,
-    NSTextAlignmentCenter, NSAlert, NSAlertStyleWarning,
+    NSTextAlignmentCenter, NSTextAlignmentRight, NSAlert, NSAlertStyleWarning,
     NSAlertStyleInformational, NSMakeRect, NSScreen,
     NSMenu, NSMenuItem, NSStatusBar,
     NSVariableStatusItemLength, NSImage, NSBezierPath,
@@ -167,6 +167,8 @@ class NottaAppDelegate(NSObject):
         title.setDrawsBackground_(False)
         title.setEditable_(False)
         title.setSelectable_(False)
+        # CRITICAL: Allow clicks to pass through the title label
+        title.setRefusesFirstResponder_(True)
         content.addSubview_(title)
 
         # Circular record button with SF Symbol
@@ -230,75 +232,100 @@ class NottaAppDelegate(NSObject):
         self.hotkey_label.setSelectable_(False)
         content.addSubview_(self.hotkey_label)
 
-        # Separator line above toolbar
-        separator = NSBox.alloc().initWithFrame_(NSMakeRect(20, 55, width - 40, 1))
-        separator.setBoxType_(NSBoxSeparator)
-        content.addSubview_(separator)
-
-        # Bottom toolbar with SF Symbol buttons
-        toolbar_y = 15
+        # Top toolbar with SF Symbol buttons - MOVED TO TOP FOR TESTING
+        toolbar_y = 240  # Near top of window instead of bottom
         btn_size = 36
         spacing = 20
         total_width = 4 * btn_size + 3 * spacing
         start_x = (width - total_width) / 2
 
-        # Settings button
+        # Separator line below toolbar
+        separator = NSBox.alloc().initWithFrame_(NSMakeRect(20, 230, width - 40, 1))
+        separator.setBoxType_(NSBoxSeparator)
+        content.addSubview_(separator)
+
+        # Create button_container AFTER all non-interactive elements
+        # This ensures buttons are on top in z-order and can receive clicks
+        button_container = NSView.alloc().initWithFrame_(NSMakeRect(0, 0, width, height))
+        button_container.setWantsLayer_(True)
+        content.addSubview_(button_container)
+
+        # Settings button - ADD TO BUTTON_CONTAINER instead of content view
         settings_btn = self.createToolbarButton_symbol_tooltip_action_(
             NSMakeRect(start_x, toolbar_y, btn_size, btn_size),
             "gear",
             "Settings",
-            objc.selector(self.showSettings_, signature=b'v@:@')
+            "toolbarButtonClicked:"
         )
-        content.addSubview_(settings_btn)
+        settings_btn.setTag_(1)  # Tag for Settings
+        button_container.addSubview_(settings_btn)  # Add to button_container for better event handling
 
         # History button
         history_btn = self.createToolbarButton_symbol_tooltip_action_(
             NSMakeRect(start_x + btn_size + spacing, toolbar_y, btn_size, btn_size),
             "list.bullet",
             "History",
-            objc.selector(self.showHistory_, signature=b'v@:@')
+            "toolbarButtonClicked:"
         )
-        content.addSubview_(history_btn)
+        history_btn.setTag_(2)  # Tag for History
+        button_container.addSubview_(history_btn)
 
         # Health button
         health_btn = self.createToolbarButton_symbol_tooltip_action_(
             NSMakeRect(start_x + 2 * (btn_size + spacing), toolbar_y, btn_size, btn_size),
             "heart.fill",
             "Health",
-            objc.selector(self.showHealth_, signature=b'v@:@')
+            "toolbarButtonClicked:"
         )
-        content.addSubview_(health_btn)
+        health_btn.setTag_(3)  # Tag for Health
+        button_container.addSubview_(health_btn)
 
         # Quit button
         quit_btn = self.createToolbarButton_symbol_tooltip_action_(
             NSMakeRect(start_x + 3 * (btn_size + spacing), toolbar_y, btn_size, btn_size),
             "xmark.circle",
             "Quit",
-            objc.selector(self.quitApp_, signature=b'v@:@')
+            "toolbarButtonClicked:"
         )
-        content.addSubview_(quit_btn)
+        quit_btn.setTag_(4)  # Tag for Quit
+        button_container.addSubview_(quit_btn)
 
     def createToolbarButton_symbol_tooltip_action_(self, frame, symbol_name, tooltip, action):
         """Create a toolbar button with SF Symbol"""
+        logger.debug(f"Creating button: {tooltip} with action: {action}")
+
+        # Use alloc/init for proper button creation
         button = NSButton.alloc().initWithFrame_(frame)
-        button.setBezelStyle_(NSBezelStyleRounded)
-        button.setBordered_(False)  # Borderless for clean look
+        button.setButtonType_(0)  # NSButtonTypeMomentaryLight
+        button.setBezelStyle_(4)  # NSBezelStyleRounded
+        button.setBordered_(True)
+        button.setTitle_("")
         button.setToolTip_(tooltip)
+
+        # CRITICAL: Set target and action properly
         button.setTarget_(self)
         button.setAction_(action)
+
+        # Make sure button can receive events
+        button.setEnabled_(True)
+        button.setRefusesFirstResponder_(False)
+
+        logger.debug(f"Button {tooltip}: frame={frame}, target={button.target()}, action={button.action()}, enabled={button.isEnabled()}")
 
         # Set SF Symbol
         image = NSImage.imageWithSystemSymbolName_accessibilityDescription_(symbol_name, tooltip)
         if image:
             config = objc.lookUpClass('NSImageSymbolConfiguration').configurationWithPointSize_weight_scale_(
-                18, 1, 1  # pointSize, weight (medium), scale (medium)
+                20, 1, 2  # pointSize, weight (medium), scale (large)
             )
             configured_image = image.imageWithSymbolConfiguration_(config)
             button.setImage_(configured_image)
+            button.setImagePosition_(2)  # NSImageOnly
         else:
             # Fallback to text
             button.setTitle_(tooltip[:1])
 
+        logger.debug(f"Button {tooltip} created successfully with target={button.target()} action={button.action()}")
         return button
 
     def _setup_button_tracking(self):
@@ -313,16 +340,22 @@ class NottaAppDelegate(NSObject):
             # Check if click is on the record button
             if self.record_button and self.window:
                 loc = event.locationInWindow()
+                logger.debug(f"Mouse down at: ({loc.x}, {loc.y})")
                 button_frame = self.record_button.frame()
                 # For circular button, check if within circle
                 center_x = button_frame.origin.x + button_frame.size.width / 2
                 center_y = button_frame.origin.y + button_frame.size.height / 2
                 radius = button_frame.size.width / 2
                 dist = ((loc.x - center_x) ** 2 + (loc.y - center_y) ** 2) ** 0.5
+
+                # Only handle if it's the record button (center circle)
                 if dist <= radius:
+                    logger.debug("Click on record button detected")
                     self._button_pressed = True
                     self.start_recording()
                     self.setRecordingButtonState_(True)
+                else:
+                    logger.debug(f"Click outside record button (dist={dist:.1f}, radius={radius:.1f})")
             return event
 
         def handle_mouse_up(event):
@@ -332,8 +365,10 @@ class NottaAppDelegate(NSObject):
                 self.setRecordingButtonState_(False)
             return event
 
-        NSEvent.addLocalMonitorForEventsMatchingMask_handler_(NSEventMaskLeftMouseDown, handle_mouse_down)
-        NSEvent.addLocalMonitorForEventsMatchingMask_handler_(NSEventMaskLeftMouseUp, handle_mouse_up)
+        # TEMPORARILY DISABLED to test toolbar buttons
+        # NSEvent.addLocalMonitorForEventsMatchingMask_handler_(NSEventMaskLeftMouseDown, handle_mouse_down)
+        # NSEvent.addLocalMonitorForEventsMatchingMask_handler_(NSEventMaskLeftMouseUp, handle_mouse_up)
+        logger.warning("Mouse event monitors DISABLED for debugging toolbar buttons")
 
     def setRecordingButtonState_(self, is_recording):
         """Update button appearance for recording state"""
@@ -1172,6 +1207,22 @@ class NottaAppDelegate(NSObject):
             logger.error(f"Grammar fix error: {e}")
             return text
 
+    def toolbarButtonClicked_(self, sender):
+        """Route toolbar button clicks to appropriate handlers"""
+        tag = sender.tag()
+        logger.info(f"Toolbar button clicked: tag={tag}")
+
+        if tag == 1:  # Settings
+            self.showSettings_(sender)
+        elif tag == 2:  # History
+            self.showHistory_(sender)
+        elif tag == 3:  # Health
+            self.showHealth_(sender)
+        elif tag == 4:  # Quit
+            self.quitApp_(sender)
+        else:
+            logger.warning(f"Unknown toolbar button tag: {tag}")
+
     def showSettings_(self, sender):
         """Show settings dialog"""
         logger.info("Settings button clicked")
@@ -1220,11 +1271,19 @@ class NottaAppDelegate(NSObject):
 
     def showHealth_(self, sender):
         """Open the health analysis window"""
-        logger.info("Health button clicked")
-        if not hasattr(self, 'health_window') or self.health_window is None:
-            self.createHealthWindow()
-        self.updateHealthStatusDisplay()
-        self.health_window.makeKeyAndOrderFront_(None)
+        logger.info("Health button clicked - starting")
+        try:
+            if not hasattr(self, 'health_window') or self.health_window is None:
+                logger.info("Creating health window...")
+                self.createHealthWindow()
+                logger.info("Health window created successfully")
+            logger.info("Updating health status display...")
+            self.updateHealthStatusDisplay()
+            logger.info("Showing health window...")
+            self.health_window.makeKeyAndOrderFront_(None)
+            logger.info("Health window shown successfully")
+        except Exception as e:
+            logger.error(f"Error showing health window: {e}", exc_info=True)
 
     def createHealthWindow(self):
         """Create the health analysis window with modern macOS design"""
