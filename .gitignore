@@ -34,3 +34,10 @@ env/
 # PyInstaller
 *.manifest
 *.spec.tmp
+
+# Swift
+.build/
+.swiftpm/
+*.xcuserstate
+xcuserdata/
+DerivedData/

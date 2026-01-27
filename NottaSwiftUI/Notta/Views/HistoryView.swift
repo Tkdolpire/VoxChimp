@@ -1,0 +1,283 @@
+import SwiftUI
+import AppKit
+
+struct HistoryView: View {
+    @EnvironmentObject var appState: AppState
+    @State private var searchText = ""
+    @State private var selectedTranscription: Transcription?
+    @State private var sortOrder: SortOrder = .newest
+
+    enum SortOrder: String, CaseIterable {
+        case newest = "Newest First"
+        case oldest = "Oldest First"
+        case longest = "Longest First"
+    }
+
+    var filteredHistory: [Transcription] {
+        var results = appState.transcriptionHistory
+
+        if !searchText.isEmpty {
+            results = results.filter { transcription in
+                transcription.text.localizedCaseInsensitiveContains(searchText) ||
+                (transcription.category?.localizedCaseInsensitiveContains(searchText) ?? false) ||
+                transcription.tags.contains { $0.localizedCaseInsensitiveContains(searchText) }
+            }
+        }
+
+        switch sortOrder {
+        case .newest:
+            results.sort { $0.timestamp > $1.timestamp }
+        case .oldest:
+            results.sort { $0.timestamp < $1.timestamp }
+        case .longest:
+            results.sort { $0.wordCount > $1.wordCount }
+        }
+
+        return results
+    }
+
+    var body: some View {
+        NavigationSplitView {
+            sidebarContent
+        } detail: {
+            detailContent
+        }
+        .navigationTitle("History")
+    }
+
+    @ViewBuilder
+    private var sidebarContent: some View {
+        List(filteredHistory, selection: $selectedTranscription) { transcription in
+            TranscriptionRow(transcription: transcription)
+                .tag(transcription)
+                .contextMenu {
+                    Button("Copy") {
+                        copyToClipboard(transcription.text)
+                    }
+                    Divider()
+                    Button("Delete", role: .destructive) {
+                        appState.deleteTranscription(transcription)
+                    }
+                }
+        }
+        .listStyle(.sidebar)
+        .frame(minWidth: 280)
+        .searchable(text: $searchText, prompt: "Search transcriptions")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                sortMenu
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var sortMenu: some View {
+        Menu {
+            ForEach(SortOrder.allCases, id: \.self) { order in
+                Button(order.rawValue) {
+                    sortOrder = order
+                }
+            }
+        } label: {
+            Image(systemName: "arrow.up.arrow.down")
+        }
+    }
+
+    @ViewBuilder
+    private var detailContent: some View {
+        if let transcription = selectedTranscription {
+            TranscriptionDetailView(transcription: transcription)
+        } else {
+            ContentUnavailableView(
+                "Select a Transcription",
+                systemImage: "text.quote",
+                description: Text("Choose a transcription from the list to view details")
+            )
+        }
+    }
+
+    private func copyToClipboard(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
+}
+
+// MARK: - Transcription Row
+
+struct TranscriptionRow: View {
+    let transcription: Transcription
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(transcription.relativeDate)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                if transcription.audioFilePath != nil {
+                    Image(systemName: "waveform")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Text(transcription.preview)
+                .font(.callout)
+                .lineLimit(2)
+
+            HStack(spacing: 8) {
+                if let category = transcription.category {
+                    Label(category, systemImage: "folder")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+
+                Text("\(transcription.wordCount) words")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Detail View
+
+struct TranscriptionDetailView: View {
+    let transcription: Transcription
+    @State private var isCopied = false
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                headerSection
+                Divider()
+                textSection
+                tagsSection
+                audioSection
+            }
+            .padding(20)
+        }
+        .frame(minWidth: 350)
+    }
+
+    @ViewBuilder
+    private var headerSection: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(transcription.formattedDate)
+                    .font(.headline)
+
+                HStack(spacing: 12) {
+                    Label("\(transcription.wordCount) words", systemImage: "textformat.abc")
+                    Label("\(transcription.charCount) characters", systemImage: "character")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button {
+                copyToClipboard()
+            } label: {
+                HStack {
+                    Image(systemName: isCopied ? "checkmark.circle.fill" : "doc.on.doc")
+                    Text(isCopied ? "Copied!" : "Copy")
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+
+    @ViewBuilder
+    private var textSection: some View {
+        Text(transcription.text)
+            .font(.body)
+            .textSelection(.enabled)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private var tagsSection: some View {
+        if !transcription.tags.isEmpty {
+            Divider()
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Tags")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                HStack {
+                    ForEach(transcription.tags, id: \.self) { tag in
+                        Text(tag)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.quaternary)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var audioSection: some View {
+        if let audioPath = transcription.audioFilePath {
+            Divider()
+            AudioPlayerView(audioPath: audioPath)
+        }
+    }
+
+    private func copyToClipboard() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(transcription.text, forType: .string)
+        isCopied = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isCopied = false
+        }
+    }
+}
+
+// MARK: - Audio Player
+
+struct AudioPlayerView: View {
+    let audioPath: String
+    @State private var isPlaying = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Audio Recording")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            HStack {
+                Button {
+                    isPlaying.toggle()
+                } label: {
+                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                        .font(.title)
+                }
+                .buttonStyle(.plain)
+
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(.quaternary)
+                    .frame(height: 30)
+                    .overlay {
+                        Image(systemName: "waveform")
+                            .foregroundStyle(.tertiary)
+                    }
+            }
+        }
+    }
+}
+
+// MARK: - Preview
+
+#Preview {
+    HistoryView()
+        .environmentObject(AppState())
+}

@@ -1,0 +1,293 @@
+import SwiftUI
+import Combine
+
+@MainActor
+class AppState: ObservableObject {
+    // MARK: - Recording State
+    @Published var isRecording = false
+    @Published var recordingStatus: RecordingStatus = .ready
+    @Published var lastTranscription: String?
+    @Published var audioLevel: Float = 0  // Normalized 0-1 for UI
+    @Published var showTranscriptionSuccess = false  // For success animation
+
+    // MARK: - Services
+    let audioRecorder = AudioRecorder()
+    let whisperService = WhisperService()
+    let settings = SettingsManager.shared
+
+    // MARK: - History
+    @Published var transcriptionHistory: [Transcription] = []
+
+    // MARK: - Health
+    @Published var healthMetrics: VoiceHealthMetrics?
+
+    private var cancellables = Set<AnyCancellable>()
+    private var audioLevelTimer: Timer?
+
+    init() {
+        loadHistory()
+        setupHotkeyBinding()
+    }
+
+    // MARK: - Recording
+
+    func startRecording() {
+        guard !isRecording else { return }
+        isRecording = true
+        recordingStatus = .recording
+        showTranscriptionSuccess = false
+
+        Task {
+            do {
+                try await audioRecorder.startRecording()
+                startAudioLevelMonitoring()
+            } catch {
+                recordingStatus = .error(error.localizedDescription)
+                isRecording = false
+            }
+        }
+    }
+
+    private func startAudioLevelMonitoring() {
+        audioLevelTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self = self else { return }
+                let db = self.audioRecorder.updateMeters()
+                // Convert dB (-160 to 0) to normalized value (0 to 1)
+                // Typical speech is around -20 to -10 dB
+                let normalized = max(0, min(1, (db + 50) / 50))
+                self.audioLevel = normalized
+            }
+        }
+    }
+
+    private func stopAudioLevelMonitoring() {
+        audioLevelTimer?.invalidate()
+        audioLevelTimer = nil
+        audioLevel = 0
+    }
+
+    func stopRecording() {
+        guard isRecording else { return }
+        isRecording = false
+        recordingStatus = .processing
+        stopAudioLevelMonitoring()
+
+        Task {
+            do {
+                let audioURL = try await audioRecorder.stopRecording()
+                print("Audio recorded, starting transcription...")
+                let transcription = try await whisperService.transcribe(audioURL: audioURL)
+                print("Transcription completed: \(transcription)")
+
+                // Apply grammar fixes if enabled
+                let finalText = settings.fixGrammar ? applyGrammarFixes(transcription) : transcription
+
+                // Save to history
+                let entry = Transcription(
+                    text: finalText,
+                    timestamp: Date(),
+                    audioFilePath: settings.saveAudio ? audioURL.path : nil
+                )
+                saveTranscription(entry)
+
+                lastTranscription = finalText
+                recordingStatus = .success
+                showTranscriptionSuccess = true
+
+                // Auto-paste if enabled
+                if settings.autoPaste {
+                    pasteToFrontmostApp(finalText)
+                }
+
+                // Clean up audio if not saving
+                if !settings.saveAudio {
+                    try? FileManager.default.removeItem(at: audioURL)
+                }
+
+                // Reset status after delay
+                try? await Task.sleep(for: .seconds(2))
+                recordingStatus = .ready
+
+            } catch {
+                print("Recording/transcription error: \(error)")
+                recordingStatus = .error(error.localizedDescription)
+                // Reset after showing error
+                try? await Task.sleep(for: .seconds(3))
+                recordingStatus = .ready
+            }
+        }
+    }
+
+    // MARK: - History Management
+
+    private func loadHistory() {
+        let historyURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".notta_history.json")
+
+        guard let data = try? Data(contentsOf: historyURL),
+              let history = try? JSONDecoder().decode([Transcription].self, from: data) else {
+            return
+        }
+
+        transcriptionHistory = history.sorted { $0.timestamp > $1.timestamp }
+    }
+
+    func saveTranscription(_ transcription: Transcription) {
+        transcriptionHistory.insert(transcription, at: 0)
+
+        let historyURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".notta_history.json")
+
+        if let data = try? JSONEncoder().encode(transcriptionHistory) {
+            try? data.write(to: historyURL)
+        }
+    }
+
+    func deleteTranscription(_ transcription: Transcription) {
+        transcriptionHistory.removeAll { $0.id == transcription.id }
+
+        // Remove audio file if exists
+        if let audioPath = transcription.audioFilePath {
+            try? FileManager.default.removeItem(atPath: audioPath)
+        }
+
+        // Save updated history
+        let historyURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".notta_history.json")
+
+        if let data = try? JSONEncoder().encode(transcriptionHistory) {
+            try? data.write(to: historyURL)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func applyGrammarFixes(_ text: String) -> String {
+        var result = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !result.isEmpty else { return result }
+
+        // Capitalize first letter
+        result = result.prefix(1).uppercased() + result.dropFirst()
+
+        // Common contractions
+        let replacements = [
+            "\\bi\\b": "I",
+            "\\bim\\b": "I'm",
+            "\\bdont\\b": "don't",
+            "\\bcant\\b": "can't",
+            "\\bwont\\b": "won't",
+            "\\bive\\b": "I've",
+            "\\bid\\b": "I'd",
+            "\\bill\\b": "I'll"
+        ]
+
+        for (pattern, replacement) in replacements {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
+                result = regex.stringByReplacingMatches(
+                    in: result,
+                    range: NSRange(result.startIndex..., in: result),
+                    withTemplate: replacement
+                )
+            }
+        }
+
+        // Add period if missing punctuation
+        if let lastChar = result.last, !".!?".contains(lastChar) {
+            result += "."
+        }
+
+        return result
+    }
+
+    private func pasteToFrontmostApp(_ text: String) {
+        // Copy to clipboard
+        NSPasteboard.general.clearContents()
+        let success = NSPasteboard.general.setString(text, forType: .string)
+        print("Clipboard set: \(success), text: \(text.prefix(50))...")
+
+        // Small delay to ensure clipboard is ready
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            // Simulate Cmd+V using CGEvent (more reliable than AppleScript)
+            self.simulatePaste()
+        }
+    }
+
+    private func simulatePaste() {
+        // Try CGEvent approach first (doesn't require Accessibility for clipboard, but does for keystroke)
+        let source = CGEventSource(stateID: .hidSystemState)
+
+        // Key down
+        guard let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true) else {
+            print("Failed to create key down event")
+            return
+        }
+        keyDown.flags = .maskCommand
+
+        // Key up
+        guard let keyUp = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: false) else {
+            print("Failed to create key up event")
+            return
+        }
+        keyUp.flags = .maskCommand
+
+        // Post events
+        keyDown.post(tap: .cghidEventTap)
+        keyUp.post(tap: .cghidEventTap)
+        print("Paste keystroke sent (Cmd+V)")
+    }
+
+    private func setupHotkeyBinding() {
+        NotificationCenter.default.publisher(for: .hotkeyPressed)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.startRecording()
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: .hotkeyReleased)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.stopRecording()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Recording Status
+
+enum RecordingStatus: Equatable {
+    case ready
+    case recording
+    case processing
+    case success
+    case error(String)
+
+    var displayText: String {
+        switch self {
+        case .ready: return "Ready"
+        case .recording: return "Recording..."
+        case .processing: return "Processing..."
+        case .success: return "Done!"
+        case .error(let message): return "Error: \(message)"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .ready: return .primary
+        case .recording: return .red
+        case .processing: return .secondary
+        case .success: return .green
+        case .error: return .orange
+        }
+    }
+}
+
+// MARK: - Notifications
+
+extension Notification.Name {
+    static let hotkeyPressed = Notification.Name("hotkeyPressed")
+    static let hotkeyReleased = Notification.Name("hotkeyReleased")
+}
