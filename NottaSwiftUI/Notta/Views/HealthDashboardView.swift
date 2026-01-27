@@ -13,10 +13,37 @@ struct HealthDashboardView: View {
         case month = "30 days"
     }
 
-    // Sample data for preview
-    private let metrics = VoiceHealthMetrics.sample
-    private let baseline = BaselineMetrics.sample
-    private let chartData = HealthDataPoint.sampleWeekData
+    // Use real data from appState, fall back to sample for empty state
+    private var metrics: VoiceHealthMetrics {
+        appState.healthMetrics ?? VoiceHealthMetrics.sample
+    }
+
+    private var baseline: BaselineMetrics {
+        appState.baselineMetrics ?? BaselineMetrics.sample
+    }
+
+    private var chartData: [HealthDataPoint] {
+        let data = filteredHealthHistory
+        return data.isEmpty ? HealthDataPoint.sampleWeekData : data
+    }
+
+    private var filteredHealthHistory: [HealthDataPoint] {
+        let now = Date()
+        let cutoff: Date
+        switch selectedTimeRange {
+        case .day:
+            cutoff = now.addingTimeInterval(-24 * 60 * 60)
+        case .week:
+            cutoff = now.addingTimeInterval(-7 * 24 * 60 * 60)
+        case .month:
+            cutoff = now.addingTimeInterval(-30 * 24 * 60 * 60)
+        }
+        return appState.healthHistory.filter { $0.date > cutoff }.sorted { $0.date < $1.date }
+    }
+
+    private var hasRealData: Bool {
+        appState.healthMetrics != nil
+    }
 
     var body: some View {
         ScrollView {
@@ -102,9 +129,18 @@ struct HealthDashboardView: View {
                     .font(.title2.weight(.semibold))
                     .symbolRenderingMode(.multicolor)
 
-                Text("Last updated: \(metrics.timestamp.formatted(date: .abbreviated, time: .shortened))")
+                if hasRealData {
+                    Text("Last updated: \(metrics.timestamp.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    HStack(spacing: 4) {
+                        Image(systemName: "info.circle")
+                        Text("Sample data - make recordings to see your metrics")
+                    }
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.orange)
+                }
             }
 
             Spacer()
@@ -124,9 +160,20 @@ struct HealthDashboardView: View {
 
     private func runAnalysis() {
         isAnalyzing = true
-        // TODO: Implement actual analysis
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            isAnalyzing = false
+
+        // Find the most recent audio file to analyze
+        Task {
+            if let lastTranscription = appState.transcriptionHistory.first,
+               let audioPath = lastTranscription.audioFilePath {
+                let audioURL = URL(fileURLWithPath: audioPath)
+                if FileManager.default.fileExists(atPath: audioPath) {
+                    await appState.analyzeVoiceHealth(audioURL: audioURL)
+                }
+            }
+
+            await MainActor.run {
+                isAnalyzing = false
+            }
         }
     }
 

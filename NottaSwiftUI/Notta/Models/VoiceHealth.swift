@@ -118,6 +118,13 @@ struct HealthDataPoint: Identifiable {
     let illnessScore: Double
 }
 
+// Codable version for persistence
+struct HealthDataPointCodable: Codable {
+    let date: Date
+    let fatigueScore: Double
+    let illnessScore: Double
+}
+
 // MARK: - Sample Data for Previews
 
 extension VoiceHealthMetrics {

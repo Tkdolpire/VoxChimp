@@ -13,6 +13,7 @@ class AppState: ObservableObject {
     // MARK: - Services
     let audioRecorder = AudioRecorder()
     let whisperService = WhisperService()
+    let acousticAnalyzer = AcousticAnalyzer()
     let settings = SettingsManager.shared
 
     // MARK: - History
@@ -20,12 +21,15 @@ class AppState: ObservableObject {
 
     // MARK: - Health
     @Published var healthMetrics: VoiceHealthMetrics?
+    @Published var healthHistory: [HealthDataPoint] = []
+    @Published var baselineMetrics: BaselineMetrics?
 
     private var cancellables = Set<AnyCancellable>()
     private var audioLevelTimer: Timer?
 
     init() {
         loadHistory()
+        loadHealthData()
         setupHotkeyBinding()
     }
 
@@ -100,9 +104,14 @@ class AppState: ObservableObject {
                     pasteToFrontmostApp(finalText)
                 }
 
-                // Clean up audio if not saving
-                if !settings.saveAudio {
-                    try? FileManager.default.removeItem(at: audioURL)
+                // Analyze voice health (runs in background)
+                Task {
+                    await analyzeVoiceHealth(audioURL: audioURL)
+
+                    // Clean up audio after analysis if not saving
+                    if !self.settings.saveAudio {
+                        try? FileManager.default.removeItem(at: audioURL)
+                    }
                 }
 
                 // Reset status after delay
@@ -158,6 +167,87 @@ class AppState: ObservableObject {
 
         if let data = try? JSONEncoder().encode(transcriptionHistory) {
             try? data.write(to: historyURL)
+        }
+    }
+
+    // MARK: - Health Analysis
+
+    func analyzeVoiceHealth(audioURL: URL) async {
+        do {
+            let metrics = try await acousticAnalyzer.analyzeAudio(at: audioURL)
+            healthMetrics = metrics
+
+            // Add to history
+            let dataPoint = HealthDataPoint(
+                date: metrics.timestamp,
+                fatigueScore: Double(metrics.fatigueScore),
+                illnessScore: Double(metrics.illnessScore)
+            )
+            healthHistory.append(dataPoint)
+
+            // Keep only last 30 days of data
+            let thirtyDaysAgo = Date().addingTimeInterval(-30 * 24 * 60 * 60)
+            healthHistory = healthHistory.filter { $0.date > thirtyDaysAgo }
+
+            // Save health history
+            saveHealthHistory()
+
+            // Update baseline reference
+            loadBaseline()
+
+            print("Voice health analyzed - Fatigue: \(metrics.fatigueScore)%, Illness: \(metrics.illnessScore)%")
+        } catch {
+            print("Voice health analysis failed: \(error)")
+        }
+    }
+
+    private func loadHealthData() {
+        loadHealthHistory()
+        loadBaseline()
+    }
+
+    private func loadHealthHistory() {
+        let historyURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".notta_health")
+            .appendingPathComponent("history.json")
+
+        guard let data = try? Data(contentsOf: historyURL),
+              let history = try? JSONDecoder().decode([HealthDataPointCodable].self, from: data) else {
+            return
+        }
+
+        healthHistory = history.map {
+            HealthDataPoint(date: $0.date, fatigueScore: $0.fatigueScore, illnessScore: $0.illnessScore)
+        }
+    }
+
+    private func saveHealthHistory() {
+        let historyURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".notta_health")
+            .appendingPathComponent("history.json")
+
+        let codable = healthHistory.map {
+            HealthDataPointCodable(date: $0.date, fatigueScore: $0.fatigueScore, illnessScore: $0.illnessScore)
+        }
+
+        try? FileManager.default.createDirectory(
+            at: historyURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+
+        if let data = try? JSONEncoder().encode(codable) {
+            try? data.write(to: historyURL)
+        }
+    }
+
+    private func loadBaseline() {
+        let baselineURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".notta_health")
+            .appendingPathComponent("baseline.json")
+
+        if let data = try? Data(contentsOf: baselineURL),
+           let baseline = try? JSONDecoder().decode(BaselineMetrics.self, from: data) {
+            baselineMetrics = baseline
         }
     }
 
