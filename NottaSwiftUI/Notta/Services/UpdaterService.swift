@@ -1,6 +1,11 @@
 import Foundation
 import SwiftUI
 
+// UpdaterService uses Sparkle for direct distribution (Pro) version only
+// App Store version gets updates through the App Store
+
+#if !APPSTORE
+
 // Note: Sparkle must be added as a package dependency in Xcode
 // File -> Add Package Dependencies -> https://github.com/sparkle-project/Sparkle
 // Version: 2.x
@@ -89,6 +94,35 @@ final class UpdaterService: ObservableObject {
 
 #endif
 
+#else
+
+// MARK: - App Store Stub
+
+/// Stub UpdaterService for App Store version - updates come from the App Store
+final class UpdaterService: ObservableObject {
+    static let shared = UpdaterService()
+
+    @Published var automaticallyChecksForUpdates: Bool = true
+
+    var canCheckForUpdates: Bool { false }
+    var lastUpdateCheckDate: Date? { nil }
+
+    private init() {}
+
+    func checkForUpdates() {
+        // Open App Store to check for updates
+        if let url = URL(string: "macappstore://apps.apple.com/app/idYOUR_APP_ID") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    func checkForUpdatesInBackground() {
+        // App Store handles background updates
+    }
+}
+
+#endif
+
 // MARK: - SwiftUI View Modifier
 
 /// View modifier for adding update check button to menus
@@ -115,6 +149,7 @@ struct UpdateSettingsView: View {
     var body: some View {
         Form {
             Section {
+                #if !APPSTORE
                 Toggle("Automatically check for updates", isOn: $updater.automaticallyChecksForUpdates)
 
                 HStack {
@@ -133,10 +168,22 @@ struct UpdateSettingsView: View {
                     updater.checkForUpdates()
                 }
                 .disabled(!updater.canCheckForUpdates)
+                #else
+                Text("Updates are delivered through the App Store.")
+                    .foregroundStyle(.secondary)
+
+                Button("Open App Store") {
+                    updater.checkForUpdates()
+                }
+                #endif
             } header: {
                 Text("Software Updates")
             } footer: {
+                #if !APPSTORE
                 Text("Notta will automatically download and install updates when available.")
+                #else
+                Text("Enable automatic updates in the App Store to stay up to date.")
+                #endif
             }
         }
         .formStyle(.grouped)

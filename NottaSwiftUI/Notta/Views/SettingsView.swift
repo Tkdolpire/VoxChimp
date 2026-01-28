@@ -18,10 +18,17 @@ struct SettingsView: View {
                     Label("Health", systemImage: "heart")
                 }
 
+            #if !APPSTORE
             LicenseSettingsView()
                 .tabItem {
                     Label("License", systemImage: "key.fill")
                 }
+            #else
+            StoreSettingsView()
+                .tabItem {
+                    Label("Subscription", systemImage: "creditcard.fill")
+                }
+            #endif
 
             AdvancedSettingsView()
                 .tabItem {
@@ -207,6 +214,33 @@ struct HealthSettingsView: View {
     }
 }
 
+// MARK: - App Store Subscription Settings
+
+#if APPSTORE
+struct StoreSettingsView: View {
+    var body: some View {
+        Form {
+            Section {
+                Text("Subscription management coming soon.")
+                    .foregroundStyle(.secondary)
+
+                Button("Manage in App Store") {
+                    if let url = URL(string: "macappstore://apps.apple.com/account/subscriptions") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+            } header: {
+                Text("Subscription")
+            } footer: {
+                Text("Your subscription is managed through the App Store.")
+            }
+        }
+        .formStyle(.grouped)
+        .padding()
+    }
+}
+#endif
+
 // MARK: - Advanced Settings
 
 struct AdvancedSettingsView: View {
@@ -216,6 +250,7 @@ struct AdvancedSettingsView: View {
     var body: some View {
         Form {
             Section {
+                #if !APPSTORE
                 Toggle("Automatically check for updates", isOn: $updater.automaticallyChecksForUpdates)
 
                 HStack {
@@ -234,6 +269,10 @@ struct AdvancedSettingsView: View {
                     updater.checkForUpdates()
                 }
                 .disabled(!updater.canCheckForUpdates)
+                #else
+                Text("Updates are delivered through the App Store.")
+                    .foregroundStyle(.secondary)
+                #endif
             } header: {
                 Text("Software Updates")
             }
@@ -296,8 +335,13 @@ struct AdvancedSettingsView: View {
                 HStack {
                     Text("Build")
                     Spacer()
-                    Text(Bundle.main.buildNumber)
+                    #if APPSTORE
+                    Text("\(Bundle.main.buildNumber) (App Store)")
                         .foregroundStyle(.secondary)
+                    #else
+                    Text("\(Bundle.main.buildNumber) (Direct)")
+                        .foregroundStyle(.secondary)
+                    #endif
                 }
             } header: {
                 Text("About")

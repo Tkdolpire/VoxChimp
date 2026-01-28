@@ -2,6 +2,11 @@ import Foundation
 import SwiftUI
 import Combine
 
+// LicenseManager is only used in the direct distribution (Pro) version
+// App Store version uses StoreKit instead
+
+#if !APPSTORE
+
 /// Manages license validation, trial periods, and feature gating
 @MainActor
 final class LicenseManager: ObservableObject {
@@ -357,3 +362,35 @@ extension LicenseManager {
         }
     }
 }
+
+#else
+
+// MARK: - App Store Stub
+
+/// Stub LicenseManager for App Store version - uses StoreKit instead
+@MainActor
+final class LicenseManager: ObservableObject {
+    static let shared = LicenseManager()
+
+    @Published private(set) var state: LicenseState = .active // App Store version is always "active" (uses StoreKit)
+    @Published private(set) var licenseKey: String? = nil
+    @Published private(set) var email: String? = nil
+    @Published private(set) var isValidating: Bool = false
+    @Published private(set) var lastError: String? = nil
+
+    private init() {}
+
+    func initialize() async {
+        // App Store version uses StoreKit - see StoreKitManager
+    }
+
+    var canUseUnlimitedTranscriptions: Bool { true }
+    var canUseVoiceHealth: Bool { true }
+    var shouldShowUpgradePrompt: Bool { false }
+
+    static func handleIncomingURL(_ url: URL) {
+        // No-op for App Store version
+    }
+}
+
+#endif

@@ -15,9 +15,11 @@ struct NottaApp: App {
                 .environmentObject(appState)
                 .environmentObject(licenseManager)
                 .frame(minWidth: 360, minHeight: 400)
+                #if !APPSTORE
                 .onOpenURL { url in
                     handleIncomingURL(url)
                 }
+                #endif
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
@@ -26,10 +28,12 @@ struct NottaApp: App {
 
             // Check for Updates menu item
             CommandGroup(after: .appInfo) {
+                #if !APPSTORE
                 Button("Check for Updates...") {
                     updaterService.checkForUpdates()
                 }
                 .checkForUpdatesStyle()
+                #endif
             }
         }
 
@@ -56,10 +60,12 @@ struct NottaApp: App {
 
     // MARK: - URL Handling
 
+    #if !APPSTORE
     private func handleIncomingURL(_ url: URL) {
         // Handle notta:// URLs for license activation
         LicenseManager.handleIncomingURL(url)
     }
+    #endif
 }
 
 // MARK: - App Delegate
@@ -96,11 +102,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - URL Handling
 
+    #if !APPSTORE
     func application(_ application: NSApplication, open urls: [URL]) {
         for url in urls {
             LicenseManager.handleIncomingURL(url)
         }
     }
+    #endif
 
     // MARK: - Permissions
 
