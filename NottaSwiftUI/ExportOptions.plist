@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Export method: developer-id for outside App Store distribution -->
+    <key>method</key>
+    <string>developer-id</string>
+
+    <!-- Your Apple Developer Team ID -->
+    <!-- Find at: developer.apple.com/account -> Membership Details -->
+    <key>teamID</key>
+    <string>A66WA4P44Y</string>
+
+    <!-- Signing certificate -->
+    <key>signingCertificate</key>
+    <string>Developer ID Application</string>
+
+    <!-- Signing style -->
+    <key>signingStyle</key>
+    <string>manual</string>
+
+    <!-- Destination: export for distribution -->
+    <key>destination</key>
+    <string>export</string>
+
+    <!-- Strip Swift symbols for smaller binary -->
+    <key>stripSwiftSymbols</key>
+    <true/>
+
+    <!-- Upload symbols for crash reporting -->
+    <key>uploadSymbols</key>
+    <true/>
+
+    <!-- Compile bitcode (not needed for macOS) -->
+    <key>compileBitcode</key>
+    <false/>
+
+    <!-- Manage app version and build automatically -->
+    <key>manageAppVersionAndBuildNumber</key>
+    <false/>
+</dict>
+</plist>

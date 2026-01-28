@@ -18,12 +18,17 @@ struct SettingsView: View {
                     Label("Health", systemImage: "heart")
                 }
 
+            LicenseSettingsView()
+                .tabItem {
+                    Label("License", systemImage: "key.fill")
+                }
+
             AdvancedSettingsView()
                 .tabItem {
                     Label("Advanced", systemImage: "wrench.and.screwdriver")
                 }
         }
-        .frame(width: 450, height: 320)
+        .frame(width: 450, height: 380)
     }
 }
 
@@ -205,10 +210,34 @@ struct HealthSettingsView: View {
 // MARK: - Advanced Settings
 
 struct AdvancedSettingsView: View {
+    @ObservedObject var updater = UpdaterService.shared
     @State private var showDebugInfo = false
 
     var body: some View {
         Form {
+            Section {
+                Toggle("Automatically check for updates", isOn: $updater.automaticallyChecksForUpdates)
+
+                HStack {
+                    Text("Last checked")
+                    Spacer()
+                    if let date = updater.lastUpdateCheckDate {
+                        Text(date, style: .relative)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Never")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Button("Check for Updates Now") {
+                    updater.checkForUpdates()
+                }
+                .disabled(!updater.canCheckForUpdates)
+            } header: {
+                Text("Software Updates")
+            }
+
             Section {
                 Button("Open Log File") {
                     let url = FileManager.default.homeDirectoryForCurrentUser
@@ -260,14 +289,14 @@ struct AdvancedSettingsView: View {
                 HStack {
                     Text("Version")
                     Spacer()
-                    Text("2.0.0")
+                    Text(Bundle.main.appVersion)
                         .foregroundStyle(.secondary)
                 }
 
                 HStack {
                     Text("Build")
                     Spacer()
-                    Text("SwiftUI")
+                    Text(Bundle.main.buildNumber)
                         .foregroundStyle(.secondary)
                 }
             } header: {

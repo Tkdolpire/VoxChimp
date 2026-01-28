@@ -6,42 +6,63 @@ import AppKit
 struct NottaApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appState = AppState()
+    @StateObject private var licenseManager = LicenseManager.shared
+    @StateObject private var updaterService = UpdaterService.shared
 
     var body: some Scene {
         WindowGroup {
             MainView()
                 .environmentObject(appState)
+                .environmentObject(licenseManager)
                 .frame(minWidth: 360, minHeight: 400)
+                .onOpenURL { url in
+                    handleIncomingURL(url)
+                }
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
         .commands {
             CommandGroup(replacing: .newItem) { }
+
+            // Check for Updates menu item
             CommandGroup(after: .appInfo) {
                 Button("Check for Updates...") {
-                    // Future: Sparkle integration
+                    updaterService.checkForUpdates()
                 }
+                .checkForUpdatesStyle()
             }
         }
 
         Settings {
             SettingsView()
                 .environmentObject(appState)
+                .environmentObject(licenseManager)
         }
 
         Window("History", id: "history") {
             HistoryView()
                 .environmentObject(appState)
+                .environmentObject(licenseManager)
                 .frame(minWidth: 500, minHeight: 400)
         }
 
         Window("Voice Health", id: "health") {
             HealthDashboardView()
                 .environmentObject(appState)
+                .environmentObject(licenseManager)
                 .frame(minWidth: 450, minHeight: 550)
         }
     }
+
+    // MARK: - URL Handling
+
+    private func handleIncomingURL(_ url: URL) {
+        // Handle notta:// URLs for license activation
+        LicenseManager.handleIncomingURL(url)
+    }
 }
+
+// MARK: - App Delegate
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var hotkeyManager: HotkeyManager?
@@ -53,6 +74,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Request necessary permissions
         requestPermissions()
+
+        // Initialize license manager
+        Task { @MainActor in
+            await LicenseManager.shared.initialize()
+        }
 
         // Check accessibility permission after a short delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -67,6 +93,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
     }
+
+    // MARK: - URL Handling
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            LicenseManager.handleIncomingURL(url)
+        }
+    }
+
+    // MARK: - Permissions
 
     private func requestPermissions() {
         // Microphone permission
