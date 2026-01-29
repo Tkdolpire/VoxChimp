@@ -7,6 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		16D6E3AE2F2B551E003EE171 /* NottaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* NottaApp.swift */; };
+		16D6E3AF2F2B551E003EE171 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppState.swift */; };
+		16D6E3B02F2B551E003EE171 /* Transcription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* Transcription.swift */; };
+		16D6E3B12F2B551E003EE171 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004 /* Settings.swift */; };
+		16D6E3B22F2B551E003EE171 /* VoiceHealth.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000005 /* VoiceHealth.swift */; };
+		16D6E3B32F2B551E003EE171 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000006 /* MainView.swift */; };
+		16D6E3B42F2B551E003EE171 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000007 /* HistoryView.swift */; };
+		16D6E3B52F2B551E003EE171 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008 /* SettingsView.swift */; };
+		16D6E3B62F2B551E003EE171 /* HealthDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000009 /* HealthDashboardView.swift */; };
+		16D6E3B72F2B551E003EE171 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000010 /* AudioRecorder.swift */; };
+		16D6E3B82F2B551E003EE171 /* WhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000011 /* WhisperService.swift */; };
+		16D6E3B92F2B551E003EE171 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* HotkeyManager.swift */; };
+		16D6E3BA2F2B551E003EE171 /* AcousticAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000013 /* AcousticAnalyzer.swift */; };
+		16D6E3BD2F2B551E003EE171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000014 /* Assets.xcassets */; };
+		16D6E3C52F2B6A15003EE171 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 16D6E3C42F2B6A15003EE171 /* Sparkle */; };
+		C10000010000000000000001 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* License.swift */; };
+		C10000010000000000000002 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* LicenseManager.swift */; };
+		C10000010000000000000003 /* LicenseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* LicenseAPI.swift */; };
+		C10000010000000000000004 /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000004 /* UpdaterService.swift */; };
+		C10000010000000000000005 /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000005 /* LicenseView.swift */; };
+		C10000010000000000000006 /* TrialBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000006 /* TrialBannerView.swift */; };
+		D10000010000000000000001 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* License.swift */; };
+		D10000010000000000000002 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* LicenseManager.swift */; };
+		D10000010000000000000003 /* LicenseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* LicenseAPI.swift */; };
+		D10000010000000000000004 /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000004 /* UpdaterService.swift */; };
+		D10000010000000000000005 /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000005 /* LicenseView.swift */; };
+		D10000010000000000000006 /* TrialBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000006 /* TrialBannerView.swift */; };
 		A10000010000000000000001 /* NottaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* NottaApp.swift */; };
 		A10000010000000000000002 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppState.swift */; };
 		A10000010000000000000003 /* Transcription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* Transcription.swift */; };
@@ -24,6 +51,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		16D6E3C12F2B551E003EE171 /* Notta Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notta Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		16D6E3C22F2B551E003EE171 /* Notta copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Notta copy-Info.plist"; path = "/Users/tyrondolpire/Projects/2026/Notta/NottaSwiftUI/Notta copy-Info.plist"; sourceTree = "<absolute>"; };
 		A20000010000000000000001 /* NottaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NottaApp.swift; sourceTree = "<group>"; };
 		A20000010000000000000002 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		A20000010000000000000003 /* Transcription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transcription.swift; sourceTree = "<group>"; };
@@ -40,10 +69,25 @@
 		A20000010000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A20000010000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A20000010000000000000016 /* Notta.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notta.entitlements; sourceTree = "<group>"; };
+		A20000010000000000000017 /* NottaPro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NottaPro.entitlements; sourceTree = "<group>"; };
+		C20000010000000000000001 /* License.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License.swift; sourceTree = "<group>"; };
+		C20000010000000000000002 /* LicenseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseManager.swift; sourceTree = "<group>"; };
+		C20000010000000000000003 /* LicenseAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseAPI.swift; sourceTree = "<group>"; };
+		C20000010000000000000004 /* UpdaterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterService.swift; sourceTree = "<group>"; };
+		C20000010000000000000005 /* LicenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseView.swift; sourceTree = "<group>"; };
+		C20000010000000000000006 /* TrialBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialBannerView.swift; sourceTree = "<group>"; };
 		A30000010000000000000001 /* Notta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		16D6E3BB2F2B551E003EE171 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16D6E3C52F2B6A15003EE171 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A40000010000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -58,6 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				A50000010000000000000002 /* Notta */,
+				16D6E3C22F2B551E003EE171 /* Notta copy-Info.plist */,
 				A50000010000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -69,6 +114,7 @@
 				A20000010000000000000002 /* AppState.swift */,
 				A20000010000000000000015 /* Info.plist */,
 				A20000010000000000000016 /* Notta.entitlements */,
+				A20000010000000000000017 /* NottaPro.entitlements */,
 				A50000010000000000000004 /* Models */,
 				A50000010000000000000005 /* Views */,
 				A50000010000000000000006 /* Services */,
@@ -81,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				A30000010000000000000001 /* Notta.app */,
+				16D6E3C12F2B551E003EE171 /* Notta Pro.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -91,6 +138,7 @@
 				A20000010000000000000003 /* Transcription.swift */,
 				A20000010000000000000004 /* Settings.swift */,
 				A20000010000000000000005 /* VoiceHealth.swift */,
+				C20000010000000000000001 /* License.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -102,6 +150,8 @@
 				A20000010000000000000007 /* HistoryView.swift */,
 				A20000010000000000000008 /* SettingsView.swift */,
 				A20000010000000000000009 /* HealthDashboardView.swift */,
+				C20000010000000000000005 /* LicenseView.swift */,
+				C20000010000000000000006 /* TrialBannerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -113,6 +163,9 @@
 				A20000010000000000000011 /* WhisperService.swift */,
 				A20000010000000000000012 /* HotkeyManager.swift */,
 				A20000010000000000000013 /* AcousticAnalyzer.swift */,
+				C20000010000000000000002 /* LicenseManager.swift */,
+				C20000010000000000000003 /* LicenseAPI.swift */,
+				C20000010000000000000004 /* UpdaterService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -128,6 +181,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		16D6E3AC2F2B551E003EE171 /* Notta Pro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 16D6E3BE2F2B551E003EE171 /* Build configuration list for PBXNativeTarget "Notta Pro" */;
+			buildPhases = (
+				16D6E3AD2F2B551E003EE171 /* Sources */,
+				16D6E3BB2F2B551E003EE171 /* Frameworks */,
+				16D6E3BC2F2B551E003EE171 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Notta Pro";
+			productName = Notta;
+			productReference = 16D6E3C12F2B551E003EE171 /* Notta Pro.app */;
+			productType = "com.apple.product-type.application";
+		};
 		A60000010000000000000001 /* Notta */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A80000010000000000000001 /* Build configuration list for PBXNativeTarget "Notta" */;
@@ -169,16 +239,28 @@
 				Base,
 			);
 			mainGroup = A50000010000000000000001;
+			packageReferences = (
+				16D6E3C32F2B6A15003EE171 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			productRefGroup = A50000010000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				A60000010000000000000001 /* Notta */,
+				16D6E3AC2F2B551E003EE171 /* Notta Pro */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		16D6E3BC2F2B551E003EE171 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16D6E3BD2F2B551E003EE171 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A70000010000000000000002 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -190,6 +272,32 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		16D6E3AD2F2B551E003EE171 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16D6E3AE2F2B551E003EE171 /* NottaApp.swift in Sources */,
+				16D6E3AF2F2B551E003EE171 /* AppState.swift in Sources */,
+				16D6E3B02F2B551E003EE171 /* Transcription.swift in Sources */,
+				16D6E3B12F2B551E003EE171 /* Settings.swift in Sources */,
+				16D6E3B22F2B551E003EE171 /* VoiceHealth.swift in Sources */,
+				16D6E3B32F2B551E003EE171 /* MainView.swift in Sources */,
+				16D6E3B42F2B551E003EE171 /* HistoryView.swift in Sources */,
+				16D6E3B52F2B551E003EE171 /* SettingsView.swift in Sources */,
+				16D6E3B62F2B551E003EE171 /* HealthDashboardView.swift in Sources */,
+				16D6E3B72F2B551E003EE171 /* AudioRecorder.swift in Sources */,
+				16D6E3B82F2B551E003EE171 /* WhisperService.swift in Sources */,
+				16D6E3B92F2B551E003EE171 /* HotkeyManager.swift in Sources */,
+				16D6E3BA2F2B551E003EE171 /* AcousticAnalyzer.swift in Sources */,
+				C10000010000000000000001 /* License.swift in Sources */,
+				C10000010000000000000002 /* LicenseManager.swift in Sources */,
+				C10000010000000000000003 /* LicenseAPI.swift in Sources */,
+				C10000010000000000000004 /* UpdaterService.swift in Sources */,
+				C10000010000000000000005 /* LicenseView.swift in Sources */,
+				C10000010000000000000006 /* TrialBannerView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A70000010000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -207,12 +315,76 @@
 				A10000010000000000000011 /* WhisperService.swift in Sources */,
 				A10000010000000000000012 /* HotkeyManager.swift in Sources */,
 				A10000010000000000000013 /* AcousticAnalyzer.swift in Sources */,
+				D10000010000000000000001 /* License.swift in Sources */,
+				D10000010000000000000002 /* LicenseManager.swift in Sources */,
+				D10000010000000000000003 /* LicenseAPI.swift in Sources */,
+				D10000010000000000000004 /* UpdaterService.swift in Sources */,
+				D10000010000000000000005 /* LicenseView.swift in Sources */,
+				D10000010000000000000006 /* TrialBannerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		16D6E3BF2F2B551E003EE171 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Notta/NottaPro.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A66WA4P44Y;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Notta copy-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Notta;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2026. All rights reserved.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Notta needs microphone access to record your voice for transcription.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 2.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.notta.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		16D6E3C02F2B551E003EE171 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Notta/NottaPro.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A66WA4P44Y;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Notta copy-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Notta;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2026. All rights reserved.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Notta needs microphone access to record your voice for transcription.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 2.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.notta.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		B10000010000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -355,6 +527,7 @@
 				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.notta.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) APPSTORE";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -384,6 +557,7 @@
 				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.notta.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) APPSTORE";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -392,6 +566,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		16D6E3BE2F2B551E003EE171 /* Build configuration list for PBXNativeTarget "Notta Pro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				16D6E3BF2F2B551E003EE171 /* Debug */,
+				16D6E3C02F2B551E003EE171 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A80000010000000000000001 /* Build configuration list for PBXNativeTarget "Notta" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -411,6 +594,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		16D6E3C32F2B6A15003EE171 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		16D6E3C42F2B6A15003EE171 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 16D6E3C32F2B6A15003EE171 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A90000010000000000000001 /* Project object */;
 }

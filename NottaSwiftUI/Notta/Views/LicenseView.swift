@@ -1,5 +1,7 @@
 import SwiftUI
 
+#if !APPSTORE
+
 /// Settings view for license management
 struct LicenseSettingsView: View {
     @ObservedObject var licenseManager = LicenseManager.shared
@@ -323,6 +325,51 @@ struct LicenseActivationView: View {
         }
     }
 }
+
+#else
+
+// MARK: - App Store Stubs
+
+/// App Store version - placeholder that shows StoreKit info
+struct LicenseSettingsView: View {
+    var body: some View {
+        Form {
+            Section {
+                Text("Your subscription is managed through the App Store.")
+                    .foregroundStyle(.secondary)
+
+                Button("Manage Subscription") {
+                    if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+            } header: {
+                Text("Subscription")
+            }
+        }
+        .formStyle(.grouped)
+        .padding()
+    }
+}
+
+/// App Store version - not used
+struct LicenseActivationView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text("Subscription managed via App Store")
+                .foregroundStyle(.secondary)
+            Button("Close") {
+                dismiss()
+            }
+        }
+        .padding(32)
+        .frame(width: 400)
+    }
+}
+
+#endif
 
 // MARK: - Preview
 

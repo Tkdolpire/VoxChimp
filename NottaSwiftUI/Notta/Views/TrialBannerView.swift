@@ -1,5 +1,7 @@
 import SwiftUI
 
+#if !APPSTORE
+
 /// Banner displayed when user is in trial or trial has expired
 struct TrialBannerView: View {
     @ObservedObject var licenseManager = LicenseManager.shared
@@ -213,6 +215,42 @@ struct FeatureLockOverlay: View {
         }
     }
 }
+
+#else
+
+// MARK: - App Store Stubs
+
+/// App Store version - empty (no trial banner needed)
+struct TrialBannerView: View {
+    var body: some View {
+        EmptyView()
+    }
+}
+
+/// App Store version - shows Pro status
+struct TrialIndicator: View {
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "checkmark.seal.fill")
+                .font(.caption2)
+            Text("Pro")
+                .font(.caption2.bold())
+        }
+        .foregroundStyle(.green)
+        .help("Notta Pro")
+    }
+}
+
+/// App Store version - no lock overlay needed
+struct FeatureLockOverlay: View {
+    let featureName: String
+
+    var body: some View {
+        EmptyView()
+    }
+}
+
+#endif
 
 // MARK: - Preview
 
