@@ -25,7 +25,7 @@ final class LicenseManager: ObservableObject {
     // MARK: - Configuration
 
     /// Number of days for the free trial
-    private let trialDays: Int = 14
+    private let trialDays: Int = 7
 
     /// Number of days to allow offline usage without re-validation
     private let gracePeriodDays: Int = 3

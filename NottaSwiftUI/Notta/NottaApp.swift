@@ -21,6 +21,7 @@ struct NottaApp: App {
                 }
                 #endif
         }
+        .handlesExternalEvents(matching: Set(["*"]))
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
         .commands {
@@ -104,6 +105,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     #if !APPSTORE
     func application(_ application: NSApplication, open urls: [URL]) {
+        // Bring app to front
+        NSApp.activate(ignoringOtherApps: true)
+
         for url in urls {
             LicenseManager.handleIncomingURL(url)
         }

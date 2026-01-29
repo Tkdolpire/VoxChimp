@@ -44,9 +44,10 @@ final class UpdaterService: ObservableObject {
 
     private init() {
         // Initialize Sparkle updater controller
-        // startingUpdater: true means it will start checking for updates immediately
+        // startingUpdater: false - don't auto-start until appcast URL and signing key are configured
+        // Set to true once you've generated keys and hosted the appcast
         updaterController = SPUStandardUpdaterController(
-            startingUpdater: true,
+            startingUpdater: false,
             updaterDelegate: nil,
             userDriverDelegate: nil
         )

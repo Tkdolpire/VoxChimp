@@ -208,7 +208,7 @@ struct LicenseSettingsView: View {
                     .font(.caption)
             }
 
-            ProgressView(value: Double(14 - daysRemaining), total: 14)
+            ProgressView(value: Double(7 - daysRemaining), total: 7)
                 .tint(daysRemaining <= 3 ? .orange : .blue)
         }
     }

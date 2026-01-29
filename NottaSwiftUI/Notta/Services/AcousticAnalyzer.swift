@@ -433,7 +433,7 @@ class BaselineManager {
     }
 
     func addSample(pitch: Double, jitter: Double, shimmer: Double, hnr: Double, speechRate: Double) {
-        var baseline = getBaseline() ?? BaselineMetrics(
+        let baseline = getBaseline() ?? BaselineMetrics(
             pitchHz: 0,
             jitterPercent: 0,
             shimmerPercent: 0,
