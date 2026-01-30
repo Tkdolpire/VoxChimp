@@ -26,12 +26,12 @@ class WhisperKitService: ObservableObject {
         loadingError = nil
 
         do {
-            // WhisperKit model naming convention
-            let modelName = "openai_whisper-\(model.rawValue)"
-
+            // WhisperKit handles model download automatically
+            // Use nil to let WhisperKit select the best available model,
+            // or specify a variant like "small", "base", etc.
             whisperKit = try await WhisperKit(
-                model: modelName,
-                verbose: false,
+                model: model.rawValue,
+                verbose: true,
                 prewarm: true
             )
 

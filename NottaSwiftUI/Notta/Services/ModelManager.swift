@@ -80,12 +80,9 @@ class ModelManager: ObservableObject {
         do {
             // WhisperKit downloads models automatically when initializing
             // We'll use a temporary instance to trigger the download
-            let modelName = "openai_whisper-\(model.rawValue)"
-
-            // Download the model
             _ = try await WhisperKit(
-                model: modelName,
-                verbose: false,
+                model: model.rawValue,
+                verbose: true,
                 prewarm: false
             )
 
@@ -126,25 +123,34 @@ class ModelManager: ObservableObject {
     // MARK: - Private
 
     private func scanForDownloadedModels() {
-        // Check WhisperKit's default model cache location
-        // WhisperKit stores models in ~/Library/Caches/com.argmax.WhisperKit/
-        let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
-            .appendingPathComponent("com.argmax.WhisperKit")
+        // WhisperKit stores models in ~/Documents/huggingface/models/argmaxinc/whisperkit-coreml/
+        let homeDir = FileManager.default.homeDirectoryForCurrentUser
+        let huggingfaceDir = homeDir.appendingPathComponent("Documents/huggingface/models/argmaxinc/whisperkit-coreml")
 
-        guard let cacheDir = cacheDir,
-              FileManager.default.fileExists(atPath: cacheDir.path) else {
+        guard FileManager.default.fileExists(atPath: huggingfaceDir.path) else {
+            print("[ModelManager] No HuggingFace model directory found")
             return
         }
 
         do {
-            let contents = try FileManager.default.contentsOfDirectory(at: cacheDir, includingPropertiesForKeys: nil)
+            let contents = try FileManager.default.contentsOfDirectory(at: huggingfaceDir, includingPropertiesForKeys: nil)
             for url in contents {
                 let name = url.lastPathComponent
-                // Check if this matches a known model
+                // Skip cache directories
+                if name.starts(with: ".") { continue }
+
+                // Check if this matches a known model (e.g., "openai_whisper-small")
                 for model in WhisperModel.allCases {
                     if name.contains(model.rawValue) {
-                        downloadedModels.insert(model)
-                        print("[ModelManager] Found cached model: \(model.rawValue)")
+                        // Verify the model is complete (has AudioEncoder and TextDecoder)
+                        let audioEncoderPath = url.appendingPathComponent("AudioEncoder.mlmodelc")
+                        let textDecoderPath = url.appendingPathComponent("TextDecoder.mlmodelc")
+
+                        if FileManager.default.fileExists(atPath: audioEncoderPath.path) &&
+                           FileManager.default.fileExists(atPath: textDecoderPath.path) {
+                            downloadedModels.insert(model)
+                            print("[ModelManager] Found cached model: \(model.rawValue)")
+                        }
                     }
                 }
             }
