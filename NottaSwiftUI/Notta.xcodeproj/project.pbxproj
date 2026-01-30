@@ -50,6 +50,15 @@
 		A10000010000000000000012 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* HotkeyManager.swift */; };
 		A10000010000000000000013 /* AcousticAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000013 /* AcousticAnalyzer.swift */; };
 		A10000010000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000014 /* Assets.xcassets */; };
+		E10000010000000000000001 /* SettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000001 /* SettingsTests.swift */; };
+		E10000010000000000000002 /* TranscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000002 /* TranscriptionTests.swift */; };
+		E10000010000000000000003 /* VoiceHealthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000003 /* VoiceHealthTests.swift */; };
+		E10000010000000000000004 /* AcousticAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000004 /* AcousticAnalyzerTests.swift */; };
+		E10000010000000000000005 /* LicenseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000005 /* LicenseTests.swift */; };
+		E10000010000000000000006 /* RecordingStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000006 /* RecordingStatusTests.swift */; };
+		E10000010000000000000007 /* NotificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000007 /* NotificationServiceTests.swift */; };
+		E10000010000000000000008 /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000008 /* AppStateTests.swift */; };
+		E10000010000000000000009 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000009 /* IntegrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +89,16 @@
 		C20000010000000000000006 /* TrialBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialBannerView.swift; sourceTree = "<group>"; };
 		C20000010000000000000007 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		A30000010000000000000001 /* Notta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notta.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E20000010000000000000001 /* SettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTests.swift; sourceTree = "<group>"; };
+		E20000010000000000000002 /* TranscriptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionTests.swift; sourceTree = "<group>"; };
+		E20000010000000000000003 /* VoiceHealthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceHealthTests.swift; sourceTree = "<group>"; };
+		E20000010000000000000004 /* AcousticAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcousticAnalyzerTests.swift; sourceTree = "<group>"; };
+		E20000010000000000000005 /* LicenseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseTests.swift; sourceTree = "<group>"; };
+		E20000010000000000000006 /* RecordingStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingStatusTests.swift; sourceTree = "<group>"; };
+		E20000010000000000000007 /* NotificationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceTests.swift; sourceTree = "<group>"; };
+		E20000010000000000000008 /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
+		E20000010000000000000009 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
+		E30000010000000000000001 /* NottaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NottaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +117,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E40000010000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -105,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				A50000010000000000000002 /* Notta */,
+				E50000010000000000000001 /* NottaTests */,
 				16D6E3C22F2B551E003EE171 /* Notta copy-Info.plist */,
 				A50000010000000000000003 /* Products */,
 			);
@@ -131,6 +158,7 @@
 			children = (
 				A30000010000000000000001 /* Notta.app */,
 				16D6E3C12F2B551E003EE171 /* Notta Pro.app */,
+				E30000010000000000000001 /* NottaTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -182,6 +210,22 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		E50000010000000000000001 /* NottaTests */ = {
+			isa = PBXGroup;
+			children = (
+				E20000010000000000000001 /* SettingsTests.swift */,
+				E20000010000000000000002 /* TranscriptionTests.swift */,
+				E20000010000000000000003 /* VoiceHealthTests.swift */,
+				E20000010000000000000004 /* AcousticAnalyzerTests.swift */,
+				E20000010000000000000005 /* LicenseTests.swift */,
+				E20000010000000000000006 /* RecordingStatusTests.swift */,
+				E20000010000000000000007 /* NotificationServiceTests.swift */,
+				E20000010000000000000008 /* AppStateTests.swift */,
+				E20000010000000000000009 /* IntegrationTests.swift */,
+			);
+			path = NottaTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -219,6 +263,23 @@
 			productReference = A30000010000000000000001 /* Notta.app */;
 			productType = "com.apple.product-type.application";
 		};
+		E60000010000000000000001 /* NottaTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E80000010000000000000001 /* Build configuration list for PBXNativeTarget "NottaTests" */;
+			buildPhases = (
+				E70000010000000000000001 /* Sources */,
+				E40000010000000000000001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E90000010000000000000001 /* PBXTargetDependency */,
+			);
+			name = NottaTests;
+			productName = NottaTests;
+			productReference = E30000010000000000000001 /* NottaTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -252,6 +313,7 @@
 			targets = (
 				A60000010000000000000001 /* Notta */,
 				16D6E3AC2F2B551E003EE171 /* Notta Pro */,
+				E60000010000000000000001 /* NottaTests */,
 			);
 		};
 /* End PBXProject section */
@@ -330,7 +392,41 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E70000010000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E10000010000000000000001 /* SettingsTests.swift in Sources */,
+				E10000010000000000000002 /* TranscriptionTests.swift in Sources */,
+				E10000010000000000000003 /* VoiceHealthTests.swift in Sources */,
+				E10000010000000000000004 /* AcousticAnalyzerTests.swift in Sources */,
+				E10000010000000000000005 /* LicenseTests.swift in Sources */,
+				E10000010000000000000006 /* RecordingStatusTests.swift in Sources */,
+				E10000010000000000000007 /* NotificationServiceTests.swift in Sources */,
+				E10000010000000000000008 /* AppStateTests.swift in Sources */,
+				E10000010000000000000009 /* IntegrationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXContainerItemProxy section */
+		E90000010000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90000010000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A60000010000000000000001;
+			remoteInfo = Notta;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		E90000010000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A60000010000000000000001 /* Notta */;
+			targetProxy = E90000010000000000000002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		16D6E3BF2F2B551E003EE171 /* Debug */ = {
@@ -569,6 +665,42 @@
 			};
 			name = Release;
 		};
+		E80000010000000000000002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A66WA4P44Y;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.notta.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Notta.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Notta";
+			};
+			name = Debug;
+		};
+		E80000010000000000000003 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A66WA4P44Y;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.notta.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Notta.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Notta";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -595,6 +727,15 @@
 			buildConfigurations = (
 				B10000010000000000000001 /* Debug */,
 				B10000010000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E80000010000000000000001 /* Build configuration list for PBXNativeTarget "NottaTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E80000010000000000000002 /* Debug */,
+				E80000010000000000000003 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

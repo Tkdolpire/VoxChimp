@@ -16,7 +16,12 @@ class AcousticAnalyzer {
     func analyzeAudio(at url: URL) async throws -> VoiceHealthMetrics {
         let audioData = try loadAudio(from: url)
 
-        // Extract features
+        // Safety check: ensure we have enough audio data to analyze
+        guard audioData.count >= frameSize * 2 else {
+            throw AnalysisError.invalidAudio
+        }
+
+        // Extract features with error handling
         let pitch = extractPitch(from: audioData)
         let jitter = calculateJitter(pitchValues: pitch.values)
         let shimmer = calculateShimmer(from: audioData)
@@ -95,22 +100,30 @@ class AcousticAnalyzer {
     private func extractPitch(from samples: [Float]) -> (mean: Double, values: [Double]) {
         var pitchValues: [Double] = []
 
+        // Safety check: need enough samples
+        guard samples.count > frameSize else {
+            return (0, [])
+        }
+
         let minLag = Int(sampleRate / 400) // Max F0 = 400 Hz
         let maxLag = Int(sampleRate / 50)  // Min F0 = 50 Hz
+
+        // Pre-compute window once
+        var window = [Float](repeating: 0, count: frameSize)
+        vDSP_hann_window(&window, vDSP_Length(frameSize), Int32(vDSP_HANN_NORM))
 
         for frameStart in stride(from: 0, to: samples.count - frameSize, by: hopSize) {
             let frame = Array(samples[frameStart..<frameStart + frameSize])
 
             // Apply Hanning window
             var windowedFrame = [Float](repeating: 0, count: frameSize)
-            var window = [Float](repeating: 0, count: frameSize)
-            vDSP_hann_window(&window, vDSP_Length(frameSize), Int32(vDSP_HANN_NORM))
             vDSP_vmul(frame, 1, window, 1, &windowedFrame, 1, vDSP_Length(frameSize))
 
-            // Autocorrelation
-            var autocorr = [Float](repeating: 0, count: frameSize)
-            vDSP_conv(windowedFrame, 1, windowedFrame.reversed(), 1, &autocorr, 1,
-                     vDSP_Length(frameSize), vDSP_Length(frameSize))
+            // Autocorrelation using safe method
+            let autocorr = safeAutocorrelation(windowedFrame, maxLag: maxLag)
+
+            // Safety check for search range
+            guard maxLag <= autocorr.count, minLag < maxLag else { continue }
 
             // Find peak in valid lag range
             let searchRange = Array(autocorr[minLag..<min(maxLag, autocorr.count)])
@@ -127,6 +140,32 @@ class AcousticAnalyzer {
 
         let mean = pitchValues.isEmpty ? 0 : pitchValues.reduce(0, +) / Double(pitchValues.count)
         return (mean, pitchValues)
+    }
+
+    /// Safe autocorrelation computation that avoids buffer overflows
+    /// Uses vDSP_dotpr for each lag which is safer than vDSP_conv
+    private func safeAutocorrelation(_ signal: [Float], maxLag: Int) -> [Float] {
+        let n = signal.count
+        guard n > 0 else { return [] }
+
+        let effectiveMaxLag = min(maxLag, n - 1)
+        var result = [Float](repeating: 0, count: effectiveMaxLag + 1)
+
+        for lag in 0...effectiveMaxLag {
+            let overlapLength = n - lag
+            guard overlapLength > 0 else { break }
+
+            var dotProduct: Float = 0
+            signal.withUnsafeBufferPointer { signalPtr in
+                vDSP_dotpr(signalPtr.baseAddress!, 1,
+                          signalPtr.baseAddress!.advanced(by: lag), 1,
+                          &dotProduct,
+                          vDSP_Length(overlapLength))
+            }
+            result[lag] = dotProduct
+        }
+
+        return result
     }
 
     // MARK: - Jitter (Pitch Variability)
@@ -154,10 +193,16 @@ class AcousticAnalyzer {
     // MARK: - Shimmer (Amplitude Variability)
 
     private func calculateShimmer(from samples: [Float]) -> Double {
+        // Safety check
+        guard samples.count > frameSize else { return 0 }
+
         var amplitudes: [Float] = []
 
         for frameStart in stride(from: 0, to: samples.count - frameSize, by: hopSize) {
-            let frame = Array(samples[frameStart..<frameStart + frameSize])
+            let endIndex = frameStart + frameSize
+            guard endIndex <= samples.count else { break }
+
+            let frame = Array(samples[frameStart..<endIndex])
 
             // RMS amplitude
             var sumSquares: Float = 0
@@ -172,6 +217,7 @@ class AcousticAnalyzer {
         guard amplitudes.count > 1 else { return 0 }
 
         let meanAmp = amplitudes.reduce(0, +) / Float(amplitudes.count)
+        guard meanAmp > 0 else { return 0 }
 
         // Average absolute difference between consecutive amplitudes
         var totalDiff: Float = 0
@@ -186,18 +232,48 @@ class AcousticAnalyzer {
     // MARK: - HNR (Harmonics-to-Noise Ratio)
 
     private func calculateHNR(from samples: [Float]) -> Double {
-        // Simplified HNR estimation using autocorrelation
-        let minLag = Int(sampleRate / 400)
-        let maxLag = Int(sampleRate / 50)
+        // Safety checks
+        guard samples.count > frameSize else {
+            return 0
+        }
 
-        // Autocorrelation of full signal
-        var autocorr = [Float](repeating: 0, count: samples.count)
-        vDSP_conv(samples, 1, samples.reversed(), 1, &autocorr, 1,
-                 vDSP_Length(samples.count), vDSP_Length(samples.count))
+        let minLag = Int(sampleRate / 400) // Max F0 = 400 Hz
+        let maxLag = Int(sampleRate / 50)  // Min F0 = 50 Hz
+
+        guard maxLag > minLag, minLag > 0 else {
+            return 0
+        }
+
+        // For HNR, we analyze a limited segment to avoid memory issues with large files
+        // Use up to 2 seconds of audio from the middle of the recording
+        let maxSamples = Int(sampleRate * 2) // 2 seconds
+        let segmentSamples: [Float]
+
+        if samples.count > maxSamples {
+            let start = (samples.count - maxSamples) / 2
+            segmentSamples = Array(samples[start..<(start + maxSamples)])
+        } else {
+            segmentSamples = samples
+        }
+
+        // Use safe autocorrelation method
+        let autocorr = safeAutocorrelation(segmentSamples, maxLag: maxLag)
+
+        // Safety check for valid results
+        guard autocorr.count > maxLag,
+              let r0 = autocorr.first, r0 > 0,
+              minLag < autocorr.count else {
+            return 0
+        }
 
         // Find max in pitch range
-        let searchRange = Array(autocorr[minLag..<min(maxLag, autocorr.count)])
-        guard let maxVal = searchRange.max(), let r0 = autocorr.first, r0 > 0 else {
+        let searchEndIndex = min(maxLag, autocorr.count)
+        guard minLag < searchEndIndex else {
+            return 0
+        }
+
+        let searchRange = Array(autocorr[minLag..<searchEndIndex])
+        guard let maxVal = searchRange.max() else {
             return 0
         }
 
@@ -213,12 +289,18 @@ class AcousticAnalyzer {
     // MARK: - Speech Rate
 
     private func estimateSpeechRate(from samples: [Float]) -> Double {
+        // Safety check
+        guard samples.count > frameSize else { return 0 }
+
         // Estimate syllables per minute using energy envelope
 
         // Calculate energy envelope
         var energyEnvelope: [Float] = []
         for frameStart in stride(from: 0, to: samples.count - frameSize, by: hopSize) {
-            let frame = Array(samples[frameStart..<frameStart + frameSize])
+            let endIndex = frameStart + frameSize
+            guard endIndex <= samples.count else { break }
+
+            let frame = Array(samples[frameStart..<endIndex])
             var energy: Float = 0
             vDSP_svesq(frame, 1, &energy, vDSP_Length(frameSize))
             energyEnvelope.append(energy)
@@ -230,7 +312,8 @@ class AcousticAnalyzer {
         let smoothedEnvelope = smoothArray(energyEnvelope, windowSize: 5)
 
         // Find peaks (syllable nuclei)
-        let threshold = smoothedEnvelope.max()! * 0.3
+        guard let maxEnergy = smoothedEnvelope.max(), maxEnergy > 0 else { return 0 }
+        let threshold = maxEnergy * 0.3
         var peakCount = 0
         var inPeak = false
 
@@ -245,6 +328,7 @@ class AcousticAnalyzer {
 
         // Convert to syllables per minute
         let durationSeconds = Double(samples.count) / sampleRate
+        guard durationSeconds > 0 else { return 0 }
         let syllablesPerMinute = (Double(peakCount) / durationSeconds) * 60
 
         return syllablesPerMinute
@@ -424,16 +508,23 @@ class BaselineManager {
     }
 
     func getBaseline() -> BaselineMetrics? {
+        guard let baseline = getRawBaseline(), baseline.isValid else {
+            return nil
+        }
+        return baseline
+    }
+
+    /// Returns baseline data regardless of validity (for accumulating samples)
+    private func getRawBaseline() -> BaselineMetrics? {
         guard let data = try? Data(contentsOf: storageURL),
-              let baseline = try? JSONDecoder().decode(BaselineMetrics.self, from: data),
-              baseline.isValid else {
+              let baseline = try? JSONDecoder().decode(BaselineMetrics.self, from: data) else {
             return nil
         }
         return baseline
     }
 
     func addSample(pitch: Double, jitter: Double, shimmer: Double, hnr: Double, speechRate: Double) {
-        let baseline = getBaseline() ?? BaselineMetrics(
+        let baseline = getRawBaseline() ?? BaselineMetrics(
             pitchHz: 0,
             jitterPercent: 0,
             shimmerPercent: 0,
