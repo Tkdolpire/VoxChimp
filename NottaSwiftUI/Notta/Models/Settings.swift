@@ -16,6 +16,9 @@ class SettingsManager: ObservableObject {
         static let floatOnTop = "floatOnTop"
         static let showInMenuBar = "showInMenuBar"
         static let launchAtLogin = "launchAtLogin"
+        static let healthNotificationsEnabled = "healthNotificationsEnabled"
+        static let fatigueAlertThreshold = "fatigueAlertThreshold"
+        static let illnessAlertThreshold = "illnessAlertThreshold"
     }
 
     // MARK: - Published Properties
@@ -52,6 +55,18 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(launchAtLogin, forKey: Keys.launchAtLogin) }
     }
 
+    @Published var healthNotificationsEnabled: Bool {
+        didSet { defaults.set(healthNotificationsEnabled, forKey: Keys.healthNotificationsEnabled) }
+    }
+
+    @Published var fatigueAlertThreshold: Int {
+        didSet { defaults.set(fatigueAlertThreshold, forKey: Keys.fatigueAlertThreshold) }
+    }
+
+    @Published var illnessAlertThreshold: Int {
+        didSet { defaults.set(illnessAlertThreshold, forKey: Keys.illnessAlertThreshold) }
+    }
+
     // MARK: - Initialization
 
     private init() {
@@ -64,6 +79,9 @@ class SettingsManager: ObservableObject {
         self.floatOnTop = defaults.object(forKey: Keys.floatOnTop) as? Bool ?? true
         self.showInMenuBar = defaults.object(forKey: Keys.showInMenuBar) as? Bool ?? false
         self.launchAtLogin = defaults.object(forKey: Keys.launchAtLogin) as? Bool ?? false
+        self.healthNotificationsEnabled = defaults.object(forKey: Keys.healthNotificationsEnabled) as? Bool ?? true
+        self.fatigueAlertThreshold = defaults.object(forKey: Keys.fatigueAlertThreshold) as? Int ?? 60
+        self.illnessAlertThreshold = defaults.object(forKey: Keys.illnessAlertThreshold) as? Int ?? 60
     }
 
     // MARK: - Migration

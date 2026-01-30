@@ -226,10 +226,7 @@ struct TranscriptionDetailView: View {
 
     @ViewBuilder
     private var audioSection: some View {
-        if let audioPath = transcription.audioFilePath {
-            Divider()
-            AudioPlayerView(audioPath: audioPath)
-        }
+        EmptyView()
     }
 
     private func copyToClipboard() {
@@ -238,39 +235,6 @@ struct TranscriptionDetailView: View {
         isCopied = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             isCopied = false
-        }
-    }
-}
-
-// MARK: - Audio Player
-
-struct AudioPlayerView: View {
-    let audioPath: String
-    @State private var isPlaying = false
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Audio Recording")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            HStack {
-                Button {
-                    isPlaying.toggle()
-                } label: {
-                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                        .font(.title)
-                }
-                .buttonStyle(.plain)
-
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(.quaternary)
-                    .frame(height: 30)
-                    .overlay {
-                        Image(systemName: "waveform")
-                            .foregroundStyle(.tertiary)
-                    }
-            }
         }
     }
 }

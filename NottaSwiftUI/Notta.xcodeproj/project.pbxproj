@@ -28,12 +28,14 @@
 		C10000010000000000000004 /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000004 /* UpdaterService.swift */; };
 		C10000010000000000000005 /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000005 /* LicenseView.swift */; };
 		C10000010000000000000006 /* TrialBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000006 /* TrialBannerView.swift */; };
+		C10000010000000000000007 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000007 /* NotificationService.swift */; };
 		D10000010000000000000001 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* License.swift */; };
 		D10000010000000000000002 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* LicenseManager.swift */; };
 		D10000010000000000000003 /* LicenseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* LicenseAPI.swift */; };
 		D10000010000000000000004 /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000004 /* UpdaterService.swift */; };
 		D10000010000000000000005 /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000005 /* LicenseView.swift */; };
 		D10000010000000000000006 /* TrialBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000006 /* TrialBannerView.swift */; };
+		D10000010000000000000007 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000007 /* NotificationService.swift */; };
 		A10000010000000000000001 /* NottaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* NottaApp.swift */; };
 		A10000010000000000000002 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppState.swift */; };
 		A10000010000000000000003 /* Transcription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* Transcription.swift */; };
@@ -76,6 +78,7 @@
 		C20000010000000000000004 /* UpdaterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterService.swift; sourceTree = "<group>"; };
 		C20000010000000000000005 /* LicenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseView.swift; sourceTree = "<group>"; };
 		C20000010000000000000006 /* TrialBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialBannerView.swift; sourceTree = "<group>"; };
+		C20000010000000000000007 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		A30000010000000000000001 /* Notta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -166,6 +169,7 @@
 				C20000010000000000000002 /* LicenseManager.swift */,
 				C20000010000000000000003 /* LicenseAPI.swift */,
 				C20000010000000000000004 /* UpdaterService.swift */,
+				C20000010000000000000007 /* NotificationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -295,6 +299,7 @@
 				C10000010000000000000004 /* UpdaterService.swift in Sources */,
 				C10000010000000000000005 /* LicenseView.swift in Sources */,
 				C10000010000000000000006 /* TrialBannerView.swift in Sources */,
+				C10000010000000000000007 /* NotificationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,6 +326,7 @@
 				D10000010000000000000004 /* UpdaterService.swift in Sources */,
 				D10000010000000000000005 /* LicenseView.swift in Sources */,
 				D10000010000000000000006 /* TrialBannerView.swift in Sources */,
+				D10000010000000000000007 /* NotificationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

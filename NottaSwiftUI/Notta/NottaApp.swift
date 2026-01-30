@@ -87,6 +87,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             await LicenseManager.shared.initialize()
         }
 
+        // Request notification permission if health notifications enabled
+        if SettingsManager.shared.healthNotificationsEnabled {
+            Task {
+                await NotificationService.shared.requestPermission()
+            }
+        }
+
         // Check accessibility permission after a short delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.checkAccessibilityPermission()

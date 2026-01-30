@@ -85,20 +85,13 @@ struct TranscriptionSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Picker("Whisper Model", selection: $settings.whisperModel) {
-                    ForEach(WhisperModel.allCases) { model in
-                        VStack(alignment: .leading) {
-                            Text(model.displayName)
-                            Text(model.description)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .tag(model)
-                    }
+                HStack {
+                    Image(systemName: "apple.logo")
+                        .foregroundStyle(.secondary)
+                    Text("Using Apple Speech Recognition")
                 }
-                .pickerStyle(.radioGroup)
 
-                Text("Larger models are more accurate but slower. The 'small' model works well for most uses.")
+                Text("Notta uses Apple's on-device speech recognition for fast, private transcription. This improves automatically with macOS updates.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } header: {
@@ -146,67 +139,58 @@ struct TranscriptionSettingsView: View {
 // MARK: - Health Settings
 
 struct HealthSettingsView: View {
-    @State private var baselineSamples = 12
-    @State private var enableNotifications = true
-    @State private var fatigueThreshold = 60.0
-    @State private var illnessThreshold = 60.0
+    @ObservedObject var settings = SettingsManager.shared
 
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Text("Baseline samples collected:")
-                    Spacer()
-                    Text("\(baselineSamples)")
-                        .foregroundStyle(.secondary)
-                }
-
-                Button("Reset Baseline") {
-                    // TODO: Implement baseline reset
-                }
-                .foregroundStyle(.red)
-            } header: {
-                Text("Voice Baseline")
-            }
-
-            Section {
-                Toggle("Enable health notifications", isOn: $enableNotifications)
+                Toggle("Enable health notifications", isOn: $settings.healthNotificationsEnabled)
                     .help("Get notified when voice changes suggest fatigue or illness")
+                    .onChange(of: settings.healthNotificationsEnabled) { _, enabled in
+                        if enabled {
+                            Task {
+                                await NotificationService.shared.requestPermission()
+                            }
+                        }
+                    }
 
-                if enableNotifications {
+                if settings.healthNotificationsEnabled {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("Fatigue alert threshold:")
                             Spacer()
-                            Text("\(Int(fatigueThreshold))%")
+                            Text("\(settings.fatigueAlertThreshold)%")
                                 .foregroundStyle(.secondary)
                         }
-                        Slider(value: $fatigueThreshold, in: 30...90, step: 5)
+                        Slider(
+                            value: Binding(
+                                get: { Double(settings.fatigueAlertThreshold) },
+                                set: { settings.fatigueAlertThreshold = Int($0) }
+                            ),
+                            in: 30...90,
+                            step: 5
+                        )
 
                         HStack {
                             Text("Illness alert threshold:")
                             Spacer()
-                            Text("\(Int(illnessThreshold))%")
+                            Text("\(settings.illnessAlertThreshold)%")
                                 .foregroundStyle(.secondary)
                         }
-                        Slider(value: $illnessThreshold, in: 30...90, step: 5)
+                        Slider(
+                            value: Binding(
+                                get: { Double(settings.illnessAlertThreshold) },
+                                set: { settings.illnessAlertThreshold = Int($0) }
+                            ),
+                            in: 30...90,
+                            step: 5
+                        )
                     }
                 }
             } header: {
                 Text("Notifications")
-            }
-
-            Section {
-                Button("Export Health Data...") {
-                    // TODO: Implement export
-                }
-
-                Button("Clear All Health Data") {
-                    // TODO: Implement clear with confirmation
-                }
-                .foregroundStyle(.red)
-            } header: {
-                Text("Data Management")
+            } footer: {
+                Text("You'll receive a macOS notification when your voice analysis detects fatigue or illness scores above these thresholds.")
             }
         }
         .formStyle(.grouped)

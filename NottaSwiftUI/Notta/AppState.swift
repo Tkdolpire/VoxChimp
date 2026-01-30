@@ -196,6 +196,25 @@ class AppState: ObservableObject {
             loadBaseline()
 
             print("Voice health analyzed - Fatigue: \(metrics.fatigueScore)%, Illness: \(metrics.illnessScore)%")
+
+            // Send notifications if enabled and thresholds exceeded
+            if settings.healthNotificationsEnabled {
+                if metrics.fatigueScore >= settings.fatigueAlertThreshold {
+                    NotificationService.shared.sendHealthAlert(
+                        title: "Voice Fatigue Detected",
+                        body: "Your voice shows signs of fatigue (\(metrics.fatigueScore)%). Consider resting your voice.",
+                        type: .fatigue
+                    )
+                }
+
+                if metrics.illnessScore >= settings.illnessAlertThreshold {
+                    NotificationService.shared.sendHealthAlert(
+                        title: "Voice Health Alert",
+                        body: "Changes in your voice may indicate early illness (\(metrics.illnessScore)%). Stay hydrated and monitor how you feel.",
+                        type: .illness
+                    )
+                }
+            }
         } catch {
             print("Voice health analysis failed: \(error)")
         }
