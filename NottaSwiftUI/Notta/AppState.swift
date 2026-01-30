@@ -12,7 +12,7 @@ class AppState: ObservableObject {
 
     // MARK: - Services
     let audioRecorder = AudioRecorder()
-    let whisperService = WhisperService()
+    let transcriptionManager = TranscriptionManager.shared
     let acousticAnalyzer = AcousticAnalyzer()
     let settings = SettingsManager.shared
 
@@ -38,6 +38,7 @@ class AppState: ObservableObject {
     func startRecording() {
         guard !isRecording else { return }
         isRecording = true
+        postRecordingStateChange()
         recordingStatus = .recording
         showTranscriptionSuccess = false
 
@@ -48,6 +49,7 @@ class AppState: ObservableObject {
             } catch {
                 recordingStatus = .error(error.localizedDescription)
                 isRecording = false
+                postRecordingStateChange()
             }
         }
     }
@@ -71,9 +73,18 @@ class AppState: ObservableObject {
         audioLevel = 0
     }
 
+    private func postRecordingStateChange() {
+        NotificationCenter.default.post(
+            name: .recordingStateChanged,
+            object: nil,
+            userInfo: ["isRecording": isRecording]
+        )
+    }
+
     func stopRecording() {
         guard isRecording else { return }
         isRecording = false
+        postRecordingStateChange()
         recordingStatus = .processing
         stopAudioLevelMonitoring()
 
@@ -81,7 +92,7 @@ class AppState: ObservableObject {
             do {
                 let audioURL = try await audioRecorder.stopRecording()
                 print("Audio recorded, starting transcription...")
-                let transcription = try await whisperService.transcribe(audioURL: audioURL)
+                let transcription = try await transcriptionManager.transcribe(audioURL: audioURL)
                 print("Transcription completed: \(transcription)")
 
                 // Apply grammar fixes if enabled
@@ -399,4 +410,5 @@ enum RecordingStatus: Equatable {
 extension Notification.Name {
     static let hotkeyPressed = Notification.Name("hotkeyPressed")
     static let hotkeyReleased = Notification.Name("hotkeyReleased")
+    static let recordingStateChanged = Notification.Name("recordingStateChanged")
 }

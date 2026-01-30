@@ -82,21 +82,129 @@ struct GeneralSettingsView: View {
 
 struct TranscriptionSettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
+    @StateObject var modelManager = ModelManager.shared
+    @StateObject var transcriptionManager = TranscriptionManager.shared
+    @State private var showModelDownloadAlert = false
+    @State private var modelToDownload: WhisperModel?
 
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Image(systemName: "apple.logo")
-                        .foregroundStyle(.secondary)
-                    Text("Using Apple Speech Recognition")
+                Picker("Speech Engine", selection: $settings.transcriptionBackend) {
+                    ForEach(TranscriptionBackend.allCases) { backend in
+                        HStack {
+                            Image(systemName: backend.iconName)
+                            VStack(alignment: .leading) {
+                                Text(backend.displayName)
+                                Text(backend.description)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .tag(backend)
+                    }
                 }
-
-                Text("Notta uses Apple's on-device speech recognition for fast, private transcription. This improves automatically with macOS updates.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                .pickerStyle(.radioGroup)
+                .onChange(of: settings.transcriptionBackend) { _, newBackend in
+                    if newBackend == .whisperKit && !modelManager.isDownloaded(settings.whisperModel) {
+                        modelToDownload = settings.whisperModel
+                        showModelDownloadAlert = true
+                    }
+                }
             } header: {
                 Text("Speech Recognition")
+            }
+
+            // Model selection (Whisper only)
+            if settings.transcriptionBackend == .whisperKit {
+                Section {
+                    Picker("Model", selection: $settings.whisperModel) {
+                        ForEach(WhisperModel.allCases) { model in
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(model.displayName)
+                                    Text("\(model.accuracyDescription) accuracy, \(model.speedDescription.lowercased())")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                if modelManager.isDownloaded(model) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(.green)
+                                } else {
+                                    Text(model.downloadSizeFormatted)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .tag(model)
+                        }
+                    }
+                    .pickerStyle(.radioGroup)
+                    .onChange(of: settings.whisperModel) { _, newModel in
+                        if !modelManager.isDownloaded(newModel) {
+                            modelToDownload = newModel
+                            showModelDownloadAlert = true
+                        } else {
+                            // Load the selected model
+                            Task {
+                                await transcriptionManager.prepareWhisperModel()
+                            }
+                        }
+                    }
+
+                    // Download progress
+                    if modelManager.isDownloading {
+                        HStack {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Downloading \(modelManager.downloadingModel?.displayName ?? "model")...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Button("Cancel") {
+                                modelManager.cancelDownload()
+                            }
+                            .buttonStyle(.link)
+                            .font(.caption)
+                        }
+                    }
+
+                    // Model status
+                    if transcriptionManager.isModelReady {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                            Text("Model ready")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else if let error = transcriptionManager.error {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                            Text(error)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                } header: {
+                    Text("Whisper Model")
+                } footer: {
+                    Text("Larger models are more accurate but slower. Models are downloaded once and stored locally.")
+                }
+
+                // Storage info
+                Section {
+                    HStack {
+                        Text("Models storage")
+                        Spacer()
+                        Text(modelManager.formattedStorageUsed())
+                            .foregroundStyle(.secondary)
+                    }
+                } header: {
+                    Text("Storage")
+                }
             }
 
             Section {
@@ -135,6 +243,26 @@ struct TranscriptionSettingsView: View {
         .formStyle(.grouped)
         .padding()
         .tint(.brandOrange)
+        .alert("Download Model?", isPresented: $showModelDownloadAlert) {
+            Button("Download") {
+                if let model = modelToDownload {
+                    Task {
+                        try? await modelManager.downloadModel(model)
+                        await transcriptionManager.prepareWhisperModel()
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                // Revert to Apple Speech if user cancels
+                if !modelManager.isDownloaded(settings.whisperModel) {
+                    settings.transcriptionBackend = .appleSpeech
+                }
+            }
+        } message: {
+            if let model = modelToDownload {
+                Text("The \(model.displayName) model (\(model.downloadSizeFormatted)) needs to be downloaded. This only happens once.")
+            }
+        }
     }
 }
 

@@ -19,11 +19,23 @@
 		16D6E3B52F2B551E003EE171 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008 /* SettingsView.swift */; };
 		16D6E3B62F2B551E003EE171 /* HealthDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000009 /* HealthDashboardView.swift */; };
 		16D6E3B72F2B551E003EE171 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000010 /* AudioRecorder.swift */; };
-		16D6E3B82F2B551E003EE171 /* WhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000011 /* WhisperService.swift */; };
+		16D6E3B82F2B551E003EE171 /* AppleSpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000011 /* AppleSpeechService.swift */; };
 		16D6E3B92F2B551E003EE171 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* HotkeyManager.swift */; };
 		16D6E3BA2F2B551E003EE171 /* AcousticAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000013 /* AcousticAnalyzer.swift */; };
 		16D6E3BD2F2B551E003EE171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000014 /* Assets.xcassets */; };
 		16D6E3C52F2B6A15003EE171 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 16D6E3C42F2B6A15003EE171 /* Sparkle */; };
+		16D6E3C62F2B6A15003EE171 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 16D6E3C72F2B6A15003EE171 /* WhisperKit */; };
+		W10000010000000000000001 /* TranscriptionBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000001 /* TranscriptionBackend.swift */; };
+		W10000010000000000000002 /* TranscriptionBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000001 /* TranscriptionBackend.swift */; };
+		W10000010000000000000003 /* TranscriptionServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000002 /* TranscriptionServiceProtocol.swift */; };
+		W10000010000000000000004 /* TranscriptionServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000002 /* TranscriptionServiceProtocol.swift */; };
+		W10000010000000000000005 /* WhisperKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000003 /* WhisperKitService.swift */; };
+		W10000010000000000000006 /* WhisperKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000003 /* WhisperKitService.swift */; };
+		W10000010000000000000007 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000004 /* ModelManager.swift */; };
+		W10000010000000000000008 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000004 /* ModelManager.swift */; };
+		W10000010000000000000009 /* TranscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000005 /* TranscriptionManager.swift */; };
+		W10000010000000000000010 /* TranscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000005 /* TranscriptionManager.swift */; };
+		W30000010000000000000003 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = W30000010000000000000002 /* WhisperKit */; };
 		C10000010000000000000001 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* License.swift */; };
 		C10000010000000000000002 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* LicenseManager.swift */; };
 		C10000010000000000000003 /* LicenseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* LicenseAPI.swift */; };
@@ -48,7 +60,7 @@
 		A10000010000000000000008 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008 /* SettingsView.swift */; };
 		A10000010000000000000009 /* HealthDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000009 /* HealthDashboardView.swift */; };
 		A10000010000000000000010 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000010 /* AudioRecorder.swift */; };
-		A10000010000000000000011 /* WhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000011 /* WhisperService.swift */; };
+		A10000010000000000000011 /* AppleSpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000011 /* AppleSpeechService.swift */; };
 		A10000010000000000000012 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* HotkeyManager.swift */; };
 		A10000010000000000000013 /* AcousticAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000013 /* AcousticAnalyzer.swift */; };
 		A10000010000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000014 /* Assets.xcassets */; };
@@ -77,8 +89,13 @@
 		A20000010000000000000008 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A20000010000000000000009 /* HealthDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDashboardView.swift; sourceTree = "<group>"; };
 		A20000010000000000000010 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
-		A20000010000000000000011 /* WhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperService.swift; sourceTree = "<group>"; };
+		A20000010000000000000011 /* AppleSpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSpeechService.swift; sourceTree = "<group>"; };
 		A20000010000000000000012 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+		W20000010000000000000001 /* TranscriptionBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionBackend.swift; sourceTree = "<group>"; };
+		W20000010000000000000002 /* TranscriptionServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionServiceProtocol.swift; sourceTree = "<group>"; };
+		W20000010000000000000003 /* WhisperKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperKitService.swift; sourceTree = "<group>"; };
+		W20000010000000000000004 /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
+		W20000010000000000000005 /* TranscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionManager.swift; sourceTree = "<group>"; };
 		A20000010000000000000013 /* AcousticAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcousticAnalyzer.swift; sourceTree = "<group>"; };
 		A20000010000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A20000010000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -117,6 +134,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				W30000010000000000000003 /* WhisperKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,6 +192,7 @@
 				A20000010000000000000004 /* Settings.swift */,
 				A20000010000000000000005 /* VoiceHealth.swift */,
 				C20000010000000000000001 /* License.swift */,
+				W20000010000000000000001 /* TranscriptionBackend.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -195,13 +214,17 @@
 			isa = PBXGroup;
 			children = (
 				A20000010000000000000010 /* AudioRecorder.swift */,
-				A20000010000000000000011 /* WhisperService.swift */,
+				A20000010000000000000011 /* AppleSpeechService.swift */,
 				A20000010000000000000012 /* HotkeyManager.swift */,
 				A20000010000000000000013 /* AcousticAnalyzer.swift */,
 				C20000010000000000000002 /* LicenseManager.swift */,
 				C20000010000000000000003 /* LicenseAPI.swift */,
 				C20000010000000000000004 /* UpdaterService.swift */,
 				C20000010000000000000007 /* NotificationService.swift */,
+				W20000010000000000000002 /* TranscriptionServiceProtocol.swift */,
+				W20000010000000000000003 /* WhisperKitService.swift */,
+				W20000010000000000000004 /* ModelManager.swift */,
+				W20000010000000000000005 /* TranscriptionManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -246,6 +269,10 @@
 			dependencies = (
 			);
 			name = "Notta Pro";
+			packageProductDependencies = (
+				16D6E3C42F2B6A15003EE171 /* Sparkle */,
+				16D6E3C72F2B6A15003EE171 /* WhisperKit */,
+			);
 			productName = Notta;
 			productReference = 16D6E3C12F2B551E003EE171 /* Notta Pro.app */;
 			productType = "com.apple.product-type.application";
@@ -263,6 +290,9 @@
 			dependencies = (
 			);
 			name = Notta;
+			packageProductDependencies = (
+				W30000010000000000000002 /* WhisperKit */,
+			);
 			productName = Notta;
 			productReference = A30000010000000000000001 /* Notta.app */;
 			productType = "com.apple.product-type.application";
@@ -310,6 +340,7 @@
 			mainGroup = A50000010000000000000001;
 			packageReferences = (
 				16D6E3C32F2B6A15003EE171 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				W30000010000000000000001 /* XCRemoteSwiftPackageReference "WhisperKit" */,
 			);
 			productRefGroup = A50000010000000000000003 /* Products */;
 			projectDirPath = "";
@@ -357,7 +388,12 @@
 				16D6E3B52F2B551E003EE171 /* SettingsView.swift in Sources */,
 				16D6E3B62F2B551E003EE171 /* HealthDashboardView.swift in Sources */,
 				16D6E3B72F2B551E003EE171 /* AudioRecorder.swift in Sources */,
-				16D6E3B82F2B551E003EE171 /* WhisperService.swift in Sources */,
+				16D6E3B82F2B551E003EE171 /* AppleSpeechService.swift in Sources */,
+				W10000010000000000000001 /* TranscriptionBackend.swift in Sources */,
+				W10000010000000000000003 /* TranscriptionServiceProtocol.swift in Sources */,
+				W10000010000000000000005 /* WhisperKitService.swift in Sources */,
+				W10000010000000000000007 /* ModelManager.swift in Sources */,
+				W10000010000000000000009 /* TranscriptionManager.swift in Sources */,
 				16D6E3B92F2B551E003EE171 /* HotkeyManager.swift in Sources */,
 				16D6E3BA2F2B551E003EE171 /* AcousticAnalyzer.swift in Sources */,
 				C10000010000000000000001 /* License.swift in Sources */,
@@ -385,7 +421,12 @@
 				A10000010000000000000008 /* SettingsView.swift in Sources */,
 				A10000010000000000000009 /* HealthDashboardView.swift in Sources */,
 				A10000010000000000000010 /* AudioRecorder.swift in Sources */,
-				A10000010000000000000011 /* WhisperService.swift in Sources */,
+				A10000010000000000000011 /* AppleSpeechService.swift in Sources */,
+				W10000010000000000000002 /* TranscriptionBackend.swift in Sources */,
+				W10000010000000000000004 /* TranscriptionServiceProtocol.swift in Sources */,
+				W10000010000000000000006 /* WhisperKitService.swift in Sources */,
+				W10000010000000000000008 /* ModelManager.swift in Sources */,
+				W10000010000000000000010 /* TranscriptionManager.swift in Sources */,
 				A10000010000000000000012 /* HotkeyManager.swift in Sources */,
 				A10000010000000000000013 /* AcousticAnalyzer.swift in Sources */,
 				D10000010000000000000001 /* License.swift in Sources */,
@@ -757,6 +798,14 @@
 				minimumVersion = 2.8.1;
 			};
 		};
+		W30000010000000000000001 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -764,6 +813,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 16D6E3C32F2B6A15003EE171 /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
+		};
+		16D6E3C72F2B6A15003EE171 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = W30000010000000000000001 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+		W30000010000000000000002 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = W30000010000000000000001 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

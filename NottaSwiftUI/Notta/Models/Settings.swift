@@ -8,6 +8,7 @@ class SettingsManager: ObservableObject {
 
     // MARK: - Keys
     private enum Keys {
+        static let transcriptionBackend = "transcriptionBackend"
         static let whisperModel = "whisperModel"
         static let hotkey = "hotkey"
         static let autoPaste = "autoPaste"
@@ -22,6 +23,10 @@ class SettingsManager: ObservableObject {
     }
 
     // MARK: - Published Properties
+
+    @Published var transcriptionBackend: TranscriptionBackend {
+        didSet { defaults.set(transcriptionBackend.rawValue, forKey: Keys.transcriptionBackend) }
+    }
 
     @Published var whisperModel: WhisperModel {
         didSet { defaults.set(whisperModel.rawValue, forKey: Keys.whisperModel) }
@@ -71,6 +76,7 @@ class SettingsManager: ObservableObject {
 
     private init() {
         // Load saved values or use defaults
+        self.transcriptionBackend = TranscriptionBackend(rawValue: defaults.string(forKey: Keys.transcriptionBackend) ?? "") ?? .appleSpeech
         self.whisperModel = WhisperModel(rawValue: defaults.string(forKey: Keys.whisperModel) ?? "") ?? .small
         self.hotkey = HotkeyOption(rawValue: defaults.string(forKey: Keys.hotkey) ?? "") ?? .leftOption
         self.autoPaste = defaults.object(forKey: Keys.autoPaste) as? Bool ?? true

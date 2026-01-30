@@ -2,9 +2,8 @@ import Foundation
 import Speech
 import AVFoundation
 
-/// Service for transcribing audio
-/// Uses Apple's Speech framework as the primary method
-class WhisperService: ObservableObject {
+/// Service for transcribing audio using Apple's Speech framework
+class AppleSpeechService: ObservableObject, TranscriptionServiceProtocol {
     @Published var isTranscribing = false
     @Published var progress: Double = 0
 
@@ -14,12 +13,14 @@ class WhisperService: ObservableObject {
         speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
     }
 
-    // MARK: - Transcription
+    // MARK: - TranscriptionServiceProtocol
 
     func transcribe(audioURL: URL) async throws -> String {
-        print("Starting transcription for: \(audioURL.path)")
-        isTranscribing = true
-        progress = 0
+        print("[AppleSpeech] Starting transcription for: \(audioURL.path)")
+        await MainActor.run {
+            isTranscribing = true
+            progress = 0
+        }
 
         defer {
             Task { @MainActor in
@@ -35,22 +36,21 @@ class WhisperService: ObservableObject {
             }
         }
 
-        print("Speech recognition auth status: \(authStatus.rawValue)")
+        print("[AppleSpeech] Auth status: \(authStatus.rawValue)")
 
         guard authStatus == .authorized else {
-            print("Speech recognition permission denied")
+            print("[AppleSpeech] Permission denied")
             throw TranscriptionError.permissionDenied
         }
 
         await MainActor.run { progress = 0.2 }
 
-        // Use Apple Speech Recognition
         let result = try await transcribeWithAppleSpeech(audioURL: audioURL)
-        print("Transcription result: \(result)")
+        print("[AppleSpeech] Result: \(result)")
         return result
     }
 
-    // MARK: - Apple Speech Framework
+    // MARK: - Private
 
     private func transcribeWithAppleSpeech(audioURL: URL) async throws -> String {
         guard let recognizer = speechRecognizer, recognizer.isAvailable else {
@@ -90,28 +90,6 @@ class WhisperService: ObservableObject {
                     continuation.resume(returning: text)
                 }
             }
-        }
-    }
-}
-
-// MARK: - Errors
-
-enum TranscriptionError: LocalizedError {
-    case permissionDenied
-    case speechRecognizerUnavailable
-    case transcriptionFailed(String)
-    case noResult
-
-    var errorDescription: String? {
-        switch self {
-        case .permissionDenied:
-            return "Speech recognition permission denied. Please enable in System Settings > Privacy & Security > Speech Recognition."
-        case .speechRecognizerUnavailable:
-            return "Speech recognition not available."
-        case .transcriptionFailed(let message):
-            return "Transcription failed: \(message)"
-        case .noResult:
-            return "No transcription result received."
         }
     }
 }
