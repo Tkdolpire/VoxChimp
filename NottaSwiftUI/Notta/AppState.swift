@@ -411,4 +411,6 @@ extension Notification.Name {
     static let hotkeyPressed = Notification.Name("hotkeyPressed")
     static let hotkeyReleased = Notification.Name("hotkeyReleased")
     static let recordingStateChanged = Notification.Name("recordingStateChanged")
+    static let openHistoryWindow = Notification.Name("openHistoryWindow")
+    static let openHealthWindow = Notification.Name("openHealthWindow")
 }

@@ -8,6 +8,7 @@ struct NottaApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var licenseManager = LicenseManager.shared
     @StateObject private var updaterService = UpdaterService.shared
+    @Environment(\.openWindow) private var openWindow
 
     var body: some Scene {
         WindowGroup {
@@ -15,6 +16,12 @@ struct NottaApp: App {
                 .environmentObject(appState)
                 .environmentObject(licenseManager)
                 .frame(minWidth: 360, minHeight: 400)
+                .onReceive(NotificationCenter.default.publisher(for: .openHistoryWindow)) { _ in
+                    openWindow(id: "history")
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .openHealthWindow)) { _ in
+                    openWindow(id: "health")
+                }
                 #if !APPSTORE
                 .onOpenURL { url in
                     handleIncomingURL(url)
@@ -73,11 +80,16 @@ struct NottaApp: App {
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var hotkeyManager: HotkeyManager?
+    var statusItem: NSStatusItem?
+    private var recordingObserver: NSObjectProtocol?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Setup global hotkey monitoring
         hotkeyManager = HotkeyManager.shared
         hotkeyManager?.startListening()
+
+        // Setup menu bar status item
+        setupMenuBarItem()
 
         // Request necessary permissions
         requestPermissions()
@@ -100,8 +112,107 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    // MARK: - Menu Bar Status Item
+
+    private func setupMenuBarItem() {
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+
+        if let button = statusItem?.button {
+            button.image = circularMenuBarIcon(named: "MenuBarIdle")
+            button.toolTip = "Notta - Ready"
+        }
+
+        // Create menu
+        let menu = NSMenu()
+        menu.addItem(NSMenuItem(title: "Open Notta", action: #selector(openMainWindow), keyEquivalent: ""))
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "History", action: #selector(openHistory), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Voice Health", action: #selector(openHealth), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Settings...", action: #selector(openSettings), keyEquivalent: ","))
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "Quit Notta", action: #selector(quitApp), keyEquivalent: "q"))
+
+        statusItem?.menu = menu
+
+        // Observe recording state changes
+        recordingObserver = NotificationCenter.default.addObserver(
+            forName: .recordingStateChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            let isRecording = notification.userInfo?["isRecording"] as? Bool ?? false
+            self?.updateMenuBarIcon(isRecording: isRecording)
+        }
+    }
+
+    private func updateMenuBarIcon(isRecording: Bool) {
+        guard let button = statusItem?.button else { return }
+
+        let imageName = isRecording ? "MenuBarRecording" : "MenuBarIdle"
+        button.image = circularMenuBarIcon(named: imageName)
+        button.toolTip = isRecording ? "Notta - Recording..." : "Notta - Ready"
+    }
+
+    private func circularMenuBarIcon(named: String) -> NSImage? {
+        guard let sourceImage = NSImage(named: named) else { return nil }
+
+        let size = NSSize(width: 18, height: 18)
+        let circularImage = NSImage(size: size)
+
+        circularImage.lockFocus()
+
+        // Create circular clipping path
+        let rect = NSRect(origin: .zero, size: size)
+        let circlePath = NSBezierPath(ovalIn: rect)
+        circlePath.addClip()
+
+        // Draw the source image scaled to fit
+        sourceImage.draw(in: rect, from: NSRect(origin: .zero, size: sourceImage.size), operation: .sourceOver, fraction: 1.0)
+
+        circularImage.unlockFocus()
+
+        return circularImage
+    }
+
+    @objc private func openMainWindow() {
+        NSApp.activate(ignoringOtherApps: true)
+        // Find and show the main window
+        for window in NSApp.windows {
+            if window.title == "Notta" || window.title.isEmpty {
+                window.makeKeyAndOrderFront(nil)
+                return
+            }
+        }
+        NSApp.windows.first?.makeKeyAndOrderFront(nil)
+    }
+
+    @objc private func openHistory() {
+        NSApp.activate(ignoringOtherApps: true)
+        NotificationCenter.default.post(name: .openHistoryWindow, object: nil)
+    }
+
+    @objc private func openHealth() {
+        NSApp.activate(ignoringOtherApps: true)
+        NotificationCenter.default.post(name: .openHealthWindow, object: nil)
+    }
+
+    @objc private func openSettings() {
+        NSApp.activate(ignoringOtherApps: true)
+        // Try modern macOS 14+ settings, fall back to older
+        if NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil) == false {
+            NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
+        }
+    }
+
+    @objc private func quitApp() {
+        NSApp.terminate(nil)
+    }
+
     func applicationWillTerminate(_ notification: Notification) {
         hotkeyManager?.stopListening()
+        if let observer = recordingObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
