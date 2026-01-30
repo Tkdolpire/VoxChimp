@@ -87,11 +87,8 @@ class TranscriptionManager: ObservableObject {
     // MARK: - Transcription
 
     /// Transcribe audio from the given URL using the current backend
+    /// Falls back to Apple Speech if Whisper model isn't ready
     func transcribe(audioURL: URL) async throws -> String {
-        guard isModelReady else {
-            throw WhisperKitError.modelNotLoaded
-        }
-
         isTranscribing = true
         progress = 0
         error = nil
@@ -109,7 +106,13 @@ class TranscriptionManager: ObservableObject {
                 result = try await appleSpeechService.transcribe(audioURL: audioURL)
 
             case .whisperKit:
-                result = try await whisperKitService.transcribe(audioURL: audioURL)
+                // Fall back to Apple Speech if Whisper model isn't ready
+                if !whisperKitService.isModelLoaded {
+                    print("[TranscriptionManager] Whisper model not ready, falling back to Apple Speech")
+                    result = try await appleSpeechService.transcribe(audioURL: audioURL)
+                } else {
+                    result = try await whisperKitService.transcribe(audioURL: audioURL)
+                }
             }
 
             return result
