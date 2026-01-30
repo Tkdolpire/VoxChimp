@@ -71,7 +71,7 @@ struct LicenseSettingsView: View {
 
                         if showActivationSuccess {
                             Label("Activated!", systemImage: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
+                                .foregroundStyle(Color.statusSuccess)
                         }
                     }
                 }
@@ -127,7 +127,7 @@ struct LicenseSettingsView: View {
                                     .font(.headline)
                                 Text("~$5/mo")
                                     .font(.caption)
-                                    .foregroundStyle(.green)
+                                    .foregroundStyle(Color.statusSuccess)
                             }
                         }
                         .padding(.top, 8)
@@ -166,6 +166,7 @@ struct LicenseSettingsView: View {
         }
         .formStyle(.grouped)
         .padding()
+        .tint(.brandOrange)
         .onAppear {
             if let key = licenseManager.licenseKey {
                 licenseKeyInput = key
@@ -180,15 +181,15 @@ struct LicenseSettingsView: View {
         let (color, icon): (Color, String) = {
             switch licenseManager.state {
             case .active:
-                return (.green, "checkmark.seal.fill")
+                return (.licenseActive, "checkmark.seal.fill")
             case .trial:
-                return (.blue, "clock.fill")
+                return (.licenseTrial, "clock.fill")
             case .trialExpired, .expired:
-                return (.orange, "exclamationmark.triangle.fill")
+                return (.statusWarning, "exclamationmark.triangle.fill")
             case .invalid:
-                return (.red, "xmark.circle.fill")
+                return (.licenseExpired, "xmark.circle.fill")
             case .unknown:
-                return (.gray, "questionmark.circle.fill")
+                return (.brandGray, "questionmark.circle.fill")
             }
         }()
 
@@ -204,12 +205,12 @@ struct LicenseSettingsView: View {
                     .foregroundStyle(.secondary)
                 Spacer()
                 Text("\(daysRemaining) days remaining")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.brandOrange)
                     .font(.caption)
             }
 
             ProgressView(value: Double(7 - daysRemaining), total: 7)
-                .tint(daysRemaining <= 3 ? .orange : .blue)
+                .tint(daysRemaining <= 3 ? .trialUrgent : .trialNormal)
         }
     }
 
@@ -249,7 +250,7 @@ struct LicenseActivationView: View {
             VStack(spacing: 8) {
                 Image(systemName: "key.fill")
                     .font(.system(size: 48))
-                    .foregroundStyle(.accent)
+                    .foregroundStyle(Color.brandOrange)
 
                 Text("Activate Notta Pro")
                     .font(.title2.bold())

@@ -32,7 +32,7 @@ struct TrialBannerView: View {
     private func trialBanner(daysRemaining: Int) -> some View {
         HStack(spacing: 12) {
             Image(systemName: "clock.fill")
-                .foregroundStyle(daysRemaining <= 3 ? .orange : .blue)
+                .foregroundStyle(daysRemaining <= 3 ? Color.trialUrgent : Color.trialNormal)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(daysRemaining <= 3 ? "Trial Ending Soon" : "Trial Mode")
@@ -56,14 +56,14 @@ struct TrialBannerView: View {
         .padding(.vertical, 8)
         .background {
             RoundedRectangle(cornerRadius: 8)
-                .fill(daysRemaining <= 3 ? Color.orange.opacity(0.15) : Color.blue.opacity(0.1))
+                .fill(Color.brandOrange.opacity(daysRemaining <= 3 ? 0.2 : 0.1))
         }
     }
 
     private var expiredBanner: some View {
         HStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color.statusWarning)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Trial Expired")
@@ -93,7 +93,7 @@ struct TrialBannerView: View {
         .padding(.vertical, 8)
         .background {
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.orange.opacity(0.15))
+                .fill(Color.brandOrange.opacity(0.2))
         }
     }
 
@@ -145,12 +145,12 @@ struct TrialIndicator: View {
                     Text("\(days)d")
                         .font(.caption2.monospacedDigit())
                 }
-                .foregroundStyle(days <= 3 ? .orange : .blue)
+                .foregroundStyle(days <= 3 ? Color.trialUrgent : Color.trialNormal)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background {
                     Capsule()
-                        .fill(days <= 3 ? Color.orange.opacity(0.2) : Color.blue.opacity(0.15))
+                        .fill(Color.brandOrange.opacity(days <= 3 ? 0.25 : 0.15))
                 }
                 .help("Trial: \(days) days remaining")
 
@@ -161,13 +161,13 @@ struct TrialIndicator: View {
                     Text("Pro")
                         .font(.caption2.bold())
                 }
-                .foregroundStyle(.green)
+                .foregroundStyle(Color.licenseActive)
                 .help("Notta Pro - Active")
 
             case .trialExpired, .expired, .invalid:
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.caption2)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(Color.statusWarning)
                     .help("License expired or invalid")
 
             default:

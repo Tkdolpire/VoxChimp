@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F10000010000000000000001 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* Theme.swift */; };
+		F10000010000000000000002 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* Theme.swift */; };
 		16D6E3AE2F2B551E003EE171 /* NottaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* NottaApp.swift */; };
 		16D6E3AF2F2B551E003EE171 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppState.swift */; };
 		16D6E3B02F2B551E003EE171 /* Transcription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* Transcription.swift */; };
@@ -62,6 +64,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F20000010000000000000001 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		16D6E3C12F2B551E003EE171 /* Notta Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notta Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D6E3C22F2B551E003EE171 /* Notta copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Notta copy-Info.plist"; path = "/Users/tyrondolpire/Projects/2026/Notta/NottaSwiftUI/Notta copy-Info.plist"; sourceTree = "<absolute>"; };
 		A20000010000000000000001 /* NottaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NottaApp.swift; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 			children = (
 				A20000010000000000000001 /* NottaApp.swift */,
 				A20000010000000000000002 /* AppState.swift */,
+				F20000010000000000000001 /* Theme.swift */,
 				A20000010000000000000015 /* Info.plist */,
 				A20000010000000000000016 /* Notta.entitlements */,
 				A20000010000000000000017 /* NottaPro.entitlements */,
@@ -342,6 +346,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F10000010000000000000001 /* Theme.swift in Sources */,
 				16D6E3AE2F2B551E003EE171 /* NottaApp.swift in Sources */,
 				16D6E3AF2F2B551E003EE171 /* AppState.swift in Sources */,
 				16D6E3B02F2B551E003EE171 /* Transcription.swift in Sources */,
@@ -369,6 +374,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F10000010000000000000002 /* Theme.swift in Sources */,
 				A10000010000000000000001 /* NottaApp.swift in Sources */,
 				A10000010000000000000002 /* AppState.swift in Sources */,
 				A10000010000000000000003 /* Transcription.swift in Sources */,

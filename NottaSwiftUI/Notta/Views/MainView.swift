@@ -114,7 +114,7 @@ struct ToolbarButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(isHovered ? Color.primary.opacity(0.1) : Color.clear)
+            .background(isHovered ? Color.brandOrange.opacity(0.15) : Color.clear)
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .scaleEffect(isHovered ? 1.05 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: isHovered)
@@ -136,7 +136,7 @@ struct ToolbarButton: View {
             Image(systemName: icon)
                 .font(.system(size: 14, weight: .medium))
                 .frame(width: 28, height: 28)
-                .background(isHovered ? Color.primary.opacity(0.1) : Color.clear)
+                .background(isHovered ? Color.brandOrange.opacity(0.15) : Color.clear)
                 .clipShape(RoundedRectangle(cornerRadius: 6))
         }
         .buttonStyle(.plain)
@@ -162,27 +162,26 @@ struct RecordButton: View {
 
     var body: some View {
         ZStack {
-            // Audio level ring (responsive to voice)
+            // Glow effect when recording (responsive to voice)
             if isRecording {
                 Circle()
-                    .stroke(
-                        Color.red.opacity(Double(audioLevel) * 0.6 + 0.2),
-                        lineWidth: 4 + CGFloat(audioLevel) * 8
-                    )
-                    .frame(width: 120, height: 120)
+                    .fill(Color.brandOrange.opacity(Double(audioLevel) * 0.4 + 0.2))
+                    .frame(width: 140, height: 140)
                     .scaleEffect(1.0 + CGFloat(audioLevel) * 0.15)
+                    .blur(radius: 20)
                     .animation(.easeOut(duration: 0.1), value: audioLevel)
             }
 
             // Pulse effect when recording
             if isRecording {
                 Circle()
-                    .fill(Color.red.opacity(0.2))
+                    .fill(Color.brandOrange.opacity(0.3))
                     .frame(width: 130, height: 130)
                     .scaleEffect(pulseScale)
+                    .blur(radius: 10)
                     .onAppear {
                         withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
-                            pulseScale = 1.15
+                            pulseScale = 1.2
                         }
                     }
                     .onDisappear {
@@ -190,19 +189,17 @@ struct RecordButton: View {
                     }
             }
 
-            // Main button
-            Circle()
-                .fill(isRecording ? Color.red : Color.accentColor)
-                .frame(width: 100, height: 100)
-                .shadow(color: (isRecording ? Color.red : Color.accentColor).opacity(0.4), radius: 10, y: 4)
-
-            // Icon
-            Image(systemName: isRecording ? "stop.fill" : "mic.fill")
-                .font(.system(size: 36, weight: .medium))
-                .foregroundStyle(.white)
+            // Mascot image - switches between idle and recording states
+            Image(isRecording ? "MascotRecording" : "MascotIdle")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 120, height: 120)
+                .clipShape(Circle())
+                .shadow(color: Color.brandOrange.opacity(isRecording ? 0.6 : 0.3), radius: isRecording ? 15 : 8, y: 4)
         }
         .scaleEffect(isPressed ? 0.95 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
+        .animation(.easeInOut(duration: 0.2), value: isRecording)
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
@@ -253,7 +250,7 @@ struct LastTranscriptionView: View {
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Color.primary.opacity(0.08))
+                        .background(Color.brandOrange.opacity(0.1))
                         .clipShape(Capsule())
                 }
 
@@ -287,9 +284,9 @@ struct LastTranscriptionView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                .stroke(Color.brandOrange.opacity(0.15), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
+        .shadow(color: .brandOrange.opacity(0.1), radius: 4, y: 2)
         .onAppear {
             if isNew {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {

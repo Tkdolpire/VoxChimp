@@ -151,10 +151,10 @@ struct HealthDashboardView: View {
 
     private func scoreColor(for score: Int) -> Color {
         switch score {
-        case 0..<30: return .green
-        case 30..<50: return .yellow
-        case 50..<70: return .orange
-        default: return .red
+        case 0..<30: return .healthGood
+        case 30..<50: return .healthModerate
+        case 50..<70: return .healthWarning
+        default: return .healthAlert
         }
     }
 
@@ -221,8 +221,7 @@ struct ScoreCard: View {
             .frame(height: 8)
         }
         .padding(16)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .warmCardStyle()
     }
 }
 
@@ -235,7 +234,7 @@ struct RecommendationCard: View {
         HStack(spacing: 12) {
             Image(systemName: "lightbulb.fill")
                 .font(.title2)
-                .foregroundStyle(.yellow)
+                .foregroundStyle(Color.brandYellow)
 
             Text(message)
                 .font(.callout)
@@ -243,8 +242,12 @@ struct RecommendationCard: View {
             Spacer()
         }
         .padding(16)
-        .background(.yellow.opacity(0.1))
+        .background(Color.brandYellow.opacity(0.15))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.brandOrange.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 
@@ -276,21 +279,21 @@ struct TrendChartSection: View {
                     x: .value("Date", point.date),
                     y: .value("Fatigue", point.fatigueScore)
                 )
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color.brandOrange)
                 .interpolationMethod(.catmullRom)
 
                 LineMark(
                     x: .value("Date", point.date),
                     y: .value("Illness", point.illnessScore)
                 )
-                .foregroundStyle(.red)
+                .foregroundStyle(Color.healthAlert)
                 .interpolationMethod(.catmullRom)
 
                 AreaMark(
                     x: .value("Date", point.date),
                     y: .value("Fatigue", point.fatigueScore)
                 )
-                .foregroundStyle(.orange.opacity(0.1))
+                .foregroundStyle(Color.brandOrange.opacity(0.1))
                 .interpolationMethod(.catmullRom)
             }
             .chartYScale(domain: 0...100)
@@ -301,14 +304,13 @@ struct TrendChartSection: View {
             .frame(height: 180)
 
             HStack {
-                LegendItem(color: .orange, label: "Fatigue")
-                LegendItem(color: .red, label: "Illness")
+                LegendItem(color: .brandOrange, label: "Fatigue")
+                LegendItem(color: .healthAlert, label: "Illness")
             }
             .font(.caption)
         }
         .padding(16)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .warmCardStyle()
     }
 }
 
@@ -396,8 +398,7 @@ struct MetricsComparisonSection: View {
             }
         }
         .padding(16)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .warmCardStyle()
     }
 }
 
@@ -467,8 +468,7 @@ struct IndicatorsSection: View {
             }
         }
         .padding(16)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .warmCardStyle()
     }
 }
 
@@ -477,10 +477,10 @@ struct IndicatorRowView: View {
 
     private var statusColor: Color {
         switch indicator.status {
-        case .excellent, .good: return .green
-        case .stable: return .blue
-        case .monitor: return .yellow
-        case .attention: return .red
+        case .excellent, .good: return .healthGood
+        case .stable: return .brandSky
+        case .monitor: return .healthModerate
+        case .attention: return .healthAlert
         }
     }
 

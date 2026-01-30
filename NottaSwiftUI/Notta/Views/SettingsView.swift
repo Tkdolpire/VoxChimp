@@ -74,6 +74,7 @@ struct GeneralSettingsView: View {
         }
         .formStyle(.grouped)
         .padding()
+        .tint(.brandOrange)
     }
 }
 
@@ -133,6 +134,7 @@ struct TranscriptionSettingsView: View {
         }
         .formStyle(.grouped)
         .padding()
+        .tint(.brandOrange)
     }
 }
 
@@ -195,6 +197,7 @@ struct HealthSettingsView: View {
         }
         .formStyle(.grouped)
         .padding()
+        .tint(.brandOrange)
     }
 }
 
@@ -333,6 +336,7 @@ struct AdvancedSettingsView: View {
         }
         .formStyle(.grouped)
         .padding()
+        .tint(.brandOrange)
     }
 }
 
@@ -357,7 +361,7 @@ struct PermissionRow: View {
             Spacer()
 
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
+                .foregroundStyle(Color.statusSuccess)
         }
     }
 }

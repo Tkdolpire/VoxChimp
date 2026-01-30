@@ -385,11 +385,11 @@ enum RecordingStatus: Equatable {
 
     var color: Color {
         switch self {
-        case .ready: return .primary
-        case .recording: return .red
-        case .processing: return .secondary
-        case .success: return .green
-        case .error: return .orange
+        case .ready: return Color.brandNavy
+        case .recording: return Color.recordingActive  // Keep red for safety
+        case .processing: return Color.brandGray
+        case .success: return Color.statusSuccess
+        case .error: return Color.statusWarning
         }
     }
 }

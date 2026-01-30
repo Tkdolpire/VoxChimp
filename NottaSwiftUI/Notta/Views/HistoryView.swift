@@ -214,9 +214,10 @@ struct TranscriptionDetailView: View {
                     ForEach(transcription.tags, id: \.self) { tag in
                         Text(tag)
                             .font(.caption)
+                            .foregroundStyle(Color.brandOrange)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(.quaternary)
+                            .background(Color.brandOrange.opacity(0.1))
                             .clipShape(Capsule())
                     }
                 }
