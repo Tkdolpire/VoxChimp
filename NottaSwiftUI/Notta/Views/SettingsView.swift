@@ -106,9 +106,12 @@ struct TranscriptionSettingsView: View {
                 }
                 .pickerStyle(.radioGroup)
                 .onChange(of: settings.transcriptionBackend) { _, newBackend in
-                    if newBackend == .whisperKit && !modelManager.isDownloaded(settings.whisperModel) {
-                        modelToDownload = settings.whisperModel
-                        showModelDownloadAlert = true
+                    if newBackend == .whisperKit {
+                        // Show download alert if model not ready
+                        if !transcriptionManager.isModelReady && !modelManager.isDownloading {
+                            modelToDownload = settings.whisperModel
+                            showModelDownloadAlert = true
+                        }
                     }
                 }
             } header: {
@@ -142,14 +145,10 @@ struct TranscriptionSettingsView: View {
                     }
                     .pickerStyle(.radioGroup)
                     .onChange(of: settings.whisperModel) { _, newModel in
-                        if !modelManager.isDownloaded(newModel) {
+                        // Only prompt if model not ready and not already downloading
+                        if !modelManager.isDownloading {
                             modelToDownload = newModel
                             showModelDownloadAlert = true
-                        } else {
-                            // Load the selected model
-                            Task {
-                                await transcriptionManager.prepareWhisperModel()
-                            }
                         }
                     }
 
@@ -245,16 +244,14 @@ struct TranscriptionSettingsView: View {
         .tint(.brandOrange)
         .alert("Download Model?", isPresented: $showModelDownloadAlert) {
             Button("Download") {
-                if let model = modelToDownload {
-                    Task {
-                        try? await modelManager.downloadModel(model)
-                        await transcriptionManager.prepareWhisperModel()
-                    }
+                Task {
+                    // WhisperKitService.loadModel handles download automatically
+                    await transcriptionManager.prepareWhisperModel()
                 }
             }
             Button("Cancel", role: .cancel) {
-                // Revert to Apple Speech if user cancels
-                if !modelManager.isDownloaded(settings.whisperModel) {
+                // Revert to Apple Speech if user cancels and model not ready
+                if !transcriptionManager.isModelReady {
                     settings.transcriptionBackend = .appleSpeech
                 }
             }

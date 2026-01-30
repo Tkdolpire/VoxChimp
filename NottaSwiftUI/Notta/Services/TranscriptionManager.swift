@@ -61,6 +61,8 @@ class TranscriptionManager: ObservableObject {
         }
     }
 
+    private var isPreparingModel = false
+
     /// Prepare the Whisper model for transcription
     func prepareWhisperModel() async {
         let settings = SettingsManager.shared
@@ -68,16 +70,28 @@ class TranscriptionManager: ObservableObject {
 
         guard currentBackend == .whisperKit else { return }
 
+        // Prevent concurrent preparation attempts
+        guard !isPreparingModel else {
+            print("[TranscriptionManager] Model preparation already in progress")
+            return
+        }
+        isPreparingModel = true
+        defer { isPreparingModel = false }
+
         do {
-            // Check if model is downloaded
-            if !modelManager.isDownloaded(model) {
-                print("[TranscriptionManager] Model not downloaded, downloading...")
-                try await modelManager.downloadModel(model)
+            // Check if model is already loaded
+            if whisperKitService.isModelLoaded {
+                print("[TranscriptionManager] Model already loaded")
+                updateModelReadyState()
+                return
             }
 
-            // Load the model
+            print("[TranscriptionManager] Preparing model: \(model.rawValue)")
+
+            // Load the model (WhisperKit handles download automatically)
             try await whisperKitService.loadModel(model)
             updateModelReadyState()
+            print("[TranscriptionManager] Model ready")
         } catch {
             self.error = error.localizedDescription
             print("[TranscriptionManager] Failed to prepare model: \(error)")
