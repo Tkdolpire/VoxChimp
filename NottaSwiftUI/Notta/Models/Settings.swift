@@ -20,6 +20,8 @@ class SettingsManager: ObservableObject {
         static let healthNotificationsEnabled = "healthNotificationsEnabled"
         static let fatigueAlertThreshold = "fatigueAlertThreshold"
         static let illnessAlertThreshold = "illnessAlertThreshold"
+        static let translationEnabled = "translationEnabled"
+        static let targetLanguage = "targetLanguage"
     }
 
     // MARK: - Published Properties
@@ -72,6 +74,20 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(illnessAlertThreshold, forKey: Keys.illnessAlertThreshold) }
     }
 
+    @Published var translationEnabled: Bool {
+        didSet { defaults.set(translationEnabled, forKey: Keys.translationEnabled) }
+    }
+
+    @Published var targetLanguage: TranslationLanguage {
+        didSet {
+            defaults.set(targetLanguage.rawValue, forKey: Keys.targetLanguage)
+            // Invalidate translation session when language changes
+            Task { @MainActor in
+                TranslationService.shared.onLanguageChanged()
+            }
+        }
+    }
+
     // MARK: - Initialization
 
     private init() {
@@ -88,6 +104,8 @@ class SettingsManager: ObservableObject {
         self.healthNotificationsEnabled = defaults.object(forKey: Keys.healthNotificationsEnabled) as? Bool ?? true
         self.fatigueAlertThreshold = defaults.object(forKey: Keys.fatigueAlertThreshold) as? Int ?? 60
         self.illnessAlertThreshold = defaults.object(forKey: Keys.illnessAlertThreshold) as? Int ?? 60
+        self.translationEnabled = defaults.object(forKey: Keys.translationEnabled) as? Bool ?? false
+        self.targetLanguage = TranslationLanguage(rawValue: defaults.string(forKey: Keys.targetLanguage) ?? "") ?? .spanish
     }
 
     // MARK: - Migration

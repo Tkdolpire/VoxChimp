@@ -73,6 +73,10 @@
 		E10000010000000000000007 /* NotificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000007 /* NotificationServiceTests.swift */; };
 		E10000010000000000000008 /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000008 /* AppStateTests.swift */; };
 		E10000010000000000000009 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000009 /* IntegrationTests.swift */; };
+		T10000010000000000000001 /* TranslationLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000010000000000000001 /* TranslationLanguage.swift */; };
+		T10000010000000000000002 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000010000000000000002 /* TranslationService.swift */; };
+		T10000010000000000000003 /* TranslationLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000010000000000000001 /* TranslationLanguage.swift */; };
+		T10000010000000000000004 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000010000000000000002 /* TranslationService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -119,6 +123,8 @@
 		E20000010000000000000008 /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
 		E20000010000000000000009 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
 		E30000010000000000000001 /* NottaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NottaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		T20000010000000000000001 /* TranslationLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationLanguage.swift; sourceTree = "<group>"; };
+		T20000010000000000000002 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +199,7 @@
 				A20000010000000000000005 /* VoiceHealth.swift */,
 				C20000010000000000000001 /* License.swift */,
 				W20000010000000000000001 /* TranscriptionBackend.swift */,
+				T20000010000000000000001 /* TranslationLanguage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -225,6 +232,7 @@
 				W20000010000000000000003 /* WhisperKitService.swift */,
 				W20000010000000000000004 /* ModelManager.swift */,
 				W20000010000000000000005 /* TranscriptionManager.swift */,
+				T20000010000000000000002 /* TranslationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -403,6 +411,8 @@
 				C10000010000000000000005 /* LicenseView.swift in Sources */,
 				C10000010000000000000006 /* TrialBannerView.swift in Sources */,
 				C10000010000000000000007 /* NotificationService.swift in Sources */,
+				T10000010000000000000003 /* TranslationLanguage.swift in Sources */,
+				T10000010000000000000004 /* TranslationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,6 +446,8 @@
 				D10000010000000000000005 /* LicenseView.swift in Sources */,
 				D10000010000000000000006 /* TrialBannerView.swift in Sources */,
 				D10000010000000000000007 /* NotificationService.swift in Sources */,
+				T10000010000000000000001 /* TranslationLanguage.swift in Sources */,
+				T10000010000000000000002 /* TranslationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

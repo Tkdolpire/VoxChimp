@@ -15,6 +15,7 @@ struct NottaApp: App {
             MainView()
                 .environmentObject(appState)
                 .environmentObject(licenseManager)
+                .withTranslationSupport()
                 .frame(minWidth: 360, minHeight: 400)
                 .onReceive(NotificationCenter.default.publisher(for: .openHistoryWindow)) { _ in
                     openWindow(id: "history")

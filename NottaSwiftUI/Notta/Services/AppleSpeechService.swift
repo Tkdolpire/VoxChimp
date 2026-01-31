@@ -16,7 +16,8 @@ class AppleSpeechService: ObservableObject, TranscriptionServiceProtocol {
     // MARK: - TranscriptionServiceProtocol
 
     func transcribe(audioURL: URL) async throws -> String {
-        print("[AppleSpeech] Starting transcription for: \(audioURL.path)")
+        let startTime = Date()
+        print("[AppleSpeech] Starting transcription...")
         await MainActor.run {
             isTranscribing = true
             progress = 0
@@ -46,7 +47,8 @@ class AppleSpeechService: ObservableObject, TranscriptionServiceProtocol {
         await MainActor.run { progress = 0.2 }
 
         let result = try await transcribeWithAppleSpeech(audioURL: audioURL)
-        print("[AppleSpeech] Result: \(result)")
+        let transcribeTime = Date().timeIntervalSince(startTime)
+        print("[AppleSpeech] ✓ Transcription complete in \(String(format: "%.2f", transcribeTime))s: \(result.prefix(50))...")
         return result
     }
 

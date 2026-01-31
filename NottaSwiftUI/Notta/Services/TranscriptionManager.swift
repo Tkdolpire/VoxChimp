@@ -42,6 +42,14 @@ class TranscriptionManager: ObservableObject {
                 self?.updateModelReadyState()
             }
             .store(in: &cancellables)
+
+        // Auto-load Whisper model on startup if WhisperKit is selected
+        if currentBackend == .whisperKit {
+            Task {
+                print("[TranscriptionManager] Auto-loading Whisper model on startup...")
+                await prepareWhisperModel()
+            }
+        }
     }
 
     // MARK: - Backend Management
@@ -124,16 +132,20 @@ class TranscriptionManager: ObservableObject {
 
         switch currentBackend {
         case .appleSpeech:
+            print("[TranscriptionManager] ✦ Using: Apple Speech")
             return try await appleSpeechService.transcribe(audioURL: audioURL)
 
         case .whisperKit:
             // Fall back to Apple Speech if Whisper model isn't ready
             if !whisperKitService.isModelLoaded {
                 print("[TranscriptionManager] Whisper model not ready, falling back to Apple Speech")
+                print("[TranscriptionManager] ✦ Using: Apple Speech (fallback)")
                 return try await appleSpeechService.transcribe(audioURL: audioURL)
             }
 
             // Try Whisper, with fallback to Apple Speech on recoverable errors
+            let model = SettingsManager.shared.whisperModel
+            print("[TranscriptionManager] ✦ Using: WhisperKit (\(model.displayName))")
             do {
                 return try await whisperKitService.transcribe(audioURL: audioURL)
             } catch {
@@ -147,6 +159,7 @@ class TranscriptionManager: ObservableObject {
 
                 if isRecoverableError {
                     print("[TranscriptionManager] Whisper error (recoverable), falling back to Apple Speech: \(error)")
+                    print("[TranscriptionManager] ✦ Using: Apple Speech (error fallback)")
                     // Try to reload model in background for next time
                     Task {
                         whisperKitService.unloadModel()

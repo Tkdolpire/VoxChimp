@@ -36,10 +36,14 @@ class ModelManager: ObservableObject {
 
     /// Get the storage used by downloaded models
     func totalStorageUsed() -> Int64 {
-        guard FileManager.default.fileExists(atPath: modelsDirectory.path) else { return 0 }
+        // WhisperKit stores models in ~/Documents/huggingface/models/argmaxinc/whisperkit-coreml/
+        let homeDir = FileManager.default.homeDirectoryForCurrentUser
+        let huggingfaceDir = homeDir.appendingPathComponent("Documents/huggingface/models/argmaxinc/whisperkit-coreml")
+
+        guard FileManager.default.fileExists(atPath: huggingfaceDir.path) else { return 0 }
 
         var totalSize: Int64 = 0
-        if let enumerator = FileManager.default.enumerator(at: modelsDirectory, includingPropertiesForKeys: [.fileSizeKey]) {
+        if let enumerator = FileManager.default.enumerator(at: huggingfaceDir, includingPropertiesForKeys: [.fileSizeKey]) {
             while let fileURL = enumerator.nextObject() as? URL {
                 if let fileSize = try? fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize {
                     totalSize += Int64(fileSize)

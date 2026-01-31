@@ -96,13 +96,18 @@ class AppState: ObservableObject {
                 print("Transcription completed: \(transcription)")
 
                 // Apply grammar fixes if enabled
-                let finalText = settings.fixGrammar ? applyGrammarFixes(transcription) : transcription
+                let afterGrammar = settings.fixGrammar ? applyGrammarFixes(transcription) : transcription
+
+                // Apply translation if enabled
+                let (finalText, originalText, translatedTo) = await applyTranslation(afterGrammar)
 
                 // Save to history
                 let entry = Transcription(
                     text: finalText,
                     timestamp: Date(),
-                    audioFilePath: settings.saveAudio ? audioURL.path : nil
+                    audioFilePath: settings.saveAudio ? audioURL.path : nil,
+                    originalText: originalText,
+                    translatedTo: translatedTo
                 )
                 saveTranscription(entry)
 
@@ -282,6 +287,18 @@ class AppState: ObservableObject {
     }
 
     // MARK: - Helpers
+
+    private func applyTranslation(_ text: String) async -> (text: String, original: String?, language: String?) {
+        guard settings.translationEnabled, settings.targetLanguage.isEnabled else {
+            return (text, nil, nil)
+        }
+
+        let translated = await TranslationService.shared.translate(text)
+        if translated != text {
+            return (translated, text, settings.targetLanguage.rawValue)
+        }
+        return (text, nil, nil)
+    }
 
     private func applyGrammarFixes(_ text: String) -> String {
         var result = text.trimmingCharacters(in: .whitespacesAndNewlines)

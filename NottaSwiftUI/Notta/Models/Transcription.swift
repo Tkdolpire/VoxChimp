@@ -10,13 +10,25 @@ struct Transcription: Identifiable, Codable, Equatable, Hashable {
     var category: String?
     var tags: [String]
 
+    /// Original text before translation (nil if not translated)
+    var originalText: String?
+    /// Language code the text was translated to (nil if not translated)
+    var translatedTo: String?
+
+    /// Whether this transcription was translated
+    var wasTranslated: Bool {
+        originalText != nil && translatedTo != nil
+    }
+
     init(
         id: UUID = UUID(),
         text: String,
         timestamp: Date = Date(),
         audioFilePath: String? = nil,
         category: String? = nil,
-        tags: [String] = []
+        tags: [String] = [],
+        originalText: String? = nil,
+        translatedTo: String? = nil
     ) {
         self.id = id
         self.text = text
@@ -26,6 +38,8 @@ struct Transcription: Identifiable, Codable, Equatable, Hashable {
         self.audioFilePath = audioFilePath
         self.category = category
         self.tags = tags
+        self.originalText = originalText
+        self.translatedTo = translatedTo
     }
 
     var formattedDate: String {

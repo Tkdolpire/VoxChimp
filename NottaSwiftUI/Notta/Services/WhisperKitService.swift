@@ -21,26 +21,29 @@ class WhisperKitService: ObservableObject {
             return
         }
 
-        print("[WhisperKit] Loading model: \(model.rawValue)")
+        let startTime = Date()
+        print("[WhisperKit] ⏳ Loading model: \(model.rawValue)...")
+        print("[WhisperKit]    This includes: loading from disk, CoreML compilation, and prewarming")
         isModelLoaded = false
         loadingError = nil
 
         do {
             // WhisperKit handles model download automatically
-            // Use nil to let WhisperKit select the best available model,
-            // or specify a variant like "small", "base", etc.
+            // prewarm: true makes first transcription faster but loading slower
             whisperKit = try await WhisperKit(
                 model: model.rawValue,
                 verbose: true,
                 prewarm: true
             )
 
+            let loadTime = Date().timeIntervalSince(startTime)
             currentModel = model
             isModelLoaded = true
-            print("[WhisperKit] Model loaded successfully")
+            print("[WhisperKit] ✓ Model loaded successfully in \(String(format: "%.1f", loadTime)) seconds")
         } catch {
+            let loadTime = Date().timeIntervalSince(startTime)
             loadingError = error.localizedDescription
-            print("[WhisperKit] Failed to load model: \(error)")
+            print("[WhisperKit] ✗ Failed to load model after \(String(format: "%.1f", loadTime))s: \(error)")
             throw WhisperKitError.downloadFailed(error.localizedDescription)
         }
     }
@@ -65,7 +68,8 @@ class WhisperKitService: ObservableObject {
             throw WhisperKitError.modelNotLoaded
         }
 
-        print("[WhisperKit] Starting transcription for: \(audioURL.path)")
+        let startTime = Date()
+        print("[WhisperKit] Starting transcription...")
         isTranscribing = true
         progress = 0
 
@@ -85,11 +89,12 @@ class WhisperKitService: ObservableObject {
             // Combine all transcription results
             let text = results.map { $0.text }.joined(separator: " ").trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 
-            print("[WhisperKit] Transcription complete: \(text.prefix(100))...")
+            let transcribeTime = Date().timeIntervalSince(startTime)
+            print("[WhisperKit] ✓ Transcription complete in \(String(format: "%.2f", transcribeTime))s: \(text.prefix(50))...")
             return text
 
         } catch {
-            print("[WhisperKit] Transcription failed: \(error)")
+            print("[WhisperKit] ✗ Transcription failed: \(error)")
             throw WhisperKitError.transcriptionFailed(error.localizedDescription)
         }
     }

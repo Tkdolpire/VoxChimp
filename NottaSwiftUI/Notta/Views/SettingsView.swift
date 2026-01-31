@@ -84,6 +84,7 @@ struct TranscriptionSettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
     @StateObject var modelManager = ModelManager.shared
     @StateObject var transcriptionManager = TranscriptionManager.shared
+    @StateObject var translationService = TranslationService.shared
     @State private var showModelDownloadAlert = false
     @State private var modelToDownload: WhisperModel?
 
@@ -152,25 +153,33 @@ struct TranscriptionSettingsView: View {
                         }
                     }
 
-                    // Download progress
-                    if modelManager.isDownloading {
+                    // Download/Loading progress
+                    if modelManager.isDownloading || transcriptionManager.isLoadingModel {
                         HStack {
                             ProgressView()
                                 .scaleEffect(0.8)
-                            Text("Downloading \(modelManager.downloadingModel?.displayName ?? "model")...")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Button("Cancel") {
-                                modelManager.cancelDownload()
+                            if !transcriptionManager.modelLoadingProgress.isEmpty {
+                                Text(transcriptionManager.modelLoadingProgress)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text("Downloading \(modelManager.downloadingModel?.displayName ?? "model")...")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
-                            .buttonStyle(.link)
-                            .font(.caption)
+                            Spacer()
+                            if modelManager.isDownloading {
+                                Button("Cancel") {
+                                    modelManager.cancelDownload()
+                                }
+                                .buttonStyle(.link)
+                                .font(.caption)
+                            }
                         }
                     }
 
                     // Model status
-                    if transcriptionManager.isModelReady {
+                    if transcriptionManager.isModelReady && !transcriptionManager.isLoadingModel {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundStyle(.green)
@@ -211,6 +220,136 @@ struct TranscriptionSettingsView: View {
                     .help("Automatically capitalize sentences and fix common contractions")
             } header: {
                 Text("Post-Processing")
+            }
+
+            // Translation Section
+            if translationService.isAvailable {
+                Section {
+                    Toggle("Translate to another language", isOn: $settings.translationEnabled)
+                        .help("Translate transcribed text before pasting")
+
+                    if settings.translationEnabled {
+                        Picker("Target Language", selection: $settings.targetLanguage) {
+                            ForEach(TranslationLanguage.enabledCases) { lang in
+                                HStack {
+                                    Text(lang.displayName)
+                                    Spacer()
+                                    switch translationService.getLanguageStatus(lang) {
+                                    case .installed:
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(.green)
+                                            .font(.caption)
+                                    case .needsDownload:
+                                        Image(systemName: "arrow.down.circle")
+                                            .foregroundStyle(.orange)
+                                            .font(.caption)
+                                    default:
+                                        EmptyView()
+                                    }
+                                }
+                                .tag(lang)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .onAppear {
+                            Task {
+                                await translationService.checkAllLanguageStatuses()
+                            }
+                        }
+                        .onChange(of: settings.targetLanguage) { _, newLang in
+                            Task {
+                                await translationService.checkLanguageStatus(newLang)
+                            }
+                        }
+
+                        // Language status
+                        HStack {
+                            switch translationService.getLanguageStatus(settings.targetLanguage) {
+                            case .installed:
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.green)
+                                Text("\(settings.targetLanguage.displayName) is ready")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            case .needsDownload:
+                                Image(systemName: "arrow.down.circle")
+                                    .foregroundStyle(.orange)
+                                Text("\(settings.targetLanguage.displayName) needs to be downloaded")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            case .checking:
+                                ProgressView()
+                                    .scaleEffect(0.7)
+                                Text("Checking availability...")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            case .unsupported:
+                                Image(systemName: "xmark.circle")
+                                    .foregroundStyle(.red)
+                                Text("\(settings.targetLanguage.displayName) is not supported")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            case .unknown:
+                                Image(systemName: "questionmark.circle")
+                                    .foregroundStyle(.secondary)
+                                Text("Status unknown")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
+                        if translationService.isDownloadingModel {
+                            HStack {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                Text(translationService.downloadProgress)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
+                        if let error = translationService.error {
+                            HStack {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(.orange)
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
+                        // Button to open Translate app for downloading
+                        if translationService.getLanguageStatus(settings.targetLanguage) == .needsDownload {
+                            Button {
+                                translationService.openTranslateApp()
+                            } label: {
+                                Label("Open Translate App to Download \(settings.targetLanguage.displayName)", systemImage: "arrow.down.circle")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .font(.caption)
+                        }
+
+                        // Link to open Translate app
+                        Button {
+                            translationService.openTranslateApp()
+                        } label: {
+                            Label("Manage Languages in Translate App", systemImage: "arrow.up.forward.app")
+                        }
+                        .buttonStyle(.link)
+                        .font(.caption)
+                    }
+                } header: {
+                    Text("Translation")
+                } footer: {
+                    Text("Translation happens on-device. Languages must be downloaded via the Translate app first.")
+                }
+            } else {
+                Section {
+                    Label("Translation requires macOS 15.0 or later", systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("Translation")
+                }
             }
 
             Section {
