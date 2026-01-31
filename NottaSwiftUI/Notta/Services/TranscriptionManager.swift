@@ -8,6 +8,8 @@ class TranscriptionManager: ObservableObject {
 
     @Published var isTranscribing = false
     @Published var isModelReady = false
+    @Published var isLoadingModel = false
+    @Published var modelLoadingProgress: String = ""
     @Published var progress: Double = 0
     @Published var currentBackend: TranscriptionBackend = .appleSpeech
     @Published var error: String?
@@ -76,7 +78,14 @@ class TranscriptionManager: ObservableObject {
             return
         }
         isPreparingModel = true
-        defer { isPreparingModel = false }
+        isLoadingModel = true
+        modelLoadingProgress = "Downloading \(model.displayName) model..."
+
+        defer {
+            isPreparingModel = false
+            isLoadingModel = false
+            modelLoadingProgress = ""
+        }
 
         do {
             // Check if model is already loaded
@@ -87,6 +96,7 @@ class TranscriptionManager: ObservableObject {
             }
 
             print("[TranscriptionManager] Preparing model: \(model.rawValue)")
+            modelLoadingProgress = "Loading \(model.displayName) model..."
 
             // Load the model (WhisperKit handles download automatically)
             try await whisperKitService.loadModel(model)
@@ -101,7 +111,7 @@ class TranscriptionManager: ObservableObject {
     // MARK: - Transcription
 
     /// Transcribe audio from the given URL using the current backend
-    /// Falls back to Apple Speech if Whisper model isn't ready
+    /// Falls back to Apple Speech if Whisper model isn't ready or encounters errors
     func transcribe(audioURL: URL) async throws -> String {
         isTranscribing = true
         progress = 0
@@ -112,28 +122,43 @@ class TranscriptionManager: ObservableObject {
             progress = 1.0
         }
 
-        do {
-            let result: String
+        switch currentBackend {
+        case .appleSpeech:
+            return try await appleSpeechService.transcribe(audioURL: audioURL)
 
-            switch currentBackend {
-            case .appleSpeech:
-                result = try await appleSpeechService.transcribe(audioURL: audioURL)
-
-            case .whisperKit:
-                // Fall back to Apple Speech if Whisper model isn't ready
-                if !whisperKitService.isModelLoaded {
-                    print("[TranscriptionManager] Whisper model not ready, falling back to Apple Speech")
-                    result = try await appleSpeechService.transcribe(audioURL: audioURL)
-                } else {
-                    result = try await whisperKitService.transcribe(audioURL: audioURL)
-                }
+        case .whisperKit:
+            // Fall back to Apple Speech if Whisper model isn't ready
+            if !whisperKitService.isModelLoaded {
+                print("[TranscriptionManager] Whisper model not ready, falling back to Apple Speech")
+                return try await appleSpeechService.transcribe(audioURL: audioURL)
             }
 
-            return result
+            // Try Whisper, with fallback to Apple Speech on recoverable errors
+            do {
+                return try await whisperKitService.transcribe(audioURL: audioURL)
+            } catch {
+                let errorMessage = error.localizedDescription.lowercased()
 
-        } catch {
-            self.error = error.localizedDescription
-            throw error
+                // Check for recoverable errors (tokenizer, configuration issues)
+                let isRecoverableError = errorMessage.contains("tokenizer") ||
+                                         errorMessage.contains("configuration") ||
+                                         errorMessage.contains("incomplete") ||
+                                         errorMessage.contains("couldn't be moved")
+
+                if isRecoverableError {
+                    print("[TranscriptionManager] Whisper error (recoverable), falling back to Apple Speech: \(error)")
+                    // Try to reload model in background for next time
+                    Task {
+                        whisperKitService.unloadModel()
+                        await prepareWhisperModel()
+                    }
+                    return try await appleSpeechService.transcribe(audioURL: audioURL)
+                }
+
+                // Non-recoverable error, propagate it
+                self.error = error.localizedDescription
+                throw error
+            }
         }
     }
 

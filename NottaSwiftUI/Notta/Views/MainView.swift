@@ -41,7 +41,14 @@ struct MainView: View {
                     Text("Hold \(SettingsManager.shared.hotkey.displayName) to record")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+
+                    // Model loading indicator
+                    if TranscriptionManager.shared.isLoadingModel {
+                        ModelLoadingView()
+                            .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                    }
                 }
+                .animation(.easeInOut(duration: 0.3), value: TranscriptionManager.shared.isLoadingModel)
             }
 
             Spacer()
@@ -312,6 +319,29 @@ struct LastTranscriptionView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Model Loading View
+
+struct ModelLoadingView: View {
+    @StateObject private var transcriptionManager = TranscriptionManager.shared
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .scaleEffect(0.7)
+                .tint(.brandOrange)
+
+            Text(transcriptionManager.modelLoadingProgress)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color.brandOrange.opacity(0.1))
+        .clipShape(Capsule())
+        .padding(.top, 8)
     }
 }
 
