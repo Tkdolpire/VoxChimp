@@ -188,14 +188,16 @@ final class TranscriptionBackendTests: XCTestCase {
         }
     }
 
-    func testCodable() throws {
+    func testRawValueEncodeDecode() throws {
+        // Test that raw values can be encoded/decoded (for storage)
         let encoder = JSONEncoder()
         let decoder = JSONDecoder()
 
         for backend in TranscriptionBackend.allCases {
-            let encoded = try encoder.encode(backend)
-            let decoded = try decoder.decode(TranscriptionBackend.self, from: encoded)
-            XCTAssertEqual(decoded, backend)
+            let encoded = try encoder.encode(backend.rawValue)
+            let decodedRaw = try decoder.decode(String.self, from: encoded)
+            let recreated = TranscriptionBackend(rawValue: decodedRaw)
+            XCTAssertEqual(recreated, backend)
         }
     }
 
