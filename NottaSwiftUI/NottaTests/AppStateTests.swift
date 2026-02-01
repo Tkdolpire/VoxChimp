@@ -176,8 +176,9 @@ final class AppStateTests: XCTestCase {
         XCTAssertNotNil(appState.audioRecorder)
     }
 
-    func testWhisperServiceExists() {
-        XCTAssertNotNil(appState.whisperService)
+    func testTranscriptionManagerExists() {
+        // TranscriptionManager is a singleton, verify it exists
+        XCTAssertNotNil(TranscriptionManager.shared)
     }
 
     func testAcousticAnalyzerExists() {
