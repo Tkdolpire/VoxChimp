@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module test_analyzer_worker</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">test_analyzer_worker</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:/Users/tyrondolpire/Projects/2026/Notta/tests/test_analyzer_worker.py">/Users/tyrondolpire/Projects/2026/Notta/tests/test_analyzer_worker.py</a></td></tr></table>
+    <p><span class="code">Unit&nbsp;tests&nbsp;for&nbsp;the&nbsp;HEAR&nbsp;model&nbsp;worker&nbsp;subprocess&nbsp;(health/analyzer_worker.py)<br>
+&nbsp;<br>
+Tests&nbsp;the&nbsp;subprocess&nbsp;worker&nbsp;that&nbsp;processes&nbsp;audio&nbsp;through&nbsp;the&nbsp;HEAR&nbsp;model.<br>
+Since&nbsp;the&nbsp;worker&nbsp;requires&nbsp;heavy&nbsp;dependencies&nbsp;(TensorFlow,&nbsp;HEAR),&nbsp;tests&nbsp;focus&nbsp;on:<br>
+-&nbsp;Input&nbsp;validation<br>
+-&nbsp;JSON&nbsp;parsing<br>
+-&nbsp;Error&nbsp;handling<br>
+-&nbsp;Output&nbsp;format</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="json.html">json</a><br>
+<a href="math.html">math</a><br>
+</td><td class="multicolumn"><a href="pytest.html">pytest</a><br>
+<a href="struct.html">struct</a><br>
+</td><td class="multicolumn"><a href="subprocess.html">subprocess</a><br>
+<a href="sys.html">sys</a><br>
+</td><td class="multicolumn"><a href="tempfile.html">tempfile</a><br>
+<a href="wave.html">wave</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="test_analyzer_worker.html#TestAudioChunkingLogic">TestAudioChunkingLogic</a>
+</dt><dt class="heading-text"><a href="test_analyzer_worker.html#TestErrorHandling">TestErrorHandling</a>
+</dt><dt class="heading-text"><a href="test_analyzer_worker.html#TestExitCodes">TestExitCodes</a>
+</dt><dt class="heading-text"><a href="test_analyzer_worker.html#TestJSONOutput">TestJSONOutput</a>
+</dt><dt class="heading-text"><a href="test_analyzer_worker.html#TestLogging">TestLogging</a>
+</dt><dt class="heading-text"><a href="test_analyzer_worker.html#TestMainFunctionInputValidation">TestMainFunctionInputValidation</a>
+</dt><dt class="heading-text"><a href="test_analyzer_worker.html#TestProcessAudioFilesMocked">TestProcessAudioFilesMocked</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestAudioChunkingLogic">class <strong>TestAudioChunkingLogic</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;audio&nbsp;chunking&nbsp;behavior.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestAudioChunkingLogic-test_chunk_size_is_2_seconds"><strong>test_chunk_size_is_2_seconds</strong></a>(self)</dt><dd><span class="code">Chunk&nbsp;size&nbsp;should&nbsp;be&nbsp;2&nbsp;seconds&nbsp;at&nbsp;16kHz&nbsp;=&nbsp;32000&nbsp;samples.</span></dd></dl>
+
+<dl><dt><a name="TestAudioChunkingLogic-test_minimum_chunk_is_1_second"><strong>test_minimum_chunk_is_1_second</strong></a>(self)</dt><dd><span class="code">Minimum&nbsp;valid&nbsp;chunk&nbsp;should&nbsp;be&nbsp;1&nbsp;second&nbsp;(half&nbsp;of&nbsp;2&nbsp;seconds).</span></dd></dl>
+
+<dl><dt><a name="TestAudioChunkingLogic-test_short_chunks_are_padded"><strong>test_short_chunks_are_padded</strong></a>(self)</dt><dd><span class="code">Chunks&nbsp;shorter&nbsp;than&nbsp;2&nbsp;seconds&nbsp;should&nbsp;be&nbsp;padded.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestErrorHandling">class <strong>TestErrorHandling</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;error&nbsp;handling&nbsp;in&nbsp;the&nbsp;worker.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestErrorHandling-test_invalid_audio_file_handled"><strong>test_invalid_audio_file_handled</strong></a>(self, tmp_path)</dt><dd><span class="code">Should&nbsp;handle&nbsp;invalid&nbsp;audio&nbsp;files&nbsp;gracefully.</span></dd></dl>
+
+<dl><dt><a name="TestErrorHandling-test_nonexistent_file_handled"><strong>test_nonexistent_file_handled</strong></a>(self, tmp_path)</dt><dd><span class="code">Should&nbsp;handle&nbsp;non-existent&nbsp;files&nbsp;gracefully.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestExitCodes">class <strong>TestExitCodes</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;subprocess&nbsp;exit&nbsp;codes.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestExitCodes-test_invalid_json_returns_nonzero"><strong>test_invalid_json_returns_nonzero</strong></a>(self)</dt><dd><span class="code">Invalid&nbsp;JSON&nbsp;should&nbsp;return&nbsp;non-zero&nbsp;exit&nbsp;code.</span></dd></dl>
+
+<dl><dt><a name="TestExitCodes-test_non_array_returns_nonzero"><strong>test_non_array_returns_nonzero</strong></a>(self)</dt><dd><span class="code">Non-array&nbsp;JSON&nbsp;should&nbsp;return&nbsp;non-zero&nbsp;exit&nbsp;code.</span></dd></dl>
+
+<dl><dt><a name="TestExitCodes-test_success_returns_zero"><strong>test_success_returns_zero</strong></a>(self)</dt><dd><span class="code">Successful&nbsp;run&nbsp;should&nbsp;return&nbsp;exit&nbsp;code&nbsp;0.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestJSONOutput">class <strong>TestJSONOutput</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;JSON&nbsp;output&nbsp;format.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestJSONOutput-test_error_output_is_json_dict"><strong>test_error_output_is_json_dict</strong></a>(self)</dt><dd><span class="code">Error&nbsp;output&nbsp;should&nbsp;be&nbsp;a&nbsp;JSON&nbsp;dict&nbsp;with&nbsp;'error'&nbsp;key.</span></dd></dl>
+
+<dl><dt><a name="TestJSONOutput-test_output_is_valid_json"><strong>test_output_is_valid_json</strong></a>(self)</dt><dd><span class="code">Output&nbsp;should&nbsp;always&nbsp;be&nbsp;valid&nbsp;JSON.</span></dd></dl>
+
+<dl><dt><a name="TestJSONOutput-test_success_output_is_json_array"><strong>test_success_output_is_json_array</strong></a>(self)</dt><dd><span class="code">Success&nbsp;output&nbsp;should&nbsp;be&nbsp;a&nbsp;JSON&nbsp;array.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestLogging">class <strong>TestLogging</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;logging&nbsp;behavior.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestLogging-test_json_not_in_stderr"><strong>test_json_not_in_stderr</strong></a>(self)</dt><dd><span class="code">JSON&nbsp;output&nbsp;should&nbsp;not&nbsp;appear&nbsp;in&nbsp;stderr.</span></dd></dl>
+
+<dl><dt><a name="TestLogging-test_logs_go_to_stderr"><strong>test_logs_go_to_stderr</strong></a>(self)</dt><dd><span class="code">Logs&nbsp;should&nbsp;go&nbsp;to&nbsp;stderr,&nbsp;not&nbsp;stdout.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestMainFunctionInputValidation">class <strong>TestMainFunctionInputValidation</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;the&nbsp;main()&nbsp;function&nbsp;input&nbsp;validation.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestMainFunctionInputValidation-test_empty_array_returns_empty_array"><strong>test_empty_array_returns_empty_array</strong></a>(self)</dt><dd><span class="code">Should&nbsp;return&nbsp;empty&nbsp;array&nbsp;for&nbsp;empty&nbsp;input&nbsp;array.</span></dd></dl>
+
+<dl><dt><a name="TestMainFunctionInputValidation-test_invalid_json_returns_error"><strong>test_invalid_json_returns_error</strong></a>(self)</dt><dd><span class="code">Should&nbsp;return&nbsp;error&nbsp;for&nbsp;invalid&nbsp;JSON&nbsp;input.</span></dd></dl>
+
+<dl><dt><a name="TestMainFunctionInputValidation-test_no_args_returns_error"><strong>test_no_args_returns_error</strong></a>(self)</dt><dd><span class="code">Should&nbsp;return&nbsp;error&nbsp;when&nbsp;no&nbsp;arguments&nbsp;provided.</span></dd></dl>
+
+<dl><dt><a name="TestMainFunctionInputValidation-test_non_array_returns_error"><strong>test_non_array_returns_error</strong></a>(self)</dt><dd><span class="code">Should&nbsp;return&nbsp;error&nbsp;when&nbsp;input&nbsp;is&nbsp;not&nbsp;a&nbsp;JSON&nbsp;array.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestProcessAudioFilesMocked">class <strong>TestProcessAudioFilesMocked</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;process_audio_files&nbsp;with&nbsp;mocked&nbsp;dependencies.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestProcessAudioFilesMocked-test_import_error_handling"><strong>test_import_error_handling</strong></a>(self)</dt><dd><span class="code">Should&nbsp;handle&nbsp;missing&nbsp;dependencies&nbsp;gracefully.</span></dd></dl>
+
+<dl><dt><a name="TestProcessAudioFilesMocked-test_result_format"><strong>test_result_format</strong></a>(self)</dt><dd><span class="code">Verify&nbsp;expected&nbsp;output&nbsp;format&nbsp;structure.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-create_test_wav"><strong>create_test_wav</strong></a>(path: pathlib.Path, duration: float, frequency: float, sample_rate: int = 16000)</dt><dd><span class="code">Create&nbsp;a&nbsp;test&nbsp;WAV&nbsp;file&nbsp;with&nbsp;a&nbsp;sine&nbsp;wave&nbsp;tone.</span></dd></dl>
+ <dl><dt><a name="-multiple_wav_files"><strong>multiple_wav_files</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;multiple&nbsp;sample&nbsp;WAV&nbsp;files.</span></dd></dl>
+ <dl><dt><a name="-sample_wav_file"><strong>sample_wav_file</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;a&nbsp;sample&nbsp;WAV&nbsp;file&nbsp;for&nbsp;testing.</span></dd></dl>
+ <dl><dt><a name="-short_wav_file"><strong>short_wav_file</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;a&nbsp;very&nbsp;short&nbsp;WAV&nbsp;file&nbsp;(less&nbsp;than&nbsp;1&nbsp;second).</span></dd></dl>
+</td></tr></table>
+</body></html>

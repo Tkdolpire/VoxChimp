@@ -1,5 +1,9 @@
 # Notta - AI Voice Dictation for Medical Notes
 
+## Design System
+
+See [docs/STYLE_GUIDE.md](./docs/STYLE_GUIDE.md) for the complete brand style guide including colors, typography, spacing, and component patterns.
+
 ## Overview
 
 Notta is a macOS dock application that provides AI-powered voice dictation. Users hold a hotkey (or button) to record speech, and the app transcribes it using Whisper, then automatically pastes the text at the cursor position.

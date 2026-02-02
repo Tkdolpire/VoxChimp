@@ -1,0 +1,78 @@
+# Notta Runtime Requirements
+# Install with: pip install -r requirements.txt
+# Note: Use system Python (/usr/bin/python3) for PyObjC compatibility
+
+# =============================================================================
+# Core Application
+# =============================================================================
+
+# macOS native UI framework
+pyobjc>=9.0
+pyobjc-core>=9.0
+pyobjc-framework-Cocoa>=9.0
+
+# Audio recording
+pyaudio>=0.2.13
+
+# Global hotkey detection
+pynput>=1.7.6
+
+# =============================================================================
+# Transcription (Whisper)
+# =============================================================================
+
+# Local Whisper model
+faster-whisper>=0.10.0
+
+# Model inference
+ctranslate2>=3.0.0
+
+# Tokenization
+tokenizers>=0.15.0
+
+# Model downloads
+huggingface-hub>=0.20.0
+
+# Audio/video processing
+av>=10.0.0
+
+# =============================================================================
+# Voice Health Analysis (HEAR Module)
+# =============================================================================
+
+# Acoustic feature extraction
+parselmouth>=0.4.3
+
+# Deep learning embeddings
+tensorflow>=2.14.0
+
+# Audio analysis
+librosa>=0.10.0
+soundfile>=0.12.0
+audioread>=3.0.0
+
+# Signal processing
+scipy>=1.11.0
+resampy>=0.4.0
+
+# JIT compilation for performance
+numba>=0.58.0
+
+# =============================================================================
+# Utilities
+# =============================================================================
+
+# Numerical computing
+numpy>=1.24.0
+
+# JSON handling (stdlib, but pinning for compatibility)
+# json is built-in
+
+# =============================================================================
+# Development (Optional)
+# =============================================================================
+
+# Build tool
+# pyinstaller>=6.0.0
+
+# For test dependencies, see requirements-test.txt

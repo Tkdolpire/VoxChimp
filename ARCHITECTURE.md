@@ -1,86 +1,138 @@
-# Nota Architecture
+# Notta Architecture
 
-This document describes the technical architecture of Nota for developers making future improvements.
+Technical architecture documentation for developers working on Notta.
 
 ## Overview
 
-Nota is a native macOS application built with Python and PyObjC. It provides voice-to-text transcription using the Whisper model, with a floating window UI and global hotkey support.
+Notta is a native macOS voice dictation application with two parallel implementations:
+
+1. **Python/PyObjC** (`notta.py`) - Original implementation, single-file architecture
+2. **Swift/SwiftUI** (`NottaSwiftUI/`) - Modern native implementation
+
+Both provide AI-powered voice-to-text transcription using local Whisper models, with additional voice health analysis capabilities.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Nota Application                          │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │
-│  │   PyObjC    │  │   pynput    │  │    faster-whisper       │ │
-│  │  (UI/App)   │  │  (Hotkeys)  │  │   (Transcription)       │ │
-│  └──────┬──────┘  └──────┬──────┘  └───────────┬─────────────┘ │
-│         │                │                      │               │
-│         └────────────────┼──────────────────────┘               │
-│                          │                                      │
-│                 ┌────────┴────────┐                            │
-│                 │ NotaAppDelegate │                            │
-│                 │  (Main Class)   │                            │
-│                 └─────────────────┘                            │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Notta Application                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐ │
+│  │   PyObjC /   │  │    pynput    │  │   Whisper    │  │  Health Module   │ │
+│  │   SwiftUI    │  │   (Hotkeys)  │  │ (Transcribe) │  │  (HEAR Analysis) │ │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘ │
+│         │                 │                 │                    │          │
+│         └─────────────────┴─────────────────┴────────────────────┘          │
+│                                    │                                         │
+│                         ┌──────────┴──────────┐                             │
+│                         │   NottaAppDelegate  │                             │
+│                         │    (Main Class)     │                             │
+│                         └─────────────────────┘                             │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Project Structure
 
 ```
-Nota/
-├── nota.py           # Main application (single-file)
-├── Nota.spec         # PyInstaller build configuration
-├── README.md         # User documentation
-├── ARCHITECTURE.md   # This file
-├── CLAUDE.md         # AI assistant instructions
-├── build/            # PyInstaller build artifacts
-├── dist/             # Built application output
-│   └── Nota.app/     # Final macOS application bundle
-└── archive/          # Legacy versions
+Notta/
+├── notta.py                 # Python app (2000+ lines, single-file)
+├── Notta.spec               # PyInstaller build configuration
+├── build.sh                 # Python app build script
+├── entitlements.plist       # macOS code signing entitlements
+│
+├── NottaSwiftUI/            # Swift/SwiftUI implementation
+│   ├── Notta/               # Source code
+│   │   ├── NottaApp.swift   # App entry point
+│   │   ├── Models/          # Data models
+│   │   ├── Views/           # SwiftUI views
+│   │   ├── Services/        # Business logic
+│   │   └── Resources/       # Assets, localization
+│   ├── NottaTests/          # Unit tests
+│   └── Scripts/
+│       └── build-release.sh # Release build with notarization
+│
+├── health/                  # Voice health analysis module
+│   ├── __init__.py
+│   ├── acoustic_analyzer.py # Praat-based feature extraction
+│   ├── analyzer.py          # Main analysis orchestrator
+│   ├── analyzer_worker.py   # Background processing
+│   ├── baseline_manager.py  # User baseline tracking
+│   ├── embedding_store.py   # Vector storage for embeddings
+│   ├── interpreter.py       # Health metric interpretation
+│   └── metrics.py           # Metric definitions
+│
+├── tests/                   # Test suite (286 tests)
+│   ├── conftest.py          # Pytest fixtures
+│   ├── test_notta_core.py   # Core functionality tests
+│   ├── test_notta_integration.py
+│   └── test_*.py            # Module-specific tests
+│
+├── docs/                    # Documentation
+│   ├── STYLE_GUIDE.md       # Brand and design specs
+│   └── BRAND-STYLE-GUIDE.md
+│
+├── assets/                  # App icons and images
+├── dist/                    # Built application output
+├── build/                   # Build artifacts
+└── archive/                 # Legacy versions
 ```
 
 ## Core Components
 
-### 1. Application Framework (PyObjC)
+### 1. Application Framework
 
-The app uses PyObjC to create a native macOS Cocoa application. This was chosen over alternatives because:
+#### Python Implementation (PyObjC)
 
-- **Tkinter**: Crashes on macOS due to Tcl/Tk version incompatibility with PyInstaller
-- **rumps**: Menu bar apps have unreliable icon visibility on modern macOS
-- **PyObjC**: Native, reliable, bundles correctly with PyInstaller
+Chosen over alternatives for reliability:
+
+| Framework | Issue                                                      |
+| --------- | ---------------------------------------------------------- |
+| Tkinter   | Crashes on macOS with PyInstaller (Tcl/Tk incompatibility) |
+| rumps     | Menu bar icon visibility unreliable on modern macOS        |
+| PyObjC    | Native, reliable, bundles correctly                        |
 
 Key PyObjC components:
 
 - `NSApplication` - Application lifecycle
 - `NSWindow` - Main floating window
+- `NSStatusBar` - Menu bar status item (chimp mascot)
 - `NSButton`, `NSTextField` - UI controls
-- `NSAlert` - Dialog boxes
-- `NSEvent` - Mouse event monitoring
+- `NSEvent` - Mouse/keyboard event monitoring
 
-### 2. Main Class: NotaAppDelegate
+#### Swift Implementation (SwiftUI)
+
+Modern native implementation using:
+
+- SwiftUI for declarative UI
+- WhisperKit for on-device transcription
+- Apple Translation framework for post-transcription translation
+- Combine for reactive data flow
+- Sparkle for auto-updates
+
+### 2. Main Class: NottaAppDelegate
 
 ```python
-class NotaAppDelegate(NSObject):
-    # Instance variables (must be declared as objc.ivar)
+class NottaAppDelegate(NSObject):
+    # Instance variables (objc.ivar required)
     window = objc.ivar()
     record_button = objc.ivar()
     status_label = objc.ivar()
-    hotkey_label = objc.ivar()
+    status_item = objc.ivar()  # Menu bar
 ```
 
-**Important PyObjC Patterns:**
+**Critical PyObjC Patterns:**
 
-1. **Method naming**: Avoid underscores in method names that will be called from Objective-C. PyObjC interprets underscores as selector argument separators.
+1. **Method naming** - Avoid underscores (parsed as argument separators):
 
    ```python
-   # BAD - PyObjC interprets as "_update:status:" (2 arguments)
+   # BAD - interpreted as "_update:status:" (2 args)
    def _update_status_(self, text): ...
 
-   # GOOD - Single argument selector
+   # GOOD - single argument selector
    def updateStatusText_(self, text): ...
    ```
 
-2. **Main thread UI updates**: All UI modifications must happen on the main thread.
+2. **Main thread UI updates**:
 
    ```python
    self.performSelectorOnMainThread_withObject_waitUntilDone_(
@@ -90,7 +142,7 @@ class NotaAppDelegate(NSObject):
    )
    ```
 
-3. **Selector signatures**: The signature `b'v@:@'` means:
+3. **Selector signatures** (`b'v@:@'`):
    - `v` = void return
    - `@` = self (object)
    - `:` = selector
@@ -115,8 +167,9 @@ class NotaAppDelegate(NSObject):
 **Thread Safety:**
 
 - `self._lock` (threading.Lock) protects `self.is_recording`
-- UI updates use `performSelectorOnMainThread_withObject_waitUntilDone_`
-- pynput listener runs in its own daemon thread
+- UI updates via `performSelectorOnMainThread_withObject_waitUntilDone_`
+- pynput listener runs in daemon thread
+- Health analysis runs in background worker thread
 
 ### 4. Audio Recording Pipeline
 
@@ -153,25 +206,27 @@ User releases hotkey/button
 │  - Detect silence │
 └─────────┬─────────┘
           │
-          ▼
-┌───────────────────┐
-│  process_audio    │
-│  - Whisper transcribe
-│  - Fix grammar    │
-│  - Copy to clipboard
-│  - Auto-paste     │
+          ├──────────────────────────────┐
+          ▼                              ▼
+┌───────────────────┐          ┌───────────────────┐
+│  process_audio    │          │  health_analysis  │
+│  - Whisper transcribe        │  - Extract features│
+│  - Fix grammar    │          │  - Generate embeddings
+│  - Translate (opt)│          │  - Compare baseline│
+│  - Copy clipboard │          │  - Store results  │
+│  - Auto-paste     │          └───────────────────┘
 └───────────────────┘
 ```
 
 ### 5. Transcription Backend
 
-faster-whisper is used for local transcription:
+**Primary: faster-whisper (Python) / WhisperKit (Swift)**
 
 ```python
 self.whisper_model = WhisperModel(
-    model_size,      # tiny/small/medium/large
-    device="cpu",    # CPU inference
-    compute_type="int8"  # Quantized for speed
+    model_size,           # tiny/small/medium/large
+    device="cpu",         # CPU inference
+    compute_type="int8"   # Quantized for speed
 )
 
 segments, _ = self.whisper_model.transcribe(
@@ -183,17 +238,67 @@ segments, _ = self.whisper_model.transcribe(
 )
 ```
 
-Model sizes and trade-offs:
-| Model | Size | Speed | Accuracy |
-|-------|------|-------|----------|
-| tiny | 75MB | Fastest | Basic |
-| small | 500MB | Fast | Good |
-| medium | 1.5GB | Medium | Better |
-| large | 3GB | Slow | Best |
+**Fallback: Apple Speech Recognition**
 
-### 6. Global Hotkey System
+When Whisper model is downloading or unavailable, falls back to system speech recognition.
 
-pynput provides cross-application keyboard monitoring:
+**Model Comparison:**
+
+| Model  | Size  | Speed   | Accuracy | Use Case              |
+| ------ | ----- | ------- | -------- | --------------------- |
+| tiny   | 75MB  | Fastest | Basic    | Quick notes           |
+| small  | 500MB | Fast    | Good     | General use (default) |
+| medium | 1.5GB | Medium  | Better   | Important docs        |
+| large  | 3GB   | Slow    | Best     | Medical/legal         |
+
+### 6. Voice Health Analysis (HEAR Module)
+
+The health module provides voice biomarker analysis:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Health Analysis Pipeline                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Audio Input                                                     │
+│      │                                                           │
+│      ▼                                                           │
+│  ┌──────────────────┐                                           │
+│  │ acoustic_analyzer │  Praat/Parselmouth feature extraction    │
+│  │  - Pitch (F0)     │  - Jitter, shimmer, HNR                  │
+│  │  - Formants       │  - Voice quality metrics                 │
+│  └────────┬─────────┘                                           │
+│           │                                                      │
+│           ▼                                                      │
+│  ┌──────────────────┐                                           │
+│  │ embedding_store  │  TensorFlow embeddings for comparison     │
+│  │  - HEAR model    │  - Vector similarity matching             │
+│  └────────┬─────────┘                                           │
+│           │                                                      │
+│           ▼                                                      │
+│  ┌──────────────────┐                                           │
+│  │ baseline_manager │  Track user's normal voice patterns       │
+│  │  - Rolling avg   │  - Detect deviations                      │
+│  └────────┬─────────┘                                           │
+│           │                                                      │
+│           ▼                                                      │
+│  ┌──────────────────┐                                           │
+│  │   interpreter    │  Convert metrics to health insights       │
+│  │  - Fatigue       │  - Stress, illness detection              │
+│  └──────────────────┘                                           │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Key Metrics:**
+
+- **Jitter**: Pitch variation (voice stability)
+- **Shimmer**: Amplitude variation
+- **HNR**: Harmonics-to-noise ratio (voice clarity)
+- **F0**: Fundamental frequency (pitch)
+- **Formants**: Resonance frequencies (articulation)
+
+### 7. Global Hotkey System
 
 ```python
 from pynput import keyboard
@@ -208,18 +313,22 @@ def on_release(key):
         self.hotkey_pressed = False
         self.stop_recording()
 
-self.listener = keyboard.Listener(
-    on_press=on_press,
-    on_release=on_release
-)
-self.listener.start()  # Runs in background thread
+self.listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+self.listener.start()  # Background thread
 ```
 
-**Critical**: Requires **Input Monitoring** permission in macOS Privacy settings.
+**Supported Hotkeys:**
 
-### 7. Auto-Paste Mechanism
+- `alt_l` (Left Option) - Default
+- `alt_r` (Right Option)
+- `ctrl_l` / `ctrl_r` (Control keys)
+- `caps_lock`
 
-Uses AppleScript via osascript to simulate Cmd+V:
+**Requires:** Input Monitoring permission in System Settings.
+
+### 8. Auto-Paste Mechanism
+
+Uses AppleScript via osascript:
 
 ```python
 subprocess.run([
@@ -228,56 +337,23 @@ subprocess.run([
 ])
 ```
 
-**Critical**: Requires **Accessibility** permission in macOS Privacy settings.
+**Requires:** Accessibility permission in System Settings.
 
-## Build System
+### 9. Translation (v2.0+)
 
-### PyInstaller Configuration (Nota.spec)
+Post-transcription translation using Apple Translation framework (Swift implementation):
 
-Key settings:
-
-```python
-# Hidden imports - modules not detected by static analysis
-hiddenimports=[
-    'pynput',
-    'pynput.keyboard',
-    'pynput.keyboard._darwin',  # macOS-specific
-    'pyaudio',
-    'faster_whisper',
-    'ctranslate2',
-    'objc',
-    'Foundation',
-    'AppKit',
-    'PyObjCTools',
-]
-
-# Info.plist settings
-info_plist={
-    'CFBundleName': 'Nota',
-    'CFBundleIdentifier': 'com.nota.app',
-    'NSMicrophoneUsageDescription': '...',  # Required for mic access
-    'NSAppleEventsUsageDescription': '...',  # Required for automation
-}
-```
-
-**Important**: No `LSUIElement: True` - this makes the app appear in Dock (not menu bar).
-
-### Build Commands
-
-```bash
-# Build with system Python (has PyObjC)
-/usr/bin/python3 -m PyInstaller Nota.spec --noconfirm
-
-# Install to Applications
-cp -R dist/Nota.app /Applications/
-
-# Run directly for testing
-/usr/bin/python3 nota.py
+```swift
+let session = TranslationSession(
+    source: .english,
+    target: selectedLanguage
+)
+let result = try await session.translate(transcribedText)
 ```
 
 ## Configuration System
 
-### File: ~/.nota_config.json
+### File: ~/.notta_config.json
 
 ```json
 {
@@ -289,90 +365,116 @@ cp -R dist/Nota.app /Applications/
 }
 ```
 
-### Loading Order
+### Runtime Files
 
-1. Check if `~/.nota_config.json` exists
-2. If yes, load and parse JSON
-3. If no (or parse error), use defaults
-4. Settings are read at startup; some require restart to take effect
+| File                    | Purpose                                  |
+| ----------------------- | ---------------------------------------- |
+| `~/.notta_config.json`  | User settings                            |
+| `~/.notta_history.txt`  | Simple text history                      |
+| `~/.notta_history.json` | Detailed JSON history with metadata      |
+| `~/.notta.log`          | Application logs (rotates at 5000 lines) |
+| `~/.notta_audio/`       | Audio archive (if enabled)               |
+| `~/.notta_health/`      | Health embeddings and baselines          |
 
-## History System
+## Build System
 
-### Text Format (~/.nota_history.txt)
+### Python Build (PyInstaller)
 
-Simple tab-separated format:
+```bash
+# Build with system Python (has PyObjC)
+/usr/bin/python3 -m PyInstaller Notta.spec --noconfirm
 
+# With code signing
+CODESIGN_IDENTITY="Developer ID Application: ..." ./build.sh
 ```
-2026-01-25 15:10:14	Testing to see if this works.
+
+Key Notta.spec settings:
+
+- Hidden imports for all dependencies
+- Bundle identifier: `com.tyrondolpire.notta`
+- Entitlements for microphone, accessibility, automation
+- No `LSUIElement` (shows in Dock, not menu bar only)
+
+### Swift Build
+
+```bash
+# Development
+xcodebuild -scheme Notta -configuration Debug
+
+# Release with notarization
+./NottaSwiftUI/Scripts/build-release.sh
 ```
 
-### JSON Format (~/.nota_history.json)
+## macOS Permissions
 
-Rich format with metadata:
+Three permissions required (System Settings > Privacy & Security):
 
-```json
-{
-  "id": 1,
-  "timestamp": "2026-01-25T15:10:14.142",
-  "text": "Testing to see if this works.",
-  "word_count": 6,
-  "char_count": 31,
-  "category": null,
-  "tags": [],
-  "audio_file": "/Users/.../.nota_audio/recording_20260125_151014.wav"
-}
-```
+| Permission       | Purpose                       | Check Method                |
+| ---------------- | ----------------------------- | --------------------------- |
+| Microphone       | Audio recording               | Test audio stream for zeros |
+| Input Monitoring | Global hotkey detection       | pynput listener status      |
+| Accessibility    | Auto-paste (Cmd+V simulation) | osascript execution         |
 
 ## Error Handling
 
 ### Audio Validation
 
-Before transcription, audio is validated:
+```python
+if max_amp == 0:
+    # Microphone permission denied (silent input)
+    show_permission_warning()
+elif max_amp < 100:
+    # Audio too quiet
+    show_volume_warning()
+```
 
-- `max_amp == 0`: Likely permission issue (silent input)
-- `max_amp < 100`: Audio too quiet to transcribe
+### Graceful Degradation
 
-### Permission Checks
-
-At startup:
-
-1. Test microphone by reading a short sample
-2. Check if samples are all zeros (permission denied)
-3. Show warning dialog if issues detected
+1. **Whisper not ready** → Fall back to Apple Speech
+2. **Model download fails** → Retry with exponential backoff
+3. **Health analysis fails** → Continue with transcription only
+4. **Auto-paste fails** → Copy to clipboard only
 
 ### Logging
-
-All operations logged to `~/.nota.log`:
 
 ```python
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(log_file),
+        logging.FileHandler('~/.notta.log'),
         logging.StreamHandler(sys.stdout)
     ]
 )
 ```
 
-Log rotation keeps last 5000 lines.
+Log rotation at 5000 lines preserves recent history.
+
+## Security Considerations
+
+- **Local processing only** - No data sent to external servers
+- **No API keys** - Uses local models
+- **User data in home directory** - Standard macOS sandboxing
+- **Optional audio archiving** - User-controlled
+- **Code signing** - Developer ID for Gatekeeper
+- **Notarization** - Apple security scan required
 
 ## Known Limitations
 
-1. **Single language**: Hardcoded to English (`language="en"`)
-2. **CPU only**: No GPU acceleration (device="cpu")
-3. **No real-time transcription**: Processes after recording completes
-4. **macOS only**: PyObjC and pynput.\_darwin are macOS-specific
+1. **Single language default** - English (`language="en"`), translation available
+2. **CPU inference** - No GPU acceleration (Metal support planned)
+3. **Post-recording transcription** - Not real-time streaming
+4. **macOS only** - PyObjC/SwiftUI are platform-specific
 
-## Common Issues When Modifying
+## Common Development Issues
 
 ### PyObjC Method Names
 
 ```python
-# This will FAIL - PyObjC parses underscores as argument separators
+# WRONG - underscores parsed as argument separators
 def _my_method_(self, arg): ...
 
-# This works - camelCase naming
+# RIGHT - camelCase
 def myMethod_(self, arg): ...
 ```
 
@@ -392,9 +494,9 @@ def record_audio(self):
     )
 ```
 
-### PyInstaller Hidden Imports
+### Adding Dependencies
 
-If adding new dependencies, add them to `hiddenimports` in Nota.spec:
+Add to `hiddenimports` in Notta.spec:
 
 ```python
 hiddenimports=[
@@ -403,11 +505,11 @@ hiddenimports=[
 ]
 ```
 
-## Future Improvement Areas
+## Future Roadmap
 
-1. **Settings UI**: Replace "edit config file" with proper settings window
-2. **Multiple languages**: Add language selection
-3. **GPU support**: Metal/CoreML acceleration on Apple Silicon
-4. **Real-time transcription**: Stream audio to model
-5. **Custom vocabulary**: Medical terminology dictionary
-6. **Keyboard shortcuts**: In-app shortcuts for common actions
+- [ ] Real-time streaming transcription
+- [ ] Metal/CoreML GPU acceleration
+- [ ] Custom medical vocabulary
+- [ ] Multi-speaker diarization
+- [ ] Cloud sync (optional, encrypted)
+- [ ] iOS companion app

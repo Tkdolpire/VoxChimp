@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module test_notta_integration</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">test_notta_integration</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:/Users/tyrondolpire/Projects/2026/Notta/tests/test_notta_integration.py">/Users/tyrondolpire/Projects/2026/Notta/tests/test_notta_integration.py</a></td></tr></table>
+    <p><span class="code">Integration&nbsp;tests&nbsp;for&nbsp;notta.py&nbsp;with&nbsp;mocked&nbsp;external&nbsp;dependencies.<br>
+&nbsp;<br>
+Tests&nbsp;components&nbsp;that&nbsp;require&nbsp;mocking:<br>
+-&nbsp;Recording&nbsp;flow&nbsp;(start_recording,&nbsp;stop_recording,&nbsp;record_audio)<br>
+-&nbsp;Audio&nbsp;processing/transcription&nbsp;(process_audio)<br>
+-&nbsp;Hotkey&nbsp;setup&nbsp;(setup_hotkeys)<br>
+-&nbsp;Microphone&nbsp;permission&nbsp;checking&nbsp;(check_microphone_permission)<br>
+-&nbsp;Health&nbsp;analysis&nbsp;integration&nbsp;(runAcousticAnalysisAsync_)</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="json.html">json</a><br>
+<a href="math.html">math</a><br>
+<a href="pytest.html">pytest</a><br>
+</td><td class="multicolumn"><a href="struct.html">struct</a><br>
+<a href="sys.html">sys</a><br>
+<a href="tempfile.html">tempfile</a><br>
+</td><td class="multicolumn"><a href="threading.html">threading</a><br>
+<a href="time.html">time</a><br>
+<a href="wave.html">wave</a><br>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="test_notta_integration.html#MockNottaIntegration">MockNottaIntegration</a>
+</dt><dt class="heading-text"><a href="test_notta_integration.html#TestAudioProcessing">TestAudioProcessing</a>
+</dt><dt class="heading-text"><a href="test_notta_integration.html#TestEndToEndRecording">TestEndToEndRecording</a>
+</dt><dt class="heading-text"><a href="test_notta_integration.html#TestHotkeySetup">TestHotkeySetup</a>
+</dt><dt class="heading-text"><a href="test_notta_integration.html#TestMicrophonePermission">TestMicrophonePermission</a>
+</dt><dt class="heading-text"><a href="test_notta_integration.html#TestRecordAudio">TestRecordAudio</a>
+</dt><dt class="heading-text"><a href="test_notta_integration.html#TestRecordingFlow">TestRecordingFlow</a>
+</dt><dt class="heading-text"><a href="test_notta_integration.html#TestSetupRecording">TestSetupRecording</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="MockNottaIntegration">class <strong>MockNottaIntegration</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#MockNottaIntegration">MockNottaIntegration</a>(temp_home:&nbsp;pathlib.Path)<br>
+&nbsp;<br>
+Mock&nbsp;NottaAppDelegate&nbsp;for&nbsp;integration&nbsp;testing.<br>
+Includes&nbsp;recording&nbsp;and&nbsp;processing&nbsp;logic&nbsp;with&nbsp;mockable&nbsp;dependencies.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="MockNottaIntegration-__init__"><strong>__init__</strong></a>(self, temp_home: pathlib.Path)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-check_microphone_permission"><strong>check_microphone_permission</strong></a>(self, pyaudio_module=None)</dt><dd><span class="code">Test&nbsp;microphone&nbsp;access.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-fix_grammar"><strong>fix_grammar</strong></a>(self, text)</dt><dd><span class="code">Fix&nbsp;basic&nbsp;grammar&nbsp;issues.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-performSelectorOnMainThread_withObject_waitUntilDone_"><strong>performSelectorOnMainThread_withObject_waitUntilDone_</strong></a>(self, selector, obj, wait)</dt><dd><span class="code">Mock&nbsp;main&nbsp;thread&nbsp;dispatch&nbsp;-&nbsp;just&nbsp;call&nbsp;directly.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-process_audio"><strong>process_audio</strong></a>(self, audio_file, subprocess_module=None)</dt><dd><span class="code">Process&nbsp;recorded&nbsp;audio.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-record_audio"><strong>record_audio</strong></a>(self, pyaudio_module=None, temp_file_path=None)</dt><dd><span class="code">Record&nbsp;audio&nbsp;-&nbsp;simplified&nbsp;for&nbsp;testing.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-save_to_history"><strong>save_to_history</strong></a>(self, text, audio_file=None)</dt><dd><span class="code">Save&nbsp;transcription&nbsp;to&nbsp;history.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-set_status"><strong>set_status</strong></a>(self, status)</dt><dd><span class="code">Track&nbsp;status&nbsp;updates.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-setup_hotkeys"><strong>setup_hotkeys</strong></a>(self, keyboard_module=None)</dt><dd><span class="code">Setup&nbsp;global&nbsp;hotkeys.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-setup_recording"><strong>setup_recording</strong></a>(self, whisper_module=None)</dt><dd><span class="code">Setup&nbsp;recording&nbsp;capabilities.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-showAlertWithInfo_"><strong>showAlertWithInfo_</strong></a>(self, info)</dt><dd><span class="code">Track&nbsp;alerts&nbsp;shown.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-start_recording"><strong>start_recording</strong></a>(self)</dt><dd><span class="code">Start&nbsp;recording.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-stop_recording"><strong>stop_recording</strong></a>(self)</dt><dd><span class="code">Stop&nbsp;recording.</span></dd></dl>
+
+<dl><dt><a name="MockNottaIntegration-validate_audio"><strong>validate_audio</strong></a>(self, audio_file)</dt><dd><span class="code">Check&nbsp;if&nbsp;audio&nbsp;file&nbsp;contains&nbsp;actual&nbsp;sound.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestAudioProcessing">class <strong>TestAudioProcessing</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;audio&nbsp;processing&nbsp;and&nbsp;transcription.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestAudioProcessing-test_process_audio_applies_grammar_fix"><strong>test_process_audio_applies_grammar_fix</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;apply&nbsp;grammar&nbsp;fixes&nbsp;when&nbsp;enabled.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_auto_paste"><strong>test_process_audio_auto_paste</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;auto-paste&nbsp;when&nbsp;enabled.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_cleans_up_temp_file"><strong>test_process_audio_cleans_up_temp_file</strong></a>(self, delegate, tmp_path)</dt><dd><span class="code">Should&nbsp;delete&nbsp;temp&nbsp;file&nbsp;after&nbsp;processing.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_copies_to_clipboard"><strong>test_process_audio_copies_to_clipboard</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;copy&nbsp;result&nbsp;to&nbsp;clipboard.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_empty_result"><strong>test_process_audio_empty_result</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;empty&nbsp;transcription&nbsp;result.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_multiple_segments"><strong>test_process_audio_multiple_segments</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;join&nbsp;multiple&nbsp;transcription&nbsp;segments.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_no_auto_paste_when_disabled"><strong>test_process_audio_no_auto_paste_when_disabled</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;not&nbsp;auto-paste&nbsp;when&nbsp;disabled.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_no_model_error"><strong>test_process_audio_no_model_error</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;missing&nbsp;model&nbsp;gracefully.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_saves_to_history"><strong>test_process_audio_saves_to_history</strong></a>(self, delegate, valid_wav_file, temp_home)</dt><dd><span class="code">Should&nbsp;save&nbsp;transcription&nbsp;to&nbsp;history.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_skips_grammar_when_disabled"><strong>test_process_audio_skips_grammar_when_disabled</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;skip&nbsp;grammar&nbsp;fixes&nbsp;when&nbsp;disabled.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_timeout"><strong>test_process_audio_timeout</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;timeout&nbsp;gracefully.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_with_ollama"><strong>test_process_audio_with_ollama</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;transcribe&nbsp;with&nbsp;Ollama&nbsp;backend.</span></dd></dl>
+
+<dl><dt><a name="TestAudioProcessing-test_process_audio_with_whisper"><strong>test_process_audio_with_whisper</strong></a>(self, delegate, valid_wav_file, temp_home)</dt><dd><span class="code">Should&nbsp;transcribe&nbsp;audio&nbsp;with&nbsp;faster-whisper.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestEndToEndRecording">class <strong>TestEndToEndRecording</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">End-to-end&nbsp;tests&nbsp;for&nbsp;the&nbsp;complete&nbsp;recording&nbsp;workflow.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestEndToEndRecording-test_concurrent_recording_attempts"><strong>test_concurrent_recording_attempts</strong></a>(self, delegate)</dt><dd><span class="code">Test&nbsp;that&nbsp;concurrent&nbsp;recording&nbsp;attempts&nbsp;are&nbsp;handled.</span></dd></dl>
+
+<dl><dt><a name="TestEndToEndRecording-test_full_recording_workflow"><strong>test_full_recording_workflow</strong></a>(self, delegate, temp_home)</dt><dd><span class="code">Test&nbsp;complete&nbsp;workflow:&nbsp;setup&nbsp;-&gt;&nbsp;record&nbsp;-&gt;&nbsp;transcribe&nbsp;-&gt;&nbsp;save.</span></dd></dl>
+
+<dl><dt><a name="TestEndToEndRecording-test_hotkey_triggered_workflow"><strong>test_hotkey_triggered_workflow</strong></a>(self, delegate, temp_home)</dt><dd><span class="code">Test&nbsp;workflow&nbsp;triggered&nbsp;by&nbsp;hotkey&nbsp;press/release.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestHotkeySetup">class <strong>TestHotkeySetup</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;hotkey&nbsp;setup&nbsp;with&nbsp;pynput.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestHotkeySetup-test_hotkey_ignores_other_keys"><strong>test_hotkey_ignores_other_keys</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;ignore&nbsp;keys&nbsp;that&nbsp;aren't&nbsp;the&nbsp;configured&nbsp;hotkey.</span></dd></dl>
+
+<dl><dt><a name="TestHotkeySetup-test_hotkey_no_double_trigger"><strong>test_hotkey_no_double_trigger</strong></a>(self, delegate)</dt><dd><span class="code">Holding&nbsp;hotkey&nbsp;should&nbsp;not&nbsp;trigger&nbsp;multiple&nbsp;times.</span></dd></dl>
+
+<dl><dt><a name="TestHotkeySetup-test_hotkey_press_starts_recording"><strong>test_hotkey_press_starts_recording</strong></a>(self, delegate)</dt><dd><span class="code">Pressing&nbsp;hotkey&nbsp;should&nbsp;start&nbsp;recording.</span></dd></dl>
+
+<dl><dt><a name="TestHotkeySetup-test_hotkey_release_stops_recording"><strong>test_hotkey_release_stops_recording</strong></a>(self, delegate)</dt><dd><span class="code">Releasing&nbsp;hotkey&nbsp;should&nbsp;stop&nbsp;recording.</span></dd></dl>
+
+<dl><dt><a name="TestHotkeySetup-test_setup_hotkeys_creates_listener"><strong>test_setup_hotkeys_creates_listener</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;create&nbsp;keyboard&nbsp;listener.</span></dd></dl>
+
+<dl><dt><a name="TestHotkeySetup-test_setup_hotkeys_import_error"><strong>test_setup_hotkeys_import_error</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;on&nbsp;import&nbsp;error.</span></dd></dl>
+
+<dl><dt><a name="TestHotkeySetup-test_setup_hotkeys_uses_configured_key"><strong>test_setup_hotkeys_uses_configured_key</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;use&nbsp;configured&nbsp;hotkey.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestMicrophonePermission">class <strong>TestMicrophonePermission</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;microphone&nbsp;permission&nbsp;checking.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestMicrophonePermission-test_mic_permission_denied_zeros"><strong>test_mic_permission_denied_zeros</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;when&nbsp;audio&nbsp;is&nbsp;all&nbsp;zeros.</span></dd></dl>
+
+<dl><dt><a name="TestMicrophonePermission-test_mic_permission_granted"><strong>test_mic_permission_granted</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;True&nbsp;when&nbsp;microphone&nbsp;works.</span></dd></dl>
+
+<dl><dt><a name="TestMicrophonePermission-test_mic_permission_insufficient_data"><strong>test_mic_permission_insufficient_data</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;when&nbsp;data&nbsp;is&nbsp;too&nbsp;short.</span></dd></dl>
+
+<dl><dt><a name="TestMicrophonePermission-test_mic_permission_open_fails"><strong>test_mic_permission_open_fails</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;when&nbsp;stream&nbsp;open&nbsp;fails.</span></dd></dl>
+
+<dl><dt><a name="TestMicrophonePermission-test_mic_permission_oserror"><strong>test_mic_permission_oserror</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;on&nbsp;OSError.</span></dd></dl>
+
+<dl><dt><a name="TestMicrophonePermission-test_mic_permission_read_fails"><strong>test_mic_permission_read_fails</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;when&nbsp;stream&nbsp;read&nbsp;fails.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestRecordAudio">class <strong>TestRecordAudio</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;the&nbsp;audio&nbsp;recording&nbsp;function.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestRecordAudio-test_record_audio_cleanup_on_error"><strong>test_record_audio_cleanup_on_error</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;cleanup&nbsp;resources&nbsp;on&nbsp;error.</span></dd></dl>
+
+<dl><dt><a name="TestRecordAudio-test_record_audio_creates_wav_file"><strong>test_record_audio_creates_wav_file</strong></a>(self, delegate, tmp_path)</dt><dd><span class="code">Should&nbsp;create&nbsp;a&nbsp;valid&nbsp;WAV&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestRecordAudio-test_record_audio_handles_read_error"><strong>test_record_audio_handles_read_error</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;handle&nbsp;read&nbsp;errors&nbsp;gracefully.</span></dd></dl>
+
+<dl><dt><a name="TestRecordAudio-test_record_audio_returns_none_when_no_frames"><strong>test_record_audio_returns_none_when_no_frames</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;None&nbsp;when&nbsp;no&nbsp;frames&nbsp;captured.</span></dd></dl>
+
+<dl><dt><a name="TestRecordAudio-test_record_audio_stops_when_flag_cleared"><strong>test_record_audio_stops_when_flag_cleared</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;stop&nbsp;recording&nbsp;when&nbsp;is_recording&nbsp;is&nbsp;cleared.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestRecordingFlow">class <strong>TestRecordingFlow</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;the&nbsp;recording&nbsp;start/stop&nbsp;flow.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestRecordingFlow-test_recording_thread_safety"><strong>test_recording_thread_safety</strong></a>(self, delegate)</dt><dd><span class="code">Recording&nbsp;state&nbsp;should&nbsp;be&nbsp;thread-safe.</span></dd></dl>
+
+<dl><dt><a name="TestRecordingFlow-test_start_recording_idempotent"><strong>test_start_recording_idempotent</strong></a>(self, delegate)</dt><dd><span class="code">Multiple&nbsp;start&nbsp;calls&nbsp;should&nbsp;not&nbsp;stack.</span></dd></dl>
+
+<dl><dt><a name="TestRecordingFlow-test_start_recording_sets_flag"><strong>test_start_recording_sets_flag</strong></a>(self, delegate)</dt><dd><span class="code">Starting&nbsp;recording&nbsp;should&nbsp;set&nbsp;is_recording&nbsp;flag.</span></dd></dl>
+
+<dl><dt><a name="TestRecordingFlow-test_start_recording_sets_status"><strong>test_start_recording_sets_status</strong></a>(self, delegate)</dt><dd><span class="code">Starting&nbsp;recording&nbsp;should&nbsp;update&nbsp;status.</span></dd></dl>
+
+<dl><dt><a name="TestRecordingFlow-test_stop_recording_clears_flag"><strong>test_stop_recording_clears_flag</strong></a>(self, delegate)</dt><dd><span class="code">Stopping&nbsp;recording&nbsp;should&nbsp;clear&nbsp;is_recording&nbsp;flag.</span></dd></dl>
+
+<dl><dt><a name="TestRecordingFlow-test_stop_recording_sets_processing_status"><strong>test_stop_recording_sets_processing_status</strong></a>(self, delegate)</dt><dd><span class="code">Stopping&nbsp;recording&nbsp;should&nbsp;set&nbsp;processing&nbsp;status.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestSetupRecording">class <strong>TestSetupRecording</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;recording&nbsp;setup&nbsp;with&nbsp;Whisper&nbsp;model.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestSetupRecording-test_setup_creates_audio_queue"><strong>test_setup_creates_audio_queue</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;create&nbsp;audio&nbsp;queue.</span></dd></dl>
+
+<dl><dt><a name="TestSetupRecording-test_setup_fallback_to_ollama_on_import_error"><strong>test_setup_fallback_to_ollama_on_import_error</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;fallback&nbsp;to&nbsp;Ollama&nbsp;when&nbsp;faster-whisper&nbsp;unavailable.</span></dd></dl>
+
+<dl><dt><a name="TestSetupRecording-test_setup_fallback_to_ollama_on_load_error"><strong>test_setup_fallback_to_ollama_on_load_error</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;fallback&nbsp;to&nbsp;Ollama&nbsp;when&nbsp;model&nbsp;loading&nbsp;fails.</span></dd></dl>
+
+<dl><dt><a name="TestSetupRecording-test_setup_with_different_model_size"><strong>test_setup_with_different_model_size</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;use&nbsp;configured&nbsp;model&nbsp;size.</span></dd></dl>
+
+<dl><dt><a name="TestSetupRecording-test_setup_with_faster_whisper"><strong>test_setup_with_faster_whisper</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;setup&nbsp;faster-whisper&nbsp;model.</span></dd></dl>
+
+<dl><dt><a name="TestSetupRecording-test_setup_with_ollama_backend"><strong>test_setup_with_ollama_backend</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;use&nbsp;Ollama&nbsp;when&nbsp;configured.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-audio_archive_dir"><strong>audio_archive_dir</strong></a>(temp_home)</dt><dd><span class="code">Create&nbsp;audio&nbsp;archive&nbsp;directory.</span></dd></dl>
+ <dl><dt><a name="-create_wav_with_tone"><strong>create_wav_with_tone</strong></a>(path: pathlib.Path, duration: float, frequency: float, amplitude: float)</dt><dd><span class="code">Helper&nbsp;to&nbsp;create&nbsp;a&nbsp;WAV&nbsp;file&nbsp;with&nbsp;a&nbsp;sine&nbsp;wave&nbsp;tone.</span></dd></dl>
+ <dl><dt><a name="-delegate"><strong>delegate</strong></a>(temp_home)</dt><dd><span class="code">Create&nbsp;a&nbsp;mock&nbsp;delegate&nbsp;for&nbsp;integration&nbsp;testing.</span></dd></dl>
+ <dl><dt><a name="-silent_wav_file"><strong>silent_wav_file</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;a&nbsp;silent&nbsp;WAV&nbsp;file.</span></dd></dl>
+ <dl><dt><a name="-temp_home"><strong>temp_home</strong></a>(tmp_path, monkeypatch)</dt><dd><span class="code">Create&nbsp;a&nbsp;temporary&nbsp;home&nbsp;directory.</span></dd></dl>
+ <dl><dt><a name="-valid_wav_file"><strong>valid_wav_file</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;a&nbsp;valid&nbsp;WAV&nbsp;file&nbsp;with&nbsp;audio&nbsp;content.</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>call</strong> = call</td></tr></table>
+</body></html>

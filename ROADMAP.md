@@ -326,6 +326,139 @@ class AppleHealthConnector:
 
 ---
 
+## Phase 5: iOS/iPad Mobile App (Server Architecture)
+
+### Overview
+
+Extend Nota to iOS and iPad by using a client-server architecture. The mobile app acts as a thin client that records audio and sends it to a self-hosted server running the existing Python stack.
+
+### Why Server Architecture?
+
+The current macOS tech stack cannot run on iOS:
+
+| Component  | macOS (current)     | iOS Blocker              |
+| ---------- | ------------------- | ------------------------ |
+| Python     | Native              | Not allowed on App Store |
+| PyObjC     | macOS Cocoa         | iOS uses UIKit/SwiftUI   |
+| pynput     | System-wide hotkeys | iOS forbids this         |
+| Auto-paste | Accessibility APIs  | No cross-app automation  |
+
+### Architecture
+
+```
+┌─────────────────────┐         ┌─────────────────────────────┐
+│   iOS/iPad App      │         │      Nota Server            │
+│   (Swift/SwiftUI)   │         │   (existing Python stack)   │
+│                     │  HTTPS  │                             │
+│  • Record audio     │ ──────► │  • faster-whisper           │
+│  • Send to API      │         │  • HEAR health analysis     │
+│  • Display results  │ ◄────── │  • Transcript analysis      │
+│  • View health data │         │  • Return JSON response     │
+└─────────────────────┘         └─────────────────────────────┘
+```
+
+### Server API Endpoints
+
+```python
+# Flask/FastAPI backend
+
+POST /api/transcribe
+  - Input: audio file (WAV/M4A)
+  - Output: { "text": "transcribed text", "duration": 3.2 }
+
+POST /api/analyze
+  - Input: audio file
+  - Output: { "transcription": "...", "health_embeddings": [...], "symptoms": [...] }
+
+GET /api/health/summary
+  - Input: date range
+  - Output: { "weekly_summary": {...}, "trends": {...} }
+
+GET /api/history
+  - Input: pagination params
+  - Output: { "transcriptions": [...] }
+```
+
+### iOS App Features
+
+- **SwiftUI interface** with large record button
+- **AVFoundation** for audio capture
+- **URLSession** for API communication
+- **Copy to clipboard** for manual paste
+- **Health dashboard** view synced from server
+- **Offline queue** for recordings when no connection
+
+### Implementation Steps
+
+#### 5.1 Create API Server
+
+```python
+# notta_server.py
+from fastapi import FastAPI, UploadFile
+from notta import transcribe_audio
+from health.audio_analyzer import HealthAudioAnalyzer
+
+app = FastAPI()
+analyzer = HealthAudioAnalyzer()
+
+@app.post("/api/transcribe")
+async def transcribe(audio: UploadFile):
+    audio_data = await audio.read()
+    result = transcribe_audio(audio_data)
+    return {"text": result["text"], "duration": result["duration"]}
+
+@app.post("/api/analyze")
+async def analyze(audio: UploadFile):
+    audio_data = await audio.read()
+    transcription = transcribe_audio(audio_data)
+    health_data = analyzer.process_audio(audio_data)
+    return {
+        "transcription": transcription["text"],
+        "health_embeddings": health_data["embeddings"].tolist(),
+        "timestamp": health_data["timestamp"]
+    }
+```
+
+#### 5.2 Build iOS App
+
+- Xcode project with SwiftUI
+- Simple recording interface
+- Server configuration (URL, auth token)
+- Background upload support
+
+#### 5.3 Authentication & Security
+
+- API key or JWT authentication
+- HTTPS only
+- Optional: self-signed certs for local network
+
+### Trade-offs
+
+| Pros                                | Cons                         |
+| ----------------------------------- | ---------------------------- |
+| Reuse existing Python codebase      | Requires internet connection |
+| Simple iOS app (App Store friendly) | Server hosting/maintenance   |
+| Easy model updates server-side      | Latency (1-3 sec round trip) |
+| Works on any iOS device             | Privacy: audio leaves device |
+| Centralized health data             | Infrastructure costs         |
+
+### Deployment Options
+
+1. **Self-hosted** (Raspberry Pi, home server, NAS)
+2. **VPS** (DigitalOcean, Linode, Hetzner)
+3. **Cloud** (AWS, GCP with auto-scaling)
+
+### Dependencies (Server)
+
+```
+fastapi
+uvicorn
+python-multipart
+# Plus existing Nota dependencies
+```
+
+---
+
 ## Implementation Priority
 
 | Phase | Feature                    | Effort | Impact    | Priority |
@@ -339,6 +472,9 @@ class AppleHealthConnector:
 | 3.1   | Health dashboard UI        | High   | High      | P2       |
 | 4.1   | Apple Health read          | High   | Very High | P3       |
 | 4.2   | Correlation analysis       | High   | Very High | P3       |
+| 5.1   | API server                 | Medium | High      | P4       |
+| 5.2   | iOS app                    | Medium | High      | P4       |
+| 5.3   | Authentication             | Low    | Medium    | P4       |
 
 ---
 

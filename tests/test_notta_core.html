@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module test_notta_core</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">test_notta_core</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:/Users/tyrondolpire/Projects/2026/Notta/tests/test_notta_core.py">/Users/tyrondolpire/Projects/2026/Notta/tests/test_notta_core.py</a></td></tr></table>
+    <p><span class="code">Unit&nbsp;tests&nbsp;for&nbsp;core&nbsp;functions&nbsp;in&nbsp;notta.py<br>
+&nbsp;<br>
+Tests&nbsp;pure&nbsp;functions&nbsp;that&nbsp;can&nbsp;be&nbsp;tested&nbsp;without&nbsp;UI&nbsp;components:<br>
+-&nbsp;fix_grammar:&nbsp;Text&nbsp;processing&nbsp;with&nbsp;regex<br>
+-&nbsp;validate_audio:&nbsp;WAV&nbsp;file&nbsp;validation<br>
+-&nbsp;load_config&nbsp;/&nbsp;save_config:&nbsp;Configuration&nbsp;management<br>
+-&nbsp;save_to_history:&nbsp;History&nbsp;file&nbsp;management<br>
+-&nbsp;rotate_log_if_needed:&nbsp;Log&nbsp;rotation</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="json.html">json</a><br>
+<a href="math.html">math</a><br>
+</td><td class="multicolumn"><a href="pytest.html">pytest</a><br>
+<a href="shutil.html">shutil</a><br>
+</td><td class="multicolumn"><a href="struct.html">struct</a><br>
+<a href="sys.html">sys</a><br>
+</td><td class="multicolumn"><a href="tempfile.html">tempfile</a><br>
+<a href="wave.html">wave</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="test_notta_core.html#MockNottaDelegate">MockNottaDelegate</a>
+</dt><dt class="heading-text"><a href="test_notta_core.html#TestConfiguration">TestConfiguration</a>
+</dt><dt class="heading-text"><a href="test_notta_core.html#TestEdgeCases">TestEdgeCases</a>
+</dt><dt class="heading-text"><a href="test_notta_core.html#TestFixGrammar">TestFixGrammar</a>
+</dt><dt class="heading-text"><a href="test_notta_core.html#TestLogRotation">TestLogRotation</a>
+</dt><dt class="heading-text"><a href="test_notta_core.html#TestSaveToHistory">TestSaveToHistory</a>
+</dt><dt class="heading-text"><a href="test_notta_core.html#TestValidateAudio">TestValidateAudio</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="MockNottaDelegate">class <strong>MockNottaDelegate</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#MockNottaDelegate">MockNottaDelegate</a>(temp_home:&nbsp;pathlib.Path)<br>
+&nbsp;<br>
+A&nbsp;mock&nbsp;version&nbsp;of&nbsp;NottaAppDelegate&nbsp;that&nbsp;can&nbsp;be&nbsp;tested&nbsp;without&nbsp;PyObjC.<br>
+Contains&nbsp;only&nbsp;the&nbsp;pure&nbsp;logic&nbsp;methods.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="MockNottaDelegate-__init__"><strong>__init__</strong></a>(self, temp_home: pathlib.Path)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="MockNottaDelegate-fix_grammar"><strong>fix_grammar</strong></a>(self, text)</dt><dd><span class="code">Fix&nbsp;basic&nbsp;grammar&nbsp;issues.</span></dd></dl>
+
+<dl><dt><a name="MockNottaDelegate-load_config"><strong>load_config</strong></a>(self)</dt><dd><span class="code">Load&nbsp;configuration.</span></dd></dl>
+
+<dl><dt><a name="MockNottaDelegate-rotate_log_if_needed"><strong>rotate_log_if_needed</strong></a>(self, max_lines=5000)</dt><dd><span class="code">Rotate&nbsp;log&nbsp;file&nbsp;if&nbsp;it&nbsp;exceeds&nbsp;max_lines.</span></dd></dl>
+
+<dl><dt><a name="MockNottaDelegate-save_config"><strong>save_config</strong></a>(self)</dt><dd><span class="code">Save&nbsp;configuration&nbsp;to&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="MockNottaDelegate-save_to_history"><strong>save_to_history</strong></a>(self, text, audio_file=None)</dt><dd><span class="code">Save&nbsp;transcription&nbsp;to&nbsp;history&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="MockNottaDelegate-validate_audio"><strong>validate_audio</strong></a>(self, audio_file)</dt><dd><span class="code">Check&nbsp;if&nbsp;audio&nbsp;file&nbsp;contains&nbsp;actual&nbsp;sound.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestConfiguration">class <strong>TestConfiguration</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;configuration&nbsp;loading&nbsp;and&nbsp;saving.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestConfiguration-test_config_with_extra_fields"><strong>test_config_with_extra_fields</strong></a>(self, delegate, config_file)</dt><dd><span class="code">Should&nbsp;preserve&nbsp;extra&nbsp;fields&nbsp;in&nbsp;config.</span></dd></dl>
+
+<dl><dt><a name="TestConfiguration-test_load_default_config_when_no_file"><strong>test_load_default_config_when_no_file</strong></a>(self, delegate, config_file)</dt><dd><span class="code">Should&nbsp;use&nbsp;default&nbsp;config&nbsp;when&nbsp;file&nbsp;doesn't&nbsp;exist.</span></dd></dl>
+
+<dl><dt><a name="TestConfiguration-test_load_existing_config"><strong>test_load_existing_config</strong></a>(self, delegate, config_file, sample_config)</dt><dd><span class="code">Should&nbsp;load&nbsp;config&nbsp;from&nbsp;existing&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestConfiguration-test_load_invalid_json_uses_defaults"><strong>test_load_invalid_json_uses_defaults</strong></a>(self, delegate, config_file)</dt><dd><span class="code">Should&nbsp;use&nbsp;defaults&nbsp;when&nbsp;config&nbsp;file&nbsp;has&nbsp;invalid&nbsp;JSON.</span></dd></dl>
+
+<dl><dt><a name="TestConfiguration-test_roundtrip_config"><strong>test_roundtrip_config</strong></a>(self, delegate, config_file)</dt><dd><span class="code">Config&nbsp;should&nbsp;survive&nbsp;save/load&nbsp;cycle.</span></dd></dl>
+
+<dl><dt><a name="TestConfiguration-test_save_config_creates_file"><strong>test_save_config_creates_file</strong></a>(self, delegate, config_file)</dt><dd><span class="code">Should&nbsp;create&nbsp;config&nbsp;file&nbsp;when&nbsp;saving.</span></dd></dl>
+
+<dl><dt><a name="TestConfiguration-test_save_config_overwrites_existing"><strong>test_save_config_overwrites_existing</strong></a>(self, delegate, config_file)</dt><dd><span class="code">Should&nbsp;overwrite&nbsp;existing&nbsp;config&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestConfiguration-test_save_config_pretty_prints"><strong>test_save_config_pretty_prints</strong></a>(self, delegate, config_file)</dt><dd><span class="code">Should&nbsp;save&nbsp;config&nbsp;with&nbsp;indentation.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestEdgeCases">class <strong>TestEdgeCases</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Test&nbsp;edge&nbsp;cases&nbsp;and&nbsp;error&nbsp;handling.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestEdgeCases-test_config_with_unicode_values"><strong>test_config_with_unicode_values</strong></a>(self, delegate, config_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;unicode&nbsp;in&nbsp;config&nbsp;values.</span></dd></dl>
+
+<dl><dt><a name="TestEdgeCases-test_fix_grammar_with_emoji"><strong>test_fix_grammar_with_emoji</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;handle&nbsp;emoji.</span></dd></dl>
+
+<dl><dt><a name="TestEdgeCases-test_fix_grammar_with_numbers"><strong>test_fix_grammar_with_numbers</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;handle&nbsp;text&nbsp;starting&nbsp;with&nbsp;numbers.</span></dd></dl>
+
+<dl><dt><a name="TestEdgeCases-test_fix_grammar_with_unicode"><strong>test_fix_grammar_with_unicode</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;handle&nbsp;unicode&nbsp;characters.</span></dd></dl>
+
+<dl><dt><a name="TestEdgeCases-test_history_with_newlines"><strong>test_history_with_newlines</strong></a>(self, delegate, history_json_file, history_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;newlines&nbsp;in&nbsp;transcription.</span></dd></dl>
+
+<dl><dt><a name="TestEdgeCases-test_history_with_special_characters"><strong>test_history_with_special_characters</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;special&nbsp;characters&nbsp;in&nbsp;transcription.</span></dd></dl>
+
+<dl><dt><a name="TestEdgeCases-test_history_with_unicode"><strong>test_history_with_unicode</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;unicode&nbsp;in&nbsp;transcription.</span></dd></dl>
+
+<dl><dt><a name="TestEdgeCases-test_very_long_transcription"><strong>test_very_long_transcription</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;very&nbsp;long&nbsp;transcriptions.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestFixGrammar">class <strong>TestFixGrammar</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;the&nbsp;fix_grammar&nbsp;function.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestFixGrammar-test_add_period_when_missing"><strong>test_add_period_when_missing</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;add&nbsp;period&nbsp;if&nbsp;no&nbsp;ending&nbsp;punctuation.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_already_capitalized"><strong>test_already_capitalized</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;not&nbsp;double-capitalize.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_capitalize_first_letter"><strong>test_capitalize_first_letter</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;capitalize&nbsp;the&nbsp;first&nbsp;letter&nbsp;of&nbsp;text.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_case_insensitive_replacements"><strong>test_case_insensitive_replacements</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;replace&nbsp;regardless&nbsp;of&nbsp;case.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_empty_string"><strong>test_empty_string</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;handle&nbsp;empty&nbsp;string.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_fix_cant_contraction"><strong>test_fix_cant_contraction</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;replace&nbsp;'cant'&nbsp;with&nbsp;'can't'.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_fix_dont_contraction"><strong>test_fix_dont_contraction</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;replace&nbsp;'dont'&nbsp;with&nbsp;'don't'.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_fix_im_contraction"><strong>test_fix_im_contraction</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;replace&nbsp;'im'&nbsp;with&nbsp;'I'm'.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_fix_lowercase_i"><strong>test_fix_lowercase_i</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;replace&nbsp;standalone&nbsp;'i'&nbsp;with&nbsp;'I'.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_medical_terminology"><strong>test_medical_terminology</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;handle&nbsp;medical&nbsp;text&nbsp;appropriately.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_multiple_contractions"><strong>test_multiple_contractions</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;fix&nbsp;multiple&nbsp;contractions&nbsp;in&nbsp;one&nbsp;sentence.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_none_input"><strong>test_none_input</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;handle&nbsp;None&nbsp;input.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_preserve_exclamation"><strong>test_preserve_exclamation</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;not&nbsp;add&nbsp;period&nbsp;if&nbsp;exclamation&nbsp;exists.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_preserve_existing_period"><strong>test_preserve_existing_period</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;not&nbsp;add&nbsp;period&nbsp;if&nbsp;one&nbsp;already&nbsp;exists.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_preserve_question_mark"><strong>test_preserve_question_mark</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;not&nbsp;add&nbsp;period&nbsp;if&nbsp;question&nbsp;mark&nbsp;exists.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_preserves_existing_punctuation_mid_sentence"><strong>test_preserves_existing_punctuation_mid_sentence</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;preserve&nbsp;commas&nbsp;and&nbsp;other&nbsp;mid-sentence&nbsp;punctuation.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_single_character"><strong>test_single_character</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;handle&nbsp;single&nbsp;character.</span></dd></dl>
+
+<dl><dt><a name="TestFixGrammar-test_word_boundaries"><strong>test_word_boundaries</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;not&nbsp;replace&nbsp;'i'&nbsp;within&nbsp;words.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestLogRotation">class <strong>TestLogRotation</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;log&nbsp;rotation&nbsp;functionality.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestLogRotation-test_default_max_lines"><strong>test_default_max_lines</strong></a>(self, delegate, log_file)</dt><dd><span class="code">Default&nbsp;max_lines&nbsp;should&nbsp;be&nbsp;5000.</span></dd></dl>
+
+<dl><dt><a name="TestLogRotation-test_exact_limit_no_rotation"><strong>test_exact_limit_no_rotation</strong></a>(self, delegate, log_file)</dt><dd><span class="code">Should&nbsp;not&nbsp;rotate&nbsp;when&nbsp;exactly&nbsp;at&nbsp;limit.</span></dd></dl>
+
+<dl><dt><a name="TestLogRotation-test_handles_empty_log"><strong>test_handles_empty_log</strong></a>(self, delegate, log_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;empty&nbsp;log&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestLogRotation-test_handles_nonexistent_log"><strong>test_handles_nonexistent_log</strong></a>(self, delegate, log_file)</dt><dd><span class="code">Should&nbsp;handle&nbsp;gracefully&nbsp;when&nbsp;log&nbsp;doesn't&nbsp;exist.</span></dd></dl>
+
+<dl><dt><a name="TestLogRotation-test_keeps_most_recent_lines"><strong>test_keeps_most_recent_lines</strong></a>(self, delegate, log_file)</dt><dd><span class="code">Should&nbsp;keep&nbsp;the&nbsp;most&nbsp;recent&nbsp;lines&nbsp;after&nbsp;rotation.</span></dd></dl>
+
+<dl><dt><a name="TestLogRotation-test_no_rotation_when_under_limit"><strong>test_no_rotation_when_under_limit</strong></a>(self, delegate, log_file)</dt><dd><span class="code">Should&nbsp;not&nbsp;rotate&nbsp;when&nbsp;log&nbsp;is&nbsp;under&nbsp;limit.</span></dd></dl>
+
+<dl><dt><a name="TestLogRotation-test_one_over_limit_rotates"><strong>test_one_over_limit_rotates</strong></a>(self, delegate, log_file)</dt><dd><span class="code">Should&nbsp;rotate&nbsp;when&nbsp;one&nbsp;line&nbsp;over&nbsp;limit.</span></dd></dl>
+
+<dl><dt><a name="TestLogRotation-test_rotation_when_over_limit"><strong>test_rotation_when_over_limit</strong></a>(self, delegate, log_file)</dt><dd><span class="code">Should&nbsp;rotate&nbsp;when&nbsp;log&nbsp;exceeds&nbsp;limit.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestSaveToHistory">class <strong>TestSaveToHistory</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;history&nbsp;saving&nbsp;functionality.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestSaveToHistory-test_archives_audio_when_enabled"><strong>test_archives_audio_when_enabled</strong></a>(self, delegate, valid_wav_file, audio_archive_dir)</dt><dd><span class="code">Should&nbsp;copy&nbsp;audio&nbsp;file&nbsp;when&nbsp;save_audio&nbsp;is&nbsp;enabled.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_char_count_accuracy"><strong>test_char_count_accuracy</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Character&nbsp;count&nbsp;should&nbsp;be&nbsp;accurate.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_handles_corrupted_json_history"><strong>test_handles_corrupted_json_history</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Should&nbsp;start&nbsp;fresh&nbsp;if&nbsp;JSON&nbsp;history&nbsp;is&nbsp;corrupted.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_handles_nonexistent_audio_file"><strong>test_handles_nonexistent_audio_file</strong></a>(self, delegate, audio_archive_dir)</dt><dd><span class="code">Should&nbsp;handle&nbsp;gracefully&nbsp;when&nbsp;audio&nbsp;file&nbsp;doesn't&nbsp;exist.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_json_history_entry_fields"><strong>test_json_history_entry_fields</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">JSON&nbsp;history&nbsp;entries&nbsp;should&nbsp;have&nbsp;all&nbsp;required&nbsp;fields.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_json_history_increments_id"><strong>test_json_history_increments_id</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Each&nbsp;entry&nbsp;should&nbsp;have&nbsp;incrementing&nbsp;ID.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_no_audio_archive_when_disabled"><strong>test_no_audio_archive_when_disabled</strong></a>(self, delegate, valid_wav_file, audio_archive_dir)</dt><dd><span class="code">Should&nbsp;not&nbsp;copy&nbsp;audio&nbsp;when&nbsp;save_audio&nbsp;is&nbsp;disabled.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_preserves_existing_json_history"><strong>test_preserves_existing_json_history</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Should&nbsp;append&nbsp;to&nbsp;existing&nbsp;JSON&nbsp;history.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_saves_to_json_history"><strong>test_saves_to_json_history</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Should&nbsp;save&nbsp;to&nbsp;JSON&nbsp;history&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_saves_to_text_history"><strong>test_saves_to_text_history</strong></a>(self, delegate, history_file)</dt><dd><span class="code">Should&nbsp;append&nbsp;to&nbsp;text&nbsp;history&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_text_history_format"><strong>test_text_history_format</strong></a>(self, delegate, history_file)</dt><dd><span class="code">Text&nbsp;history&nbsp;should&nbsp;have&nbsp;timestamp&nbsp;and&nbsp;tab&nbsp;separator.</span></dd></dl>
+
+<dl><dt><a name="TestSaveToHistory-test_word_count_accuracy"><strong>test_word_count_accuracy</strong></a>(self, delegate, history_json_file)</dt><dd><span class="code">Word&nbsp;count&nbsp;should&nbsp;be&nbsp;accurate.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TestValidateAudio">class <strong>TestValidateAudio</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Tests&nbsp;for&nbsp;the&nbsp;validate_audio&nbsp;function.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="TestValidateAudio-test_empty_wav_file"><strong>test_empty_wav_file</strong></a>(self, delegate, empty_wav_file)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;for&nbsp;empty&nbsp;WAV&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestValidateAudio-test_invalid_wav_file"><strong>test_invalid_wav_file</strong></a>(self, delegate, tmp_path)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;for&nbsp;invalid&nbsp;WAV&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestValidateAudio-test_nonexistent_file"><strong>test_nonexistent_file</strong></a>(self, delegate)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;for&nbsp;non-existent&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="TestValidateAudio-test_quiet_audio_file"><strong>test_quiet_audio_file</strong></a>(self, delegate, quiet_wav_file)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;for&nbsp;audio&nbsp;below&nbsp;threshold.</span></dd></dl>
+
+<dl><dt><a name="TestValidateAudio-test_returns_amplitude_metrics"><strong>test_returns_amplitude_metrics</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;return&nbsp;meaningful&nbsp;amplitude&nbsp;metrics.</span></dd></dl>
+
+<dl><dt><a name="TestValidateAudio-test_silent_audio_file"><strong>test_silent_audio_file</strong></a>(self, delegate, silent_wav_file)</dt><dd><span class="code">Should&nbsp;return&nbsp;False&nbsp;for&nbsp;silent&nbsp;file&nbsp;(all&nbsp;zeros).</span></dd></dl>
+
+<dl><dt><a name="TestValidateAudio-test_threshold_boundary"><strong>test_threshold_boundary</strong></a>(self, delegate, tmp_path)</dt><dd><span class="code">Test&nbsp;audio&nbsp;right&nbsp;at&nbsp;the&nbsp;threshold&nbsp;boundary.</span></dd></dl>
+
+<dl><dt><a name="TestValidateAudio-test_valid_audio_file"><strong>test_valid_audio_file</strong></a>(self, delegate, valid_wav_file)</dt><dd><span class="code">Should&nbsp;return&nbsp;True&nbsp;for&nbsp;file&nbsp;with&nbsp;actual&nbsp;audio.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-audio_archive_dir"><strong>audio_archive_dir</strong></a>(temp_home)</dt><dd><span class="code">Path&nbsp;to&nbsp;audio&nbsp;archive&nbsp;directory.</span></dd></dl>
+ <dl><dt><a name="-config_file"><strong>config_file</strong></a>(temp_home)</dt><dd><span class="code">Path&nbsp;to&nbsp;the&nbsp;config&nbsp;file.</span></dd></dl>
+ <dl><dt><a name="-create_wav_with_tone"><strong>create_wav_with_tone</strong></a>(path: pathlib.Path, duration: float, frequency: float, amplitude: float)</dt><dd><span class="code">Helper&nbsp;to&nbsp;create&nbsp;a&nbsp;WAV&nbsp;file&nbsp;with&nbsp;a&nbsp;sine&nbsp;wave&nbsp;tone.</span></dd></dl>
+ <dl><dt><a name="-delegate"><strong>delegate</strong></a>(temp_home)</dt><dd><span class="code">Create&nbsp;a&nbsp;mock&nbsp;delegate&nbsp;for&nbsp;testing.</span></dd></dl>
+ <dl><dt><a name="-empty_wav_file"><strong>empty_wav_file</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;an&nbsp;empty&nbsp;WAV&nbsp;file&nbsp;(0&nbsp;frames).</span></dd></dl>
+ <dl><dt><a name="-history_file"><strong>history_file</strong></a>(temp_home)</dt><dd><span class="code">Path&nbsp;to&nbsp;the&nbsp;text&nbsp;history&nbsp;file.</span></dd></dl>
+ <dl><dt><a name="-history_json_file"><strong>history_json_file</strong></a>(temp_home)</dt><dd><span class="code">Path&nbsp;to&nbsp;the&nbsp;JSON&nbsp;history&nbsp;file.</span></dd></dl>
+ <dl><dt><a name="-log_file"><strong>log_file</strong></a>(temp_home)</dt><dd><span class="code">Path&nbsp;to&nbsp;the&nbsp;log&nbsp;file.</span></dd></dl>
+ <dl><dt><a name="-quiet_wav_file"><strong>quiet_wav_file</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;a&nbsp;WAV&nbsp;file&nbsp;with&nbsp;very&nbsp;quiet&nbsp;audio&nbsp;(below&nbsp;threshold).</span></dd></dl>
+ <dl><dt><a name="-sample_config"><strong>sample_config</strong></a>()</dt><dd><span class="code">Sample&nbsp;configuration&nbsp;dictionary.</span></dd></dl>
+ <dl><dt><a name="-silent_wav_file"><strong>silent_wav_file</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;a&nbsp;WAV&nbsp;file&nbsp;with&nbsp;silence&nbsp;(all&nbsp;zeros).</span></dd></dl>
+ <dl><dt><a name="-temp_home"><strong>temp_home</strong></a>(tmp_path, monkeypatch)</dt><dd><span class="code">Create&nbsp;a&nbsp;temporary&nbsp;home&nbsp;directory&nbsp;for&nbsp;config/history&nbsp;files.</span></dd></dl>
+ <dl><dt><a name="-valid_wav_file"><strong>valid_wav_file</strong></a>(tmp_path)</dt><dd><span class="code">Create&nbsp;a&nbsp;valid&nbsp;WAV&nbsp;file&nbsp;with&nbsp;actual&nbsp;audio&nbsp;content.</span></dd></dl>
+</td></tr></table>
+</body></html>
