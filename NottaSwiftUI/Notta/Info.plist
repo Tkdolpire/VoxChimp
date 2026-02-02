@@ -55,11 +55,9 @@
     <!-- Sparkle Auto-Update Configuration -->
     <!-- Update SUFeedURL with your actual appcast URL before release -->
     <key>SUFeedURL</key>
-    <string>https://notta.app/appcast.xml</string>
-    <!-- Generate this key with: ./Sparkle.framework/bin/generate_keys -->
-    <!-- Then paste the public key here -->
+    <string>https://getnotta.com/appcast.xml</string>
     <key>SUPublicEDKey</key>
-    <string>YOUR_PUBLIC_ED25519_KEY_HERE</string>
+    <string>Z4l6uX4ZjsDkLzVwI1icLcFrv/CX6c2HZc5JuoWTukM=</string>
     <!-- Allow users to check for updates automatically -->
     <key>SUEnableAutomaticChecks</key>
     <true/>
