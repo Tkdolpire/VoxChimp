@@ -5,8 +5,19 @@ import AppKit
 import Translation
 #endif
 
-/// Manages translation state and coordinates with SwiftUI's translation task modifier.
-/// The actual translation happens via .translationTask in the view layer.
+/// Request for translation with unique ID
+struct TranslationRequest: Equatable {
+    let id: UUID
+    let text: String
+    let language: TranslationLanguage
+
+    static func == (lhs: TranslationRequest, rhs: TranslationRequest) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+/// Manages translation using Apple's Translation framework.
+/// Uses an inline invisible view with .translationTask modifier for reliable translation.
 @MainActor
 class TranslationService: ObservableObject {
     static let shared = TranslationService()
@@ -14,20 +25,17 @@ class TranslationService: ObservableObject {
     // MARK: - Published State
 
     @Published var isTranslating = false
+    @Published var error: String?
     @Published var isDownloadingModel = false
     @Published var downloadProgress: String = ""
-    @Published var error: String?
 
-    // Translation request/response flow
+    // Translation trigger - observed by inline view
+    @Published var currentRequest: TranslationRequest?
+
+    // Legacy properties for API compatibility
     @Published var pendingText: String?
     @Published var translatedText: String?
-
-    // Configuration trigger - when this changes, the translation task fires
-    // We use a simple counter since the actual configuration is created in the modifier
-    @Published var translationRequestId: Int = 0
-
-    private var translationContinuation: CheckedContinuation<String, Never>?
-    private var currentTargetLanguage: TranslationLanguage?
+    var translationRequestId: Int = 0
 
     // Track language status
     @Published var languageStatuses: [TranslationLanguage: LanguageStatus] = [:]
@@ -40,7 +48,14 @@ class TranslationService: ObservableObject {
         case unsupported
     }
 
+    // MARK: - Private State
+
+    private var pendingContinuations: [UUID: CheckedContinuation<String, Never>] = [:]
+    private var timeoutTasks: [UUID: Task<Void, Never>] = [:]
+
     private init() {}
+
+    // MARK: - Language Status
 
     /// Check language availability status using Apple's LanguageAvailability API
     func checkLanguageStatus(_ language: TranslationLanguage) async -> LanguageStatus {
@@ -105,7 +120,7 @@ class TranslationService: ObservableObject {
 
     // MARK: - Availability
 
-    /// Whether translation is available on this system (macOS 14.4+)
+    /// Whether translation is available on this system (macOS 15.0+)
     var isAvailable: Bool {
         if #available(macOS 15.0, *) {
             return true
@@ -136,104 +151,122 @@ class TranslationService: ObservableObject {
             return text
         }
 
-        print("[Translation] ⏳ Translating to \(settings.targetLanguage.displayName)...")
+        print("[Translation] Translating to \(settings.targetLanguage.displayName)...")
+        print("[Translation] Text length: \(text.count) characters")
 
-        // Set up the translation request
         isTranslating = true
         error = nil
-        pendingText = text
-        translatedText = nil
-        currentTargetLanguage = settings.targetLanguage
 
-        // Trigger the translation task by incrementing the request ID
-        translationRequestId += 1
-        let currentRequestId = translationRequestId
+        defer {
+            isTranslating = false
+        }
 
-        // Wait for translation with timeout to prevent leaked continuations
-        let result = await withCheckedContinuation { (continuation: CheckedContinuation<String, Never>) in
-            self.translationContinuation = continuation
+        if #available(macOS 15.0, *) {
+            // First check if language is available
+            let availability = LanguageAvailability()
+            let sourceLocale = Locale.Language(identifier: "en")
+            let targetLocale = settings.targetLanguage.locale
+            let status = await availability.status(from: sourceLocale, to: targetLocale)
 
-            // Timeout after 10 seconds - resume with original text if translation doesn't complete
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(10))
-                // Only timeout if this is still the active request and continuation hasn't been resumed
-                if self.translationRequestId == currentRequestId,
-                   self.translationContinuation != nil {
-                    print("[Translation] ⚠️ Timeout after 10s - translation task didn't fire")
-                    print("[Translation] ⚠️ This often means the language model isn't downloaded.")
-                    print("[Translation] ⚠️ Open the Translate app and translate something to/from this language to download it.")
-                    self.error = "Translation timed out. The language may need to be downloaded in the Translate app first."
-                    self.completeTranslation(with: text)
+            if status == .unsupported {
+                print("[Translation] Language pair not supported")
+                error = "Translation from English to \(settings.targetLanguage.displayName) is not supported."
+                return text
+            }
+
+            if status == .supported {
+                // Language needs to be downloaded first
+                print("[Translation] Language needs to be downloaded...")
+                self.error = "Language model not ready. Please open the Translate app and download \(settings.targetLanguage.displayName)."
+                languageStatuses[settings.targetLanguage] = .needsDownload
+                return text
+            }
+
+            // Language is installed - trigger translation via the view
+            return await triggerTranslation(text: text, to: settings.targetLanguage)
+        }
+
+        return text
+    }
+
+    /// Trigger translation by setting the request (observed by inline view)
+    @available(macOS 15.0, *)
+    private func triggerTranslation(text: String, to language: TranslationLanguage) async -> String {
+        let requestId = UUID()
+        let request = TranslationRequest(id: requestId, text: text, language: language)
+
+        print("[Translation] Creating request \(requestId)")
+
+        return await withCheckedContinuation { continuation in
+            // Store continuation
+            pendingContinuations[requestId] = continuation
+
+            // Set up timeout (10 seconds instead of 30)
+            let timeoutTask = Task {
+                try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds
+
+                // If still pending, timeout
+                if let cont = self.pendingContinuations.removeValue(forKey: requestId) {
+                    print("[Translation] Request \(requestId) timed out")
+                    self.error = "Translation timed out. Please try again."
+                    self.currentRequest = nil
+                    cont.resume(returning: text)
                 }
+                self.timeoutTasks.removeValue(forKey: requestId)
             }
-        }
+            timeoutTasks[requestId] = timeoutTask
 
-        isTranslating = false
-        return result
+            // Trigger the translation view
+            currentRequest = request
+        }
     }
 
-    /// Get the current configuration for the translation task
-    @available(macOS 15.0, *)
-    func currentConfiguration() -> TranslationSession.Configuration? {
-        guard let language = currentTargetLanguage, pendingText != nil else {
-            return nil
+    /// Called by the inline translation view when translation completes
+    func completeTranslation(requestId: UUID, result: String) {
+        print("[Translation] Completed request \(requestId): '\(result.prefix(50))...'")
+
+        // Cancel timeout
+        timeoutTasks[requestId]?.cancel()
+        timeoutTasks.removeValue(forKey: requestId)
+
+        // Resume continuation
+        if let continuation = pendingContinuations.removeValue(forKey: requestId) {
+            if let request = currentRequest {
+                languageStatuses[request.language] = .installed
+            }
+            currentRequest = nil
+            continuation.resume(returning: result)
         }
-        return TranslationSession.Configuration(
-            source: Locale.Language(identifier: "en"),
-            target: language.locale
-        )
     }
 
-    /// Called by the view's .translationTask to perform the actual translation
-    @available(macOS 15.0, *)
-    func performTranslation(session: TranslationSession) async {
-        guard let text = pendingText else {
-            print("[Translation] No pending text, skipping")
-            completeTranslation(with: nil)
-            return
-        }
+    /// Called by the inline translation view when translation fails
+    func failTranslation(requestId: UUID, error: Error, originalText: String) {
+        let errorString = String(describing: error)
+        print("[Translation] Request \(requestId) failed: \(error)")
 
-        print("[Translation] performTranslation called with text: '\(text.prefix(30))...'")
-        isDownloadingModel = true
-        downloadProgress = "Translating..."
+        // Cancel timeout
+        timeoutTasks[requestId]?.cancel()
+        timeoutTasks.removeValue(forKey: requestId)
 
-        do {
-            let response = try await session.translate(text)
-            print("[Translation] ✓ Completed: '\(text.prefix(30))...' -> '\(response.targetText.prefix(30))...'")
-            translatedText = response.targetText
-
-            // Update language status since it worked
-            if let language = currentTargetLanguage {
-                languageStatuses[language] = .installed
-            }
-
-            completeTranslation(with: response.targetText)
-        } catch {
-            let errorString = String(describing: error)
-
-            // Check for common error types
-            if errorString.contains("Code=14") || errorString.contains("internalError") {
-                self.error = "Language model not downloaded. Use the Translate app to download it first."
-                print("[Translation] ✗ Language model not available. Open System Translate app to download the language pack.")
+        // Parse common errors
+        if errorString.contains("Code=14") || errorString.contains("internalError") {
+            if let request = currentRequest {
+                self.error = "Language model not downloaded. Please open the Translate app and download \(request.language.displayName)."
+                languageStatuses[request.language] = .needsDownload
             } else {
-                self.error = "Translation failed: \(error.localizedDescription)"
+                self.error = "Language model not downloaded."
             }
-            print("[Translation] ✗ Error: \(error)")
-            // Fail-open: return original text
-            completeTranslation(with: text)
+        } else if errorString.contains("cancelled") {
+            self.error = "Translation was cancelled."
+        } else {
+            self.error = "Translation failed: \(error.localizedDescription)"
         }
 
-        isDownloadingModel = false
-        downloadProgress = ""
-        pendingText = nil
-        currentTargetLanguage = nil
-    }
-
-    /// Complete the pending translation request
-    private func completeTranslation(with result: String?) {
-        guard let continuation = translationContinuation else { return }
-        translationContinuation = nil
-        continuation.resume(returning: result ?? pendingText ?? "")
+        // Resume with original text (fail-open)
+        if let continuation = pendingContinuations.removeValue(forKey: requestId) {
+            currentRequest = nil
+            continuation.resume(returning: originalText)
+        }
     }
 
     /// Call when target language changes
@@ -241,57 +274,93 @@ class TranslationService: ObservableObject {
         error = nil
     }
 
-    /// Cancel any pending translation
+    /// Cancel any pending translation (for API compatibility)
     func cancelPendingTranslation() {
-        if let text = pendingText {
-            completeTranslation(with: text)
-        }
         pendingText = nil
-        currentTargetLanguage = nil
         isTranslating = false
         isDownloadingModel = false
+
+        // Cancel all pending
+        for (requestId, continuation) in pendingContinuations {
+            timeoutTasks[requestId]?.cancel()
+            if let request = currentRequest, request.id == requestId {
+                continuation.resume(returning: request.text)
+            } else {
+                continuation.resume(returning: "")
+            }
+        }
+        pendingContinuations.removeAll()
+        timeoutTasks.removeAll()
+        currentRequest = nil
+    }
+}
+
+// MARK: - Inline Translation View
+
+/// Invisible view that hosts the .translationTask modifier.
+/// Add this to your main view hierarchy (e.g., in MainView or NottaApp).
+@available(macOS 15.0, *)
+struct InlineTranslationView: View {
+    @ObservedObject var service: TranslationService
+
+    var body: some View {
+        // Use request ID to force view recreation for each new request
+        // This ensures .translationTask fires for every request, even with same language pair
+        TranslationTaskView(request: service.currentRequest, service: service)
+            .id(service.currentRequest?.id ?? UUID())
+    }
+}
+
+/// Inner view that gets recreated for each translation request
+@available(macOS 15.0, *)
+private struct TranslationTaskView: View {
+    let request: TranslationRequest?
+    let service: TranslationService
+
+    @State private var translationConfig: TranslationSession.Configuration?
+    @State private var hasTriggered = false
+
+    var body: some View {
+        Color.clear
+            .frame(width: 1, height: 1)
+            .translationTask(translationConfig) { session in
+                guard let request = request else { return }
+
+                do {
+                    let response = try await session.translate(request.text)
+                    await MainActor.run {
+                        service.completeTranslation(requestId: request.id, result: response.targetText)
+                    }
+                } catch {
+                    await MainActor.run {
+                        service.failTranslation(requestId: request.id, error: error, originalText: request.text)
+                    }
+                }
+            }
+            .onAppear {
+                guard let request = request, !hasTriggered else { return }
+                hasTriggered = true
+
+                // Set config to trigger translation
+                translationConfig = TranslationSession.Configuration(
+                    source: Locale.Language(identifier: "en"),
+                    target: request.language.locale
+                )
+            }
     }
 }
 
 // MARK: - SwiftUI View Extension
 
-/// View modifier that adds translation capability to a view
-@available(macOS 15.0, *)
-struct TranslationTaskModifier: ViewModifier {
-    @StateObject private var translationService = TranslationService.shared
-    @State private var configuration: TranslationSession.Configuration?
-    @State private var triggerTask = false
-
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: translationService.translationRequestId) { _, newId in
-                // Reset configuration and use task to set new config after SwiftUI processes the nil
-                if newId > 0 {
-                    configuration = nil
-                    triggerTask.toggle()
-                }
-            }
-            .task(id: triggerTask) {
-                // Small delay to ensure nil configuration is processed by SwiftUI
-                try? await Task.sleep(for: .milliseconds(50))
-                if translationService.pendingText != nil {
-                    configuration = translationService.currentConfiguration()
-                }
-            }
-            .translationTask(configuration) { session in
-                await translationService.performTranslation(session: session)
-                // Reset configuration after translation completes
-                configuration = nil
-            }
-    }
-}
-
 extension View {
-    /// Adds translation capability to the view
+    /// Add translation support to a view by embedding the inline translation helper.
     @ViewBuilder
     func withTranslationSupport() -> some View {
         if #available(macOS 15.0, *) {
-            self.modifier(TranslationTaskModifier())
+            ZStack {
+                self
+                InlineTranslationView(service: TranslationService.shared)
+            }
         } else {
             self
         }

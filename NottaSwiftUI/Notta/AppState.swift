@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import ApplicationServices  // For AXIsProcessTrusted
 
 @MainActor
 class AppState: ObservableObject {
@@ -27,6 +28,11 @@ class AppState: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var audioLevelTimer: Timer?
 
+    // MARK: - Recording Ready Gate
+    private var audioRecordingReady = false
+    private var pendingStopRecording = false
+    private let minimumRecordingDuration: TimeInterval = 0.3  // 300ms minimum
+
     init() {
         loadHistory()
         loadHealthData()
@@ -51,7 +57,9 @@ class AppState: ObservableObject {
     private func startRecordingInternal(source: String) {
         guard !isRecording else { return }
         isRecording = true
-        recordingStartTime = Date()
+        audioRecordingReady = false  // Not ready until audio actually starts
+        pendingStopRecording = false
+        recordingStartTime = nil  // Set when audio is actually ready
         recordingSource = source
         postRecordingStateChange()
         recordingStatus = .recording
@@ -64,10 +72,20 @@ class AppState: ObservableObject {
         Task {
             do {
                 try await audioRecorder.startRecording()
+                // NOW we're actually recording
+                recordingStartTime = Date()
+                audioRecordingReady = true
                 startAudioLevelMonitoring()
+
+                // Check if stop was requested while we were starting
+                if pendingStopRecording {
+                    pendingStopRecording = false
+                    await performStopRecording()
+                }
             } catch {
                 recordingStatus = .error(error.localizedDescription)
                 isRecording = false
+                audioRecordingReady = false
                 postRecordingStateChange()
                 AnalyticsService.shared.track("error", data: [
                     "context": "recording_start",
@@ -106,7 +124,32 @@ class AppState: ObservableObject {
 
     func stopRecording() {
         guard isRecording else { return }
+
+        // If audio isn't ready yet, mark that we want to stop when it is
+        if !audioRecordingReady {
+            pendingStopRecording = true
+            print("Stop requested before audio ready - will stop when ready")
+            return
+        }
+
+        Task {
+            await performStopRecording()
+        }
+    }
+
+    private func performStopRecording() async {
+        // Ensure minimum recording duration (300ms) to capture audio
+        if let startTime = recordingStartTime {
+            let elapsed = Date().timeIntervalSince(startTime)
+            if elapsed < minimumRecordingDuration {
+                let remaining = minimumRecordingDuration - elapsed
+                print("Waiting \(Int(remaining * 1000))ms to meet minimum recording duration")
+                try? await Task.sleep(nanoseconds: UInt64(remaining * 1_000_000_000))
+            }
+        }
+
         isRecording = false
+        audioRecordingReady = false
         postRecordingStateChange()
         recordingStatus = .processing
         stopAudioLevelMonitoring()
@@ -123,79 +166,77 @@ class AppState: ObservableObject {
             "source": recordingSource
         ])
 
-        Task {
-            let transcriptionStartTime = Date()
+        let transcriptionStartTime = Date()
 
-            do {
-                let audioURL = try await audioRecorder.stopRecording()
-                print("Audio recorded, starting transcription...")
-                let transcription = try await transcriptionManager.transcribe(audioURL: audioURL)
-                print("Transcription completed: \(transcription)")
+        do {
+            let audioURL = try await audioRecorder.stopRecording()
+            print("Audio recorded (\(recordingDurationMs)ms), starting transcription...")
+            let transcription = try await transcriptionManager.transcribe(audioURL: audioURL)
+            print("Transcription completed: \(transcription)")
 
-                let processingMs = Int(Date().timeIntervalSince(transcriptionStartTime) * 1000)
-                let wordCount = transcription.split(separator: " ").count
+            let processingMs = Int(Date().timeIntervalSince(transcriptionStartTime) * 1000)
+            let wordCount = transcription.split(separator: " ").count
 
-                // Track transcription success
-                AnalyticsService.shared.track("transcription_complete", data: [
-                    "word_count": wordCount,
-                    "backend": settings.transcriptionBackend.rawValue,
-                    "model": settings.whisperModel.rawValue,
-                    "processing_ms": processingMs
-                ])
+            // Track transcription success
+            AnalyticsService.shared.track("transcription_complete", data: [
+                "word_count": wordCount,
+                "backend": settings.transcriptionBackend.rawValue,
+                "model": settings.whisperModel.rawValue,
+                "processing_ms": processingMs
+            ])
 
-                // Apply grammar fixes if enabled
-                let afterGrammar = settings.fixGrammar ? applyGrammarFixes(transcription) : transcription
+            // Apply grammar fixes if enabled
+            let afterGrammar = settings.fixGrammar ? applyGrammarFixes(transcription) : transcription
 
-                // Apply translation if enabled
-                let (finalText, originalText, translatedTo) = await applyTranslation(afterGrammar)
+            // Apply translation if enabled
+            let (finalText, originalText, translatedTo) = await applyTranslation(afterGrammar)
 
-                // Save to history
-                let entry = Transcription(
-                    text: finalText,
-                    timestamp: Date(),
-                    audioFilePath: settings.saveAudio ? audioURL.path : nil,
-                    originalText: originalText,
-                    translatedTo: translatedTo
-                )
-                saveTranscription(entry)
+            // Save to history
+            let entry = Transcription(
+                text: finalText,
+                timestamp: Date(),
+                audioFilePath: settings.saveAudio ? audioURL.path : nil,
+                originalText: originalText,
+                translatedTo: translatedTo
+            )
+            saveTranscription(entry)
 
-                lastTranscription = finalText
-                recordingStatus = .success
-                showTranscriptionSuccess = true
+            lastTranscription = finalText
+            recordingStatus = .success
+            showTranscriptionSuccess = true
 
-                // Auto-paste if enabled
-                if settings.autoPaste {
-                    pasteToFrontmostApp(finalText)
-                }
-
-                // Analyze voice health (runs in background)
-                Task {
-                    await analyzeVoiceHealth(audioURL: audioURL)
-
-                    // Clean up audio after analysis if not saving
-                    if !self.settings.saveAudio {
-                        try? FileManager.default.removeItem(at: audioURL)
-                    }
-                }
-
-                // Reset status after delay
-                try? await Task.sleep(for: .seconds(2))
-                recordingStatus = .ready
-
-            } catch {
-                print("Recording/transcription error: \(error)")
-                recordingStatus = .error(error.localizedDescription)
-
-                // Track transcription failure
-                AnalyticsService.shared.track("transcription_failed", data: [
-                    "reason": error.localizedDescription,
-                    "error_type": String(describing: type(of: error))
-                ])
-
-                // Reset after showing error
-                try? await Task.sleep(for: .seconds(3))
-                recordingStatus = .ready
+            // Auto-paste if enabled
+            if settings.autoPaste {
+                pasteToFrontmostApp(finalText)
             }
+
+            // Analyze voice health (runs in background)
+            Task {
+                await analyzeVoiceHealth(audioURL: audioURL)
+
+                // Clean up audio after analysis if not saving
+                if !self.settings.saveAudio {
+                    try? FileManager.default.removeItem(at: audioURL)
+                }
+            }
+
+            // Reset status after delay
+            try? await Task.sleep(for: .seconds(2))
+            recordingStatus = .ready
+
+        } catch {
+            print("Recording/transcription error: \(error)")
+            recordingStatus = .error(error.localizedDescription)
+
+            // Track transcription failure
+            AnalyticsService.shared.track("transcription_failed", data: [
+                "reason": error.localizedDescription,
+                "error_type": String(describing: type(of: error))
+            ])
+
+            // Reset after showing error
+            try? await Task.sleep(for: .seconds(3))
+            recordingStatus = .ready
         }
     }
 
@@ -420,30 +461,39 @@ class AppState: ObservableObject {
     }
 
     private func pasteToFrontmostApp(_ text: String) {
-        // Copy to clipboard
+        // 1. Verify accessibility permission first
+        guard AXIsProcessTrusted() else {
+            print("Auto-paste failed: Accessibility permission not granted")
+            recordingStatus = .error("Accessibility permission required for auto-paste")
+            AnalyticsService.shared.track("auto_paste_failed", data: [
+                "reason": "no_accessibility_permission"
+            ])
+            return
+        }
+
+        // 2. Copy to clipboard
         NSPasteboard.general.clearContents()
         let success = NSPasteboard.general.setString(text, forType: .string)
         print("Clipboard set: \(success), text: \(text.prefix(50))...")
 
         if !success {
+            recordingStatus = .error("Failed to copy to clipboard")
             AnalyticsService.shared.track("auto_paste_failed", data: [
                 "reason": "clipboard_set_failed"
             ])
             return
         }
 
-        // Small delay to ensure clipboard is ready
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            // Simulate Cmd+V using CGEvent (more reliable than AppleScript)
+        // 3. Longer delay to ensure clipboard is ready (250ms instead of 100ms)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             self.simulatePaste()
         }
     }
 
     private func simulatePaste() {
-        // Try CGEvent approach first (doesn't require Accessibility for clipboard, but does for keystroke)
         let source = CGEventSource(stateID: .hidSystemState)
 
-        // Key down
+        // Key down for 'V' (virtual key 0x09)
         guard let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true) else {
             print("Failed to create key down event")
             AnalyticsService.shared.track("auto_paste_failed", data: [
@@ -463,9 +513,15 @@ class AppState: ObservableObject {
         }
         keyUp.flags = .maskCommand
 
-        // Post events
+        // Post key down
         keyDown.post(tap: .cghidEventTap)
+
+        // Small delay between keydown and keyup (50ms) for reliability
+        usleep(50000)
+
+        // Post key up
         keyUp.post(tap: .cghidEventTap)
+
         print("Paste keystroke sent (Cmd+V)")
         AnalyticsService.shared.track("auto_paste_success")
     }

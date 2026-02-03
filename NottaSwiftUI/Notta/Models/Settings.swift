@@ -181,7 +181,7 @@ class SettingsManager: ObservableObject {
     private init() {
         // Load saved values or use defaults
         self.transcriptionBackend = TranscriptionBackend(rawValue: defaults.string(forKey: Keys.transcriptionBackend) ?? "") ?? .appleSpeech
-        self.whisperModel = WhisperModel(rawValue: defaults.string(forKey: Keys.whisperModel) ?? "") ?? .small
+        self.whisperModel = Self.migrateWhisperModel(from: defaults.string(forKey: Keys.whisperModel))
         self.hotkey = HotkeyOption(rawValue: defaults.string(forKey: Keys.hotkey) ?? "") ?? .leftOption
         self.autoPaste = defaults.object(forKey: Keys.autoPaste) as? Bool ?? true
         self.fixGrammar = defaults.object(forKey: Keys.fixGrammar) as? Bool ?? true
@@ -198,6 +198,28 @@ class SettingsManager: ObservableObject {
 
     // MARK: - Migration
 
+    /// Migrate old short model names to new full WhisperKit model names
+    private static func migrateWhisperModel(from saved: String?) -> WhisperModel {
+        guard let saved = saved, !saved.isEmpty else {
+            return .small
+        }
+
+        // Try new format first
+        if let model = WhisperModel(rawValue: saved) {
+            return model
+        }
+
+        // Migrate old short names to new full names
+        switch saved {
+        case "tiny": return .tiny
+        case "base": return .base
+        case "small": return .small
+        case "medium": return .medium
+        case "large", "large-v3": return .large
+        default: return .small
+        }
+    }
+
     func migrateFromLegacyConfig() {
         let legacyConfigURL = FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent(".notta_config.json")
@@ -209,7 +231,7 @@ class SettingsManager: ObservableObject {
         }
 
         if let model = json["whisper_backend"] as? String {
-            whisperModel = WhisperModel(rawValue: model) ?? .small
+            whisperModel = Self.migrateWhisperModel(from: model)
         }
         if let key = json["hotkey"] as? String {
             hotkey = HotkeyOption(rawValue: key) ?? .leftOption
@@ -231,11 +253,11 @@ class SettingsManager: ObservableObject {
 // MARK: - Whisper Model Options
 
 enum WhisperModel: String, CaseIterable, Identifiable {
-    case tiny = "tiny"
-    case base = "base"
-    case small = "small"
-    case medium = "medium"
-    case large = "large"
+    case tiny = "openai_whisper-tiny"
+    case base = "openai_whisper-base"
+    case small = "openai_whisper-small"
+    case medium = "openai_whisper-medium"
+    case large = "openai_whisper-large-v3"
 
     var id: String { rawValue }
 
