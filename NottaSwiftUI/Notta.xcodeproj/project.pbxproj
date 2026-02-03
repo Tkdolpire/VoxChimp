@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F10000010000000000000001 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* Theme.swift */; };
-		F10000010000000000000002 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* Theme.swift */; };
 		16D6E3AE2F2B551E003EE171 /* NottaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* NottaApp.swift */; };
 		16D6E3AF2F2B551E003EE171 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppState.swift */; };
 		16D6E3B02F2B551E003EE171 /* Transcription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* Transcription.swift */; };
@@ -24,32 +22,9 @@
 		16D6E3BA2F2B551E003EE171 /* AcousticAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000013 /* AcousticAnalyzer.swift */; };
 		16D6E3BD2F2B551E003EE171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000014 /* Assets.xcassets */; };
 		16D6E3C52F2B6A15003EE171 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 16D6E3C42F2B6A15003EE171 /* Sparkle */; };
-		16D6E3C62F2B6A15003EE171 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 16D6E3C72F2B6A15003EE171 /* WhisperKit */; };
-		W10000010000000000000001 /* TranscriptionBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000001 /* TranscriptionBackend.swift */; };
-		W10000010000000000000002 /* TranscriptionBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000001 /* TranscriptionBackend.swift */; };
-		W10000010000000000000003 /* TranscriptionServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000002 /* TranscriptionServiceProtocol.swift */; };
-		W10000010000000000000004 /* TranscriptionServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000002 /* TranscriptionServiceProtocol.swift */; };
-		W10000010000000000000005 /* WhisperKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000003 /* WhisperKitService.swift */; };
-		W10000010000000000000006 /* WhisperKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000003 /* WhisperKitService.swift */; };
-		W10000010000000000000007 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000004 /* ModelManager.swift */; };
-		W10000010000000000000008 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000004 /* ModelManager.swift */; };
-		W10000010000000000000009 /* TranscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000005 /* TranscriptionManager.swift */; };
-		W10000010000000000000010 /* TranscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000005 /* TranscriptionManager.swift */; };
-		W30000010000000000000003 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = W30000010000000000000002 /* WhisperKit */; };
-		C10000010000000000000001 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* License.swift */; };
-		C10000010000000000000002 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* LicenseManager.swift */; };
-		C10000010000000000000003 /* LicenseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* LicenseAPI.swift */; };
-		C10000010000000000000004 /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000004 /* UpdaterService.swift */; };
-		C10000010000000000000005 /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000005 /* LicenseView.swift */; };
-		C10000010000000000000006 /* TrialBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000006 /* TrialBannerView.swift */; };
-		C10000010000000000000007 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000007 /* NotificationService.swift */; };
-		D10000010000000000000001 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* License.swift */; };
-		D10000010000000000000002 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* LicenseManager.swift */; };
-		D10000010000000000000003 /* LicenseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* LicenseAPI.swift */; };
-		D10000010000000000000004 /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000004 /* UpdaterService.swift */; };
-		D10000010000000000000005 /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000005 /* LicenseView.swift */; };
-		D10000010000000000000006 /* TrialBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000006 /* TrialBannerView.swift */; };
-		D10000010000000000000007 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000007 /* NotificationService.swift */; };
+		16E18CBE2F31E76E00C638C1 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 16D6E3C72F2B6A15003EE171 /* WhisperKit */; };
+		16E18CC02F31E81800C638C1 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16E18CBF2F31E81800C638C1 /* AnalyticsService.swift */; };
+		16E18CC12F31E81800C638C1 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16E18CBF2F31E81800C638C1 /* AnalyticsService.swift */; };
 		A10000010000000000000001 /* NottaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* NottaApp.swift */; };
 		A10000010000000000000002 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppState.swift */; };
 		A10000010000000000000003 /* Transcription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* Transcription.swift */; };
@@ -64,6 +39,20 @@
 		A10000010000000000000012 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* HotkeyManager.swift */; };
 		A10000010000000000000013 /* AcousticAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000013 /* AcousticAnalyzer.swift */; };
 		A10000010000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000014 /* Assets.xcassets */; };
+		C10000010000000000000001 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* License.swift */; };
+		C10000010000000000000002 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* LicenseManager.swift */; };
+		C10000010000000000000003 /* LicenseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* LicenseAPI.swift */; };
+		C10000010000000000000004 /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000004 /* UpdaterService.swift */; };
+		C10000010000000000000005 /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000005 /* LicenseView.swift */; };
+		C10000010000000000000006 /* TrialBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000006 /* TrialBannerView.swift */; };
+		C10000010000000000000007 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000007 /* NotificationService.swift */; };
+		D10000010000000000000001 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* License.swift */; };
+		D10000010000000000000002 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* LicenseManager.swift */; };
+		D10000010000000000000003 /* LicenseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* LicenseAPI.swift */; };
+		D10000010000000000000004 /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000004 /* UpdaterService.swift */; };
+		D10000010000000000000005 /* LicenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000005 /* LicenseView.swift */; };
+		D10000010000000000000006 /* TrialBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000006 /* TrialBannerView.swift */; };
+		D10000010000000000000007 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000010000000000000007 /* NotificationService.swift */; };
 		E10000010000000000000001 /* SettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000001 /* SettingsTests.swift */; };
 		E10000010000000000000002 /* TranscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000002 /* TranscriptionTests.swift */; };
 		E10000010000000000000003 /* VoiceHealthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000003 /* VoiceHealthTests.swift */; };
@@ -73,16 +62,39 @@
 		E10000010000000000000007 /* NotificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000007 /* NotificationServiceTests.swift */; };
 		E10000010000000000000008 /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000008 /* AppStateTests.swift */; };
 		E10000010000000000000009 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000010000000000000009 /* IntegrationTests.swift */; };
+		F10000010000000000000001 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* Theme.swift */; };
+		F10000010000000000000002 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000010000000000000001 /* Theme.swift */; };
 		T10000010000000000000001 /* TranslationLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000010000000000000001 /* TranslationLanguage.swift */; };
 		T10000010000000000000002 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000010000000000000002 /* TranslationService.swift */; };
 		T10000010000000000000003 /* TranslationLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000010000000000000001 /* TranslationLanguage.swift */; };
 		T10000010000000000000004 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000010000000000000002 /* TranslationService.swift */; };
+		W10000010000000000000001 /* TranscriptionBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000001 /* TranscriptionBackend.swift */; };
+		W10000010000000000000002 /* TranscriptionBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000001 /* TranscriptionBackend.swift */; };
+		W10000010000000000000003 /* TranscriptionServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000002 /* TranscriptionServiceProtocol.swift */; };
+		W10000010000000000000004 /* TranscriptionServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000002 /* TranscriptionServiceProtocol.swift */; };
+		W10000010000000000000005 /* WhisperKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000003 /* WhisperKitService.swift */; };
+		W10000010000000000000006 /* WhisperKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000003 /* WhisperKitService.swift */; };
+		W10000010000000000000007 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000004 /* ModelManager.swift */; };
+		W10000010000000000000008 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000004 /* ModelManager.swift */; };
+		W10000010000000000000009 /* TranscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000005 /* TranscriptionManager.swift */; };
+		W10000010000000000000010 /* TranscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000010000000000000005 /* TranscriptionManager.swift */; };
+		W30000010000000000000003 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = W30000010000000000000002 /* WhisperKit */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		E90000010000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90000010000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A60000010000000000000001;
+			remoteInfo = Notta;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		F20000010000000000000001 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		16D6E3C12F2B551E003EE171 /* Notta Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notta Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D6E3C22F2B551E003EE171 /* Notta copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Notta copy-Info.plist"; path = "/Users/tyrondolpire/Projects/2026/Notta/NottaSwiftUI/Notta copy-Info.plist"; sourceTree = "<absolute>"; };
+		16E18CBF2F31E81800C638C1 /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		A20000010000000000000001 /* NottaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NottaApp.swift; sourceTree = "<group>"; };
 		A20000010000000000000002 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		A20000010000000000000003 /* Transcription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transcription.swift; sourceTree = "<group>"; };
@@ -95,16 +107,12 @@
 		A20000010000000000000010 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		A20000010000000000000011 /* AppleSpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSpeechService.swift; sourceTree = "<group>"; };
 		A20000010000000000000012 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
-		W20000010000000000000001 /* TranscriptionBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionBackend.swift; sourceTree = "<group>"; };
-		W20000010000000000000002 /* TranscriptionServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionServiceProtocol.swift; sourceTree = "<group>"; };
-		W20000010000000000000003 /* WhisperKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperKitService.swift; sourceTree = "<group>"; };
-		W20000010000000000000004 /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
-		W20000010000000000000005 /* TranscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionManager.swift; sourceTree = "<group>"; };
 		A20000010000000000000013 /* AcousticAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcousticAnalyzer.swift; sourceTree = "<group>"; };
 		A20000010000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A20000010000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A20000010000000000000016 /* Notta.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notta.entitlements; sourceTree = "<group>"; };
 		A20000010000000000000017 /* NottaPro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NottaPro.entitlements; sourceTree = "<group>"; };
+		A30000010000000000000001 /* Notta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20000010000000000000001 /* License.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License.swift; sourceTree = "<group>"; };
 		C20000010000000000000002 /* LicenseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseManager.swift; sourceTree = "<group>"; };
 		C20000010000000000000003 /* LicenseAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseAPI.swift; sourceTree = "<group>"; };
@@ -112,7 +120,6 @@
 		C20000010000000000000005 /* LicenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseView.swift; sourceTree = "<group>"; };
 		C20000010000000000000006 /* TrialBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialBannerView.swift; sourceTree = "<group>"; };
 		C20000010000000000000007 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
-		A30000010000000000000001 /* Notta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20000010000000000000001 /* SettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTests.swift; sourceTree = "<group>"; };
 		E20000010000000000000002 /* TranscriptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionTests.swift; sourceTree = "<group>"; };
 		E20000010000000000000003 /* VoiceHealthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceHealthTests.swift; sourceTree = "<group>"; };
@@ -123,8 +130,14 @@
 		E20000010000000000000008 /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
 		E20000010000000000000009 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
 		E30000010000000000000001 /* NottaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NottaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F20000010000000000000001 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		T20000010000000000000001 /* TranslationLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationLanguage.swift; sourceTree = "<group>"; };
 		T20000010000000000000002 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
+		W20000010000000000000001 /* TranscriptionBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionBackend.swift; sourceTree = "<group>"; };
+		W20000010000000000000002 /* TranscriptionServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionServiceProtocol.swift; sourceTree = "<group>"; };
+		W20000010000000000000003 /* WhisperKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperKitService.swift; sourceTree = "<group>"; };
+		W20000010000000000000004 /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
+		W20000010000000000000005 /* TranscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +145,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16E18CBE2F31E76E00C638C1 /* WhisperKit in Frameworks */,
 				16D6E3C52F2B6A15003EE171 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -220,6 +234,7 @@
 		A50000010000000000000006 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				16E18CBF2F31E81800C638C1 /* AnalyticsService.swift */,
 				A20000010000000000000010 /* AudioRecorder.swift */,
 				A20000010000000000000011 /* AppleSpeechService.swift */,
 				A20000010000000000000012 /* HotkeyManager.swift */,
@@ -409,6 +424,7 @@
 				C10000010000000000000003 /* LicenseAPI.swift in Sources */,
 				C10000010000000000000004 /* UpdaterService.swift in Sources */,
 				C10000010000000000000005 /* LicenseView.swift in Sources */,
+				16E18CC12F31E81800C638C1 /* AnalyticsService.swift in Sources */,
 				C10000010000000000000006 /* TrialBannerView.swift in Sources */,
 				C10000010000000000000007 /* NotificationService.swift in Sources */,
 				T10000010000000000000003 /* TranslationLanguage.swift in Sources */,
@@ -446,6 +462,7 @@
 				D10000010000000000000005 /* LicenseView.swift in Sources */,
 				D10000010000000000000006 /* TrialBannerView.swift in Sources */,
 				D10000010000000000000007 /* NotificationService.swift in Sources */,
+				16E18CC02F31E81800C638C1 /* AnalyticsService.swift in Sources */,
 				T10000010000000000000001 /* TranslationLanguage.swift in Sources */,
 				T10000010000000000000002 /* TranslationService.swift in Sources */,
 			);
@@ -468,16 +485,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXContainerItemProxy section */
-		E90000010000000000000002 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A90000010000000000000001 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A60000010000000000000001;
-			remoteInfo = Notta;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXTargetDependency section */
 		E90000010000000000000001 /* PBXTargetDependency */ = {

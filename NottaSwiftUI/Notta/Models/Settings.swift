@@ -22,7 +22,6 @@ class SettingsManager: ObservableObject {
         static let illnessAlertThreshold = "illnessAlertThreshold"
         static let translationEnabled = "translationEnabled"
         static let targetLanguage = "targetLanguage"
-        static let analyticsEnabled = "notta.analytics.enabled"
     }
 
     // MARK: - Published Properties
@@ -177,20 +176,6 @@ class SettingsManager: ObservableObject {
         }
     }
 
-    @Published var analyticsEnabled: Bool {
-        didSet {
-            // Analytics state is managed by AnalyticsService, but we expose it here for UI binding
-            let shouldEnable = analyticsEnabled
-            Task { @MainActor in
-                if shouldEnable {
-                    AnalyticsService.shared.enable()
-                } else {
-                    AnalyticsService.shared.disable()
-                }
-            }
-        }
-    }
-
     // MARK: - Initialization
 
     private init() {
@@ -209,7 +194,6 @@ class SettingsManager: ObservableObject {
         self.illnessAlertThreshold = defaults.object(forKey: Keys.illnessAlertThreshold) as? Int ?? 60
         self.translationEnabled = defaults.object(forKey: Keys.translationEnabled) as? Bool ?? false
         self.targetLanguage = TranslationLanguage(rawValue: defaults.string(forKey: Keys.targetLanguage) ?? "") ?? .spanish
-        self.analyticsEnabled = defaults.object(forKey: Keys.analyticsEnabled) as? Bool ?? false
     }
 
     // MARK: - Migration
