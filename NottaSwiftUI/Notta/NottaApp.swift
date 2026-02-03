@@ -159,7 +159,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
         if let button = statusItem?.button {
-            button.image = circularMenuBarIcon(named: "MenuBarIdle")
+            // Try to load custom icon, fall back to system symbol
+            if let icon = NSImage(named: "MenuBarIdle") {
+                icon.size = NSSize(width: 18, height: 18)
+                button.image = icon
+            } else {
+                // Fallback to system microphone symbol
+                button.image = NSImage(systemSymbolName: "mic.circle.fill", accessibilityDescription: "Notta")
+            }
             button.toolTip = "Notta - Ready"
         }
 
@@ -190,29 +197,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let button = statusItem?.button else { return }
 
         let imageName = isRecording ? "MenuBarRecording" : "MenuBarIdle"
-        button.image = circularMenuBarIcon(named: imageName)
+        if let icon = NSImage(named: imageName) {
+            icon.size = NSSize(width: 18, height: 18)
+            button.image = icon
+        } else {
+            // Fallback to system symbols
+            let symbolName = isRecording ? "mic.circle.fill" : "mic.circle"
+            button.image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "Notta")
+        }
         button.toolTip = isRecording ? "Notta - Recording..." : "Notta - Ready"
-    }
-
-    private func circularMenuBarIcon(named: String) -> NSImage? {
-        guard let sourceImage = NSImage(named: named) else { return nil }
-
-        let size = NSSize(width: 18, height: 18)
-        let circularImage = NSImage(size: size)
-
-        circularImage.lockFocus()
-
-        // Create circular clipping path
-        let rect = NSRect(origin: .zero, size: size)
-        let circlePath = NSBezierPath(ovalIn: rect)
-        circlePath.addClip()
-
-        // Draw the source image scaled to fit
-        sourceImage.draw(in: rect, from: NSRect(origin: .zero, size: sourceImage.size), operation: .sourceOver, fraction: 1.0)
-
-        circularImage.unlockFocus()
-
-        return circularImage
     }
 
     @objc private func openMainWindow() {
@@ -263,6 +256,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        // Keep app running when window is closed - user can quit via menu or Cmd+Q
+        return false
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        // Show main window when dock icon is clicked and no windows are visible
+        if !flag {
+            openMainWindow()
+        }
         return true
     }
 
