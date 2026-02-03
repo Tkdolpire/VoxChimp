@@ -22,32 +22,99 @@ class SettingsManager: ObservableObject {
         static let illnessAlertThreshold = "illnessAlertThreshold"
         static let translationEnabled = "translationEnabled"
         static let targetLanguage = "targetLanguage"
+        static let analyticsEnabled = "notta.analytics.enabled"
     }
 
     // MARK: - Published Properties
 
     @Published var transcriptionBackend: TranscriptionBackend {
-        didSet { defaults.set(transcriptionBackend.rawValue, forKey: Keys.transcriptionBackend) }
+        didSet {
+            defaults.set(transcriptionBackend.rawValue, forKey: Keys.transcriptionBackend)
+            let oldVal = oldValue.rawValue
+            let newVal = transcriptionBackend.rawValue
+            Task { @MainActor in
+                AnalyticsService.shared.track("settings_changed", data: [
+                    "setting": "transcription_backend",
+                    "old_value": oldVal,
+                    "new_value": newVal
+                ])
+            }
+        }
     }
 
     @Published var whisperModel: WhisperModel {
-        didSet { defaults.set(whisperModel.rawValue, forKey: Keys.whisperModel) }
+        didSet {
+            defaults.set(whisperModel.rawValue, forKey: Keys.whisperModel)
+            let oldVal = oldValue.rawValue
+            let newVal = whisperModel.rawValue
+            Task { @MainActor in
+                AnalyticsService.shared.track("settings_changed", data: [
+                    "setting": "whisper_model",
+                    "old_value": oldVal,
+                    "new_value": newVal
+                ])
+            }
+        }
     }
 
     @Published var hotkey: HotkeyOption {
-        didSet { defaults.set(hotkey.rawValue, forKey: Keys.hotkey) }
+        didSet {
+            defaults.set(hotkey.rawValue, forKey: Keys.hotkey)
+            let oldVal = oldValue.rawValue
+            let newVal = hotkey.rawValue
+            Task { @MainActor in
+                AnalyticsService.shared.track("settings_changed", data: [
+                    "setting": "hotkey",
+                    "old_value": oldVal,
+                    "new_value": newVal
+                ])
+            }
+        }
     }
 
     @Published var autoPaste: Bool {
-        didSet { defaults.set(autoPaste, forKey: Keys.autoPaste) }
+        didSet {
+            defaults.set(autoPaste, forKey: Keys.autoPaste)
+            let oldVal = String(oldValue)
+            let newVal = String(autoPaste)
+            Task { @MainActor in
+                AnalyticsService.shared.track("settings_changed", data: [
+                    "setting": "auto_paste",
+                    "old_value": oldVal,
+                    "new_value": newVal
+                ])
+            }
+        }
     }
 
     @Published var fixGrammar: Bool {
-        didSet { defaults.set(fixGrammar, forKey: Keys.fixGrammar) }
+        didSet {
+            defaults.set(fixGrammar, forKey: Keys.fixGrammar)
+            let oldVal = String(oldValue)
+            let newVal = String(fixGrammar)
+            Task { @MainActor in
+                AnalyticsService.shared.track("settings_changed", data: [
+                    "setting": "fix_grammar",
+                    "old_value": oldVal,
+                    "new_value": newVal
+                ])
+            }
+        }
     }
 
     @Published var saveAudio: Bool {
-        didSet { defaults.set(saveAudio, forKey: Keys.saveAudio) }
+        didSet {
+            defaults.set(saveAudio, forKey: Keys.saveAudio)
+            let oldVal = String(oldValue)
+            let newVal = String(saveAudio)
+            Task { @MainActor in
+                AnalyticsService.shared.track("settings_changed", data: [
+                    "setting": "save_audio",
+                    "old_value": oldVal,
+                    "new_value": newVal
+                ])
+            }
+        }
     }
 
     @Published var floatOnTop: Bool {
@@ -63,7 +130,18 @@ class SettingsManager: ObservableObject {
     }
 
     @Published var healthNotificationsEnabled: Bool {
-        didSet { defaults.set(healthNotificationsEnabled, forKey: Keys.healthNotificationsEnabled) }
+        didSet {
+            defaults.set(healthNotificationsEnabled, forKey: Keys.healthNotificationsEnabled)
+            let oldVal = String(oldValue)
+            let newVal = String(healthNotificationsEnabled)
+            Task { @MainActor in
+                AnalyticsService.shared.track("settings_changed", data: [
+                    "setting": "health_notifications",
+                    "old_value": oldVal,
+                    "new_value": newVal
+                ])
+            }
+        }
     }
 
     @Published var fatigueAlertThreshold: Int {
@@ -75,7 +153,18 @@ class SettingsManager: ObservableObject {
     }
 
     @Published var translationEnabled: Bool {
-        didSet { defaults.set(translationEnabled, forKey: Keys.translationEnabled) }
+        didSet {
+            defaults.set(translationEnabled, forKey: Keys.translationEnabled)
+            let oldVal = String(oldValue)
+            let newVal = String(translationEnabled)
+            Task { @MainActor in
+                AnalyticsService.shared.track("settings_changed", data: [
+                    "setting": "translation_enabled",
+                    "old_value": oldVal,
+                    "new_value": newVal
+                ])
+            }
+        }
     }
 
     @Published var targetLanguage: TranslationLanguage {
@@ -84,6 +173,20 @@ class SettingsManager: ObservableObject {
             // Invalidate translation session when language changes
             Task { @MainActor in
                 TranslationService.shared.onLanguageChanged()
+            }
+        }
+    }
+
+    @Published var analyticsEnabled: Bool {
+        didSet {
+            // Analytics state is managed by AnalyticsService, but we expose it here for UI binding
+            let shouldEnable = analyticsEnabled
+            Task { @MainActor in
+                if shouldEnable {
+                    AnalyticsService.shared.enable()
+                } else {
+                    AnalyticsService.shared.disable()
+                }
             }
         }
     }
@@ -106,6 +209,7 @@ class SettingsManager: ObservableObject {
         self.illnessAlertThreshold = defaults.object(forKey: Keys.illnessAlertThreshold) as? Int ?? 60
         self.translationEnabled = defaults.object(forKey: Keys.translationEnabled) as? Bool ?? false
         self.targetLanguage = TranslationLanguage(rawValue: defaults.string(forKey: Keys.targetLanguage) ?? "") ?? .spanish
+        self.analyticsEnabled = defaults.object(forKey: Keys.analyticsEnabled) as? Bool ?? false
     }
 
     // MARK: - Migration

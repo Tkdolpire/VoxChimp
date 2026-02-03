@@ -100,6 +100,11 @@ final class LicenseManager: ObservableObject {
                 storeValidationTimestamp()
                 cacheLicenseStatus(.active)
                 print("License validated successfully")
+
+                // Track license validation
+                AnalyticsService.shared.track("license_validated", data: [
+                    "status": "active"
+                ])
             } else {
                 // License rejected by server
                 if showErrors {
@@ -264,6 +269,11 @@ final class LicenseManager: ObservableObject {
         UserDefaults.standard.set(now, forKey: Keys.trialStart)
         state = .trial(daysRemaining: trialDays)
         print("Trial started - \(trialDays) days remaining")
+
+        // Track trial start
+        AnalyticsService.shared.track("trial_started", data: [
+            "trial_days": trialDays
+        ])
     }
 
     private var trialStartDate: Date? {

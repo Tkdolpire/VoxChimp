@@ -35,12 +35,17 @@ class AppState: ObservableObject {
 
     // MARK: - Recording
 
+    private var recordingStartTime: Date?
+
     func startRecording() {
         guard !isRecording else { return }
         isRecording = true
+        recordingStartTime = Date()
         postRecordingStateChange()
         recordingStatus = .recording
         showTranscriptionSuccess = false
+
+        AnalyticsService.shared.track("recording_start")
 
         Task {
             do {
@@ -50,6 +55,10 @@ class AppState: ObservableObject {
                 recordingStatus = .error(error.localizedDescription)
                 isRecording = false
                 postRecordingStateChange()
+                AnalyticsService.shared.track("error", data: [
+                    "context": "recording_start",
+                    "error_type": String(describing: type(of: error))
+                ])
             }
         }
     }
@@ -88,12 +97,36 @@ class AppState: ObservableObject {
         recordingStatus = .processing
         stopAudioLevelMonitoring()
 
+        let recordingDurationMs: Int
+        if let startTime = recordingStartTime {
+            recordingDurationMs = Int(Date().timeIntervalSince(startTime) * 1000)
+        } else {
+            recordingDurationMs = 0
+        }
+
+        AnalyticsService.shared.track("recording_stop", data: [
+            "duration_ms": recordingDurationMs
+        ])
+
         Task {
+            let transcriptionStartTime = Date()
+
             do {
                 let audioURL = try await audioRecorder.stopRecording()
                 print("Audio recorded, starting transcription...")
                 let transcription = try await transcriptionManager.transcribe(audioURL: audioURL)
                 print("Transcription completed: \(transcription)")
+
+                let processingMs = Int(Date().timeIntervalSince(transcriptionStartTime) * 1000)
+                let wordCount = transcription.split(separator: " ").count
+
+                // Track transcription success
+                AnalyticsService.shared.track("transcription_complete", data: [
+                    "word_count": wordCount,
+                    "backend": settings.transcriptionBackend.rawValue,
+                    "model": settings.whisperModel.rawValue,
+                    "processing_ms": processingMs
+                ])
 
                 // Apply grammar fixes if enabled
                 let afterGrammar = settings.fixGrammar ? applyGrammarFixes(transcription) : transcription
@@ -137,6 +170,13 @@ class AppState: ObservableObject {
             } catch {
                 print("Recording/transcription error: \(error)")
                 recordingStatus = .error(error.localizedDescription)
+
+                // Track transcription failure
+                AnalyticsService.shared.track("transcription_failed", data: [
+                    "reason": error.localizedDescription,
+                    "error_type": String(describing: type(of: error))
+                ])
+
                 // Reset after showing error
                 try? await Task.sleep(for: .seconds(3))
                 recordingStatus = .ready
@@ -212,6 +252,12 @@ class AppState: ObservableObject {
             loadBaseline()
 
             print("Voice health analyzed - Fatigue: \(metrics.fatigueScore)%, Illness: \(metrics.illnessScore)%")
+
+            // Track health analysis completion
+            AnalyticsService.shared.track("health_analysis_complete", data: [
+                "fatigue_score": metrics.fatigueScore,
+                "illness_score": metrics.illnessScore
+            ])
 
             // Send notifications if enabled and thresholds exceeded
             if settings.healthNotificationsEnabled {

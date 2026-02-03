@@ -22,6 +22,9 @@ import time
 from pathlib import Path
 from datetime import datetime
 
+# Analytics module (opt-in, privacy-first)
+import analytics as notta_analytics
+
 # Configure logging
 log_file = Path.home() / '.notta.log'
 logging.basicConfig(
@@ -96,6 +99,7 @@ class NottaAppDelegate(NSObject):
         self.mic_permission_ok = True
         self.health_window = None
         self.acoustic_analyzer = None  # Lazy-loaded
+        self._recording_start_time = None  # For analytics duration tracking
 
         # Rotate log if too large
         self.rotate_log_if_needed()
@@ -105,6 +109,7 @@ class NottaAppDelegate(NSObject):
     def applicationDidFinishLaunching_(self, notification):
         """Called when app finishes launching"""
         logger.info("Application launched")
+        cold_start_time = time.time()
 
         # Create the main window
         self.create_window()
@@ -118,6 +123,14 @@ class NottaAppDelegate(NSObject):
         # Show the window
         self.window.makeKeyAndOrderFront_(None)
         NSApp.activateIgnoringOtherApps_(True)
+
+        # Check if this is first launch (analytics consent needed)
+        self.checkAnalyticsConsent()
+
+        # Track cold start complete
+        if notta_analytics.is_enabled():
+            cold_start_ms = int((time.time() - cold_start_time) * 1000)
+            notta_analytics.track('cold_start_complete', {'duration_ms': cold_start_ms})
 
         logger.info("Notta initialized")
 
@@ -593,6 +606,7 @@ class NottaAppDelegate(NSObject):
         if self.config.get('whisper_backend') == 'ollama':
             self.use_ollama = True
             logger.info("Using Ollama backend")
+            notta_analytics.track('model_load', {'model': 'ollama', 'backend': 'ollama'})
         else:
             try:
                 from faster_whisper import WhisperModel
@@ -600,14 +614,23 @@ class NottaAppDelegate(NSObject):
                 if model_size == 'ollama':
                     model_size = 'small'
                 logger.info(f"Loading faster-whisper model ({model_size})")
+                model_load_start = time.time()
                 self.whisper_model = WhisperModel(model_size, device="cpu", compute_type="int8")
+                model_load_ms = int((time.time() - model_load_start) * 1000)
                 self.use_ollama = False
                 logger.info(f"Using faster-whisper backend with {model_size} model")
+                notta_analytics.track('model_load', {
+                    'model': model_size,
+                    'backend': 'faster_whisper',
+                    'load_time_ms': model_load_ms
+                })
             except ImportError as e:
                 logger.warning(f"faster-whisper not available: {e}")
+                notta_analytics.track('model_load_failed', {'reason': 'import_error'})
                 self.use_ollama = True
             except Exception as e:
                 logger.error(f"Failed to load whisper model: {e}")
+                notta_analytics.track('model_load_failed', {'reason': 'exception', 'error_type': type(e).__name__})
                 self.use_ollama = True
 
         # Check microphone permission at startup
@@ -699,6 +722,27 @@ class NottaAppDelegate(NSObject):
         else:
             alert.setAlertStyle_(NSAlertStyleInformational)
         alert.runModal()
+
+    def checkAnalyticsConsent(self):
+        """Check if user has been asked about analytics, show consent dialog if not"""
+        # Check if we've already asked
+        if 'analytics_asked' in self.config:
+            # Already asked, start session if enabled
+            if notta_analytics.is_enabled():
+                notta_analytics.start_session()
+            return
+
+        # First launch - show consent dialog
+        def handle_consent(consented):
+            self.config['analytics_asked'] = True
+            self.config['analytics_enabled'] = consented
+            if consented:
+                notta_analytics.enable()
+                notta_analytics.start_session()
+            self.save_config()
+
+        # Show dialog on main thread
+        notta_analytics.show_consent_dialog(handle_consent)
 
     def validate_audio(self, audio_file):
         """Check if audio file contains actual sound."""
@@ -806,8 +850,12 @@ class NottaAppDelegate(NSObject):
             if self.is_recording:
                 return
             self.is_recording = True
+            self._recording_start_time = time.time()
 
         logger.info("Starting recording")
+
+        # Track recording start
+        notta_analytics.track('recording_start')
 
         if not self.mic_permission_ok:
             logger.warning("Recording started but microphone permission may be denied")
@@ -875,6 +923,8 @@ class NottaAppDelegate(NSObject):
 
                     if max_amp == 0:
                         logger.error("No audio detected - microphone permission likely denied")
+                        notta_analytics.track('microphone_permission_denied')
+                        notta_analytics.track('audio_validation_failed', {'reason': 'no_audio', 'max_amp': 0})
                         self.performSelectorOnMainThread_withObject_waitUntilDone_(
                             objc.selector(self.showAlertWithInfo_, signature=b'v@:@'),
                             {
@@ -888,6 +938,7 @@ class NottaAppDelegate(NSObject):
                         self.mic_permission_ok = False
                     else:
                         logger.warning(f"Audio too quiet to transcribe (max_amp={max_amp})")
+                        notta_analytics.track('audio_validation_failed', {'reason': 'too_quiet', 'max_amp': max_amp})
                         self.performSelectorOnMainThread_withObject_waitUntilDone_(
                             objc.selector(self.showAlertWithInfo_, signature=b'v@:@'),
                             {
@@ -939,13 +990,23 @@ class NottaAppDelegate(NSObject):
         """Stop recording"""
         with self._lock:
             self.is_recording = False
+            recording_duration_ms = 0
+            if hasattr(self, '_recording_start_time') and self._recording_start_time:
+                recording_duration_ms = int((time.time() - self._recording_start_time) * 1000)
+                self._recording_start_time = None
+
         logger.info("Recording stopped")
         self.set_status('processing')
 
+        # Track recording stop with duration
+        notta_analytics.track('recording_stop', {'duration_ms': recording_duration_ms})
+
     def process_audio(self, audio_file):
         """Process recorded audio"""
+        transcription_start_time = time.time()
         try:
             logger.info("Processing audio")
+            notta_analytics.track('transcription_start')
 
             if self.use_ollama:
                 logger.debug("Transcribing with Ollama")
@@ -979,6 +1040,17 @@ class NottaAppDelegate(NSObject):
             logger.info(f"Transcribed: {text[:50]}...")
 
             if text:
+                # Track successful transcription
+                processing_ms = int((time.time() - transcription_start_time) * 1000)
+                word_count = len(text.split())
+                model_used = self.config.get('whisper_backend', 'small')
+                notta_analytics.track('transcription_complete', {
+                    'word_count': word_count,
+                    'model': model_used,
+                    'processing_ms': processing_ms,
+                    'used_ollama': self.use_ollama
+                })
+
                 # Fix grammar if enabled
                 if self.config.get('fix_grammar', True):
                     text = self.fix_grammar(text)
@@ -1011,20 +1083,26 @@ class NottaAppDelegate(NSObject):
                         )
                         if result.returncode == 0:
                             logger.debug("Auto-paste successful")
+                            notta_analytics.track('auto_paste_success')
                         else:
                             logger.error(f"Auto-paste failed: {result.stderr}")
+                            notta_analytics.track('auto_paste_failed', {'reason': 'nonzero_exit'})
                     except subprocess.TimeoutExpired:
                         logger.error("Auto-paste timed out")
+                        notta_analytics.track('auto_paste_failed', {'reason': 'timeout'})
                     except Exception as e:
                         logger.error(f"Auto-paste error: {e}")
+                        notta_analytics.track('auto_paste_failed', {'reason': 'exception'})
 
                 self.set_status('success')
             else:
                 logger.warning("No transcription result")
+                notta_analytics.track('transcription_failed', {'reason': 'empty_result'})
                 self.set_status('error')
 
         except subprocess.TimeoutExpired:
             logger.error("Processing timed out")
+            notta_analytics.track('transcription_failed', {'reason': 'timeout'})
             self.performSelectorOnMainThread_withObject_waitUntilDone_(
                 objc.selector(self.showAlertWithInfo_, signature=b'v@:@'),
                 {'title': "Error", 'message': "Processing timed out. Try again.", 'style': 'warning'},
@@ -1033,6 +1111,7 @@ class NottaAppDelegate(NSObject):
             self.set_status('error')
         except Exception as e:
             logger.error(f"Processing error: {e}", exc_info=True)
+            notta_analytics.track('transcription_failed', {'reason': 'exception', 'error_type': type(e).__name__})
             self.performSelectorOnMainThread_withObject_waitUntilDone_(
                 objc.selector(self.showAlertWithInfo_, signature=b'v@:@'),
                 {'title': "Error", 'message': f"Processing failed: {e}", 'style': 'warning'},
@@ -1128,10 +1207,19 @@ class NottaAppDelegate(NSObject):
                     # Get health status and check for alerts
                     status = self.acoustic_analyzer.get_health_status(features)
 
+                    # Track health analysis
+                    notta_analytics.track('health_analysis_complete', {
+                        'fatigue_score': int(status.fatigue_score),
+                        'illness_score': int(status.illness_score),
+                        'has_baseline': self.acoustic_analyzer.has_baseline()
+                    })
+
                     # Show notification if fatigue or illness detected
                     if status.fatigue_score >= 60:
+                        notta_analytics.track('fatigue_alert_shown', {'score': int(status.fatigue_score)})
                         self.showFatigueNotification_(status)
                     elif status.illness_score >= 60:
+                        notta_analytics.track('illness_alert_shown', {'score': int(status.illness_score)})
                         self.showIllnessNotification_(status)
 
             except Exception as e:
@@ -1226,6 +1314,8 @@ class NottaAppDelegate(NSObject):
     def showSettings_(self, sender):
         """Show settings dialog"""
         logger.info("Settings button clicked")
+        notta_analytics.track('settings_opened')
+
         alert = NSAlert.alloc().init()
         alert.setMessageText_("Settings")
 
@@ -1234,6 +1324,7 @@ class NottaAppDelegate(NSObject):
         auto_paste = "On" if self.config.get('auto_paste', True) else "Off"
         fix_grammar = "On" if self.config.get('fix_grammar', True) else "Off"
         save_audio = "On" if self.config.get('save_audio', False) else "Off"
+        analytics_status = "On" if notta_analytics.is_enabled() else "Off"
 
         hotkey_names = {
             'alt_l': 'Left Option', 'alt_r': 'Right Option',
@@ -1247,7 +1338,8 @@ class NottaAppDelegate(NSObject):
             f"Hotkey: {hotkey_names.get(current_hotkey, current_hotkey)}\n"
             f"Auto-paste: {auto_paste}\n"
             f"Fix grammar: {fix_grammar}\n"
-            f"Save audio: {save_audio}\n\n"
+            f"Save audio: {save_audio}\n"
+            f"Analytics: {analytics_status}\n\n"
             f"To change settings, edit:\n{self.config_file}"
         )
         alert.setAlertStyle_(NSAlertStyleInformational)
@@ -1256,11 +1348,13 @@ class NottaAppDelegate(NSObject):
 
         response = alert.runModal()
         if response == 1001:  # Second button
+            notta_analytics.track('config_file_opened')
             subprocess.run(['open', str(self.config_file)])
 
     def showHistory_(self, sender):
         """Show history"""
         logger.info("History button clicked")
+        notta_analytics.track('history_opened')
         if self.history_file.exists():
             subprocess.run(['open', str(self.history_file)])
         else:
@@ -1272,6 +1366,7 @@ class NottaAppDelegate(NSObject):
     def showHealth_(self, sender):
         """Open the health analysis window"""
         logger.info("Health button clicked - starting")
+        notta_analytics.track('health_window_opened')
         try:
             if not hasattr(self, 'health_window') or self.health_window is None:
                 logger.info("Creating health window...")
@@ -1284,6 +1379,7 @@ class NottaAppDelegate(NSObject):
             logger.info("Health window shown successfully")
         except Exception as e:
             logger.error(f"Error showing health window: {e}", exc_info=True)
+            notta_analytics.track('error', {'context': 'show_health_window', 'error_type': type(e).__name__})
 
     def createHealthWindow(self):
         """Create the health analysis window with modern macOS design"""
@@ -1886,6 +1982,7 @@ class NottaAppDelegate(NSObject):
         # Disable button during analysis
         self.health_analyze_btn.setEnabled_(False)
         self.health_message_label.setStringValue_("Starting analysis...")
+        notta_analytics.track('health_analysis_started')
 
         def analyze():
             try:
@@ -1977,6 +2074,11 @@ class NottaAppDelegate(NSObject):
     def quitApp_(self, sender):
         """Quit the application"""
         logger.info("Notta shutting down")
+
+        # Track app quit and flush analytics
+        notta_analytics.track('app_quit')
+        notta_analytics.end_session()
+        notta_analytics.shutdown()
 
         with self._lock:
             self.is_recording = False

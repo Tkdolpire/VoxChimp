@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module analytics</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">analytics</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:/Users/tyrondolpire/Projects/2026/Notta/analytics.py">/Users/tyrondolpire/Projects/2026/Notta/analytics.py</a></td></tr></table>
+    <p><span class="code">Notta&nbsp;<a href="#Analytics">Analytics</a>&nbsp;Module<br>
+&nbsp;<br>
+Privacy-first,&nbsp;opt-in&nbsp;analytics&nbsp;for&nbsp;understanding&nbsp;usage&nbsp;patterns.<br>
+No&nbsp;PII&nbsp;collected&nbsp;-&nbsp;only&nbsp;anonymized&nbsp;usage&nbsp;metrics.<br>
+&nbsp;<br>
+Features:<br>
+-&nbsp;Opt-in&nbsp;by&nbsp;default&nbsp;(disabled&nbsp;until&nbsp;user&nbsp;consents)<br>
+-&nbsp;Anonymized&nbsp;device&nbsp;ID&nbsp;(SHA-256&nbsp;hash&nbsp;of&nbsp;machine&nbsp;UUID)<br>
+-&nbsp;Local&nbsp;queue&nbsp;with&nbsp;persistence&nbsp;for&nbsp;offline&nbsp;support<br>
+-&nbsp;Batch&nbsp;sending&nbsp;with&nbsp;exponential&nbsp;backoff<br>
+-&nbsp;Graceful&nbsp;shutdown&nbsp;with&nbsp;queue&nbsp;flush</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="hashlib.html">hashlib</a><br>
+<a href="json.html">json</a><br>
+</td><td class="multicolumn"><a href="logging.html">logging</a><br>
+<a href="os.html">os</a><br>
+</td><td class="multicolumn"><a href="platform.html">platform</a><br>
+<a href="threading.html">threading</a><br>
+</td><td class="multicolumn"><a href="time.html">time</a><br>
+<a href="urllib.html">urllib</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="analytics.html#Analytics">Analytics</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Analytics">class <strong>Analytics</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Analytics">Analytics</a>()&nbsp;-&amp;gt;&nbsp;'<a href="#Analytics">Analytics</a>'<br>
+&nbsp;<br>
+Thread-safe&nbsp;analytics&nbsp;client&nbsp;with&nbsp;local&nbsp;queuing&nbsp;and&nbsp;batch&nbsp;sending.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Analytics-__init__"><strong>__init__</strong></a>(self)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="Analytics-disable"><strong>disable</strong></a>(self)</dt><dd><span class="code">Disable&nbsp;analytics&nbsp;collection.</span></dd></dl>
+
+<dl><dt><a name="Analytics-enable"><strong>enable</strong></a>(self)</dt><dd><span class="code">Enable&nbsp;analytics&nbsp;collection.</span></dd></dl>
+
+<dl><dt><a name="Analytics-end_session"><strong>end_session</strong></a>(self)</dt><dd><span class="code">Mark&nbsp;the&nbsp;end&nbsp;of&nbsp;an&nbsp;app&nbsp;session&nbsp;and&nbsp;flush&nbsp;events.</span></dd></dl>
+
+<dl><dt><a name="Analytics-shutdown"><strong>shutdown</strong></a>(self)</dt><dd><span class="code">Graceful&nbsp;shutdown&nbsp;-&nbsp;flush&nbsp;remaining&nbsp;events.</span></dd></dl>
+
+<dl><dt><a name="Analytics-start_session"><strong>start_session</strong></a>(self)</dt><dd><span class="code">Mark&nbsp;the&nbsp;start&nbsp;of&nbsp;an&nbsp;app&nbsp;session.</span></dd></dl>
+
+<dl><dt><a name="Analytics-track"><strong>track</strong></a>(self, event_type: str, data: Optional[dict[str, Any]] = None)</dt><dd><span class="code">Track&nbsp;an&nbsp;analytics&nbsp;event.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;event_type:&nbsp;Type&nbsp;of&nbsp;event&nbsp;(e.g.,&nbsp;'app_launch',&nbsp;'recording_stop')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data:&nbsp;Optional&nbsp;event-specific&nbsp;data&nbsp;(no&nbsp;PII!)</span></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Analytics-__new__"><strong>__new__</strong></a>(cls) -&gt; 'Analytics'</dt><dd><span class="code">Singleton&nbsp;pattern&nbsp;for&nbsp;global&nbsp;analytics&nbsp;instance.</span></dd></dl>
+
+<hr>
+Readonly properties defined here:<br>
+<dl><dt><strong>enabled</strong></dt>
+<dd><span class="code">Check&nbsp;if&nbsp;analytics&nbsp;is&nbsp;enabled.</span></dd>
+</dl>
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__annotations__</strong> = {'_instance': typing.Optional[ForwardRef('Analytics')]}</dl>
+
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-disable"><strong>disable</strong></a>()</dt><dd><span class="code">Disable&nbsp;analytics.</span></dd></dl>
+ <dl><dt><a name="-enable"><strong>enable</strong></a>()</dt><dd><span class="code">Enable&nbsp;analytics.</span></dd></dl>
+ <dl><dt><a name="-end_session"><strong>end_session</strong></a>()</dt><dd><span class="code">End&nbsp;an&nbsp;analytics&nbsp;session.</span></dd></dl>
+ <dl><dt><a name="-get_analytics"><strong>get_analytics</strong></a>() -&gt; analytics.Analytics</dt><dd><span class="code">Get&nbsp;the&nbsp;global&nbsp;analytics&nbsp;instance.</span></dd></dl>
+ <dl><dt><a name="-is_enabled"><strong>is_enabled</strong></a>() -&gt; bool</dt><dd><span class="code">Check&nbsp;if&nbsp;analytics&nbsp;is&nbsp;enabled.</span></dd></dl>
+ <dl><dt><a name="-show_consent_dialog"><strong>show_consent_dialog</strong></a>(callback: Callable[[bool], NoneType])</dt><dd><span class="code">Show&nbsp;analytics&nbsp;consent&nbsp;dialog.<br>
+Must&nbsp;be&nbsp;called&nbsp;from&nbsp;main&nbsp;thread&nbsp;with&nbsp;PyObjC&nbsp;available.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback:&nbsp;Called&nbsp;with&nbsp;True&nbsp;if&nbsp;user&nbsp;consents,&nbsp;False&nbsp;otherwise</span></dd></dl>
+ <dl><dt><a name="-shutdown"><strong>shutdown</strong></a>()</dt><dd><span class="code">Shutdown&nbsp;analytics&nbsp;gracefully.</span></dd></dl>
+ <dl><dt><a name="-start_session"><strong>start_session</strong></a>()</dt><dd><span class="code">Start&nbsp;an&nbsp;analytics&nbsp;session.</span></dd></dl>
+ <dl><dt><a name="-track"><strong>track</strong></a>(event_type: str, data: Optional[dict[str, Any]] = None)</dt><dd><span class="code">Convenience&nbsp;function&nbsp;to&nbsp;track&nbsp;an&nbsp;event.</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>ANALYTICS_ENDPOINT</strong> = 'https://notta-api.vercel.app/api/analytics'<br>
+<strong>APP_VERSION</strong> = '1.0.0'<br>
+<strong>BATCH_SIZE</strong> = 20<br>
+<strong>CONFIG_FILE</strong> = PosixPath('/Users/tyrondolpire/.notta_config.json')<br>
+<strong>Callable</strong> = typing.Callable<br>
+<strong>FLUSH_INTERVAL</strong> = 60<br>
+<strong>MAX_QUEUE_SIZE</strong> = 500<br>
+<strong>MAX_RETRIES</strong> = 3<br>
+<strong>Optional</strong> = typing.Optional<br>
+<strong>QUEUE_FILE</strong> = PosixPath('/Users/tyrondolpire/.notta_analytics_queue.json')<br>
+<strong>RETRY_DELAY_BASE</strong> = 2<br>
+<strong>__annotations__</strong> = {'_analytics': typing.Optional[analytics.Analytics]}<br>
+<strong>logger</strong> = &lt;Logger Notta.Analytics (WARNING)&gt;</td></tr></table>
+</body></html>

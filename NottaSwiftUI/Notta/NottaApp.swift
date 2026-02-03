@@ -8,20 +8,43 @@ struct NottaApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var licenseManager = LicenseManager.shared
     @StateObject private var updaterService = UpdaterService.shared
+    @StateObject private var analyticsService = AnalyticsService.shared
     @Environment(\.openWindow) private var openWindow
+    @State private var showAnalyticsConsent = false
 
     var body: some Scene {
         WindowGroup {
             MainView()
                 .environmentObject(appState)
                 .environmentObject(licenseManager)
+                .environmentObject(analyticsService)
                 .withTranslationSupport()
                 .frame(minWidth: 360, minHeight: 400)
                 .onReceive(NotificationCenter.default.publisher(for: .openHistoryWindow)) { _ in
                     openWindow(id: "history")
+                    analyticsService.track("history_opened")
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .openHealthWindow)) { _ in
                     openWindow(id: "health")
+                    analyticsService.track("health_window_opened")
+                }
+                .onAppear {
+                    // Show analytics consent on first launch
+                    if !analyticsService.hasConsented {
+                        showAnalyticsConsent = true
+                    }
+                }
+                .alert("Help Improve Notta", isPresented: $showAnalyticsConsent) {
+                    Button("Share Usage Data") {
+                        analyticsService.enable()
+                        analyticsService.startSession()
+                    }
+                    Button("No Thanks", role: .cancel) {
+                        // Mark as consented but not enabled
+                        UserDefaults.standard.set(true, forKey: "notta.analytics.consented")
+                    }
+                } message: {
+                    Text("Would you like to share anonymous usage data?\n\nWhat we collect:\n\u{2022} Feature usage (which buttons you use)\n\u{2022} Performance metrics (transcription speed)\n\u{2022} Error rates\n\nWhat we never collect:\n\u{2022} Your audio recordings\n\u{2022} Your transcribed text\n\u{2022} Any personal information\n\nYou can change this anytime in Settings.")
                 }
                 #if !APPSTORE
                 .onOpenURL { url in
@@ -98,6 +121,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Initialize license manager
         Task { @MainActor in
             await LicenseManager.shared.initialize()
+        }
+
+        // Initialize analytics (start session if already enabled)
+        Task { @MainActor in
+            let analytics = AnalyticsService.shared
+            if analytics.isEnabled {
+                analytics.startSession()
+            }
         }
 
         // Request notification permission if health notifications enabled
@@ -213,6 +244,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         hotkeyManager?.stopListening()
         if let observer = recordingObserver {
             NotificationCenter.default.removeObserver(observer)
+        }
+
+        // Flush analytics before quit
+        Task { @MainActor in
+            AnalyticsService.shared.endSession()
+            AnalyticsService.shared.shutdown()
         }
     }
 

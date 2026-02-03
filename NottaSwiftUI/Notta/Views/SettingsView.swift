@@ -496,6 +496,7 @@ struct StoreSettingsView: View {
 
 struct AdvancedSettingsView: View {
     @ObservedObject var updater = UpdaterService.shared
+    @ObservedObject var settings = SettingsManager.shared
     @State private var showDebugInfo = false
 
     var body: some View {
@@ -526,6 +527,15 @@ struct AdvancedSettingsView: View {
                 #endif
             } header: {
                 Text("Software Updates")
+            }
+
+            Section {
+                Toggle("Share anonymous usage data", isOn: $settings.analyticsEnabled)
+                    .help("Help improve Notta by sharing anonymous usage statistics")
+            } header: {
+                Text("Analytics")
+            } footer: {
+                Text("We collect feature usage and performance metrics. We never collect your recordings, transcriptions, or personal information.")
             }
 
             Section {

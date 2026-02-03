@@ -89,6 +89,8 @@ class TranscriptionManager: ObservableObject {
         isLoadingModel = true
         modelLoadingProgress = "Downloading \(model.displayName) model..."
 
+        let loadStartTime = Date()
+
         defer {
             isPreparingModel = false
             isLoadingModel = false
@@ -110,9 +112,23 @@ class TranscriptionManager: ObservableObject {
             try await whisperKitService.loadModel(model)
             updateModelReadyState()
             print("[TranscriptionManager] Model ready")
+
+            // Track model load success
+            let loadTimeMs = Int(Date().timeIntervalSince(loadStartTime) * 1000)
+            AnalyticsService.shared.track("model_load", data: [
+                "model": model.rawValue,
+                "load_time_ms": loadTimeMs
+            ])
         } catch {
             self.error = error.localizedDescription
             print("[TranscriptionManager] Failed to prepare model: \(error)")
+
+            // Track model load failure
+            AnalyticsService.shared.track("error", data: [
+                "context": "model_load",
+                "model": model.rawValue,
+                "error_type": String(describing: type(of: error))
+            ])
         }
     }
 
