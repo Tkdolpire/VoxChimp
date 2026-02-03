@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import CryptoKit
 
 // LicenseManager is only used in the direct distribution (Pro) version
 // App Store version uses StoreKit instead
@@ -101,9 +102,11 @@ final class LicenseManager: ObservableObject {
                 cacheLicenseStatus(.active)
                 print("License validated successfully")
 
-                // Track license validation
+                // Track license validation with hashed key for abuse detection
+                let keyHash = Self.hashLicenseKey(key)
                 AnalyticsService.shared.track("license_validated", data: [
-                    "status": "active"
+                    "status": "active",
+                    "license_hash": keyHash
                 ])
             } else {
                 // License rejected by server
@@ -141,6 +144,12 @@ final class LicenseManager: ObservableObject {
 
     /// Deactivate the current license
     func deactivateLicense() {
+        if let key = licenseKey {
+            let keyHash = Self.hashLicenseKey(key)
+            AnalyticsService.shared.track("license_deactivated", data: [
+                "license_hash": keyHash
+            ])
+        }
         clearStoredLicense()
         state = .trialExpired // Since trial would have started before license
         checkTrialStatus()
@@ -210,6 +219,12 @@ final class LicenseManager: ObservableObject {
                 storeLicenseKey(key)
                 storeValidationTimestamp()
                 cacheLicenseStatus(.active)
+
+                // Track checkout activation with hashed key
+                let keyHash = Self.hashLicenseKey(key)
+                AnalyticsService.shared.track("license_activated_checkout", data: [
+                    "license_hash": keyHash
+                ])
             } else {
                 lastError = response.message ?? "Failed to retrieve license"
             }
@@ -314,6 +329,13 @@ final class LicenseManager: ObservableObject {
 
         let gracePeriodEnd = lastValidation.addingTimeInterval(TimeInterval(gracePeriodDays * 24 * 60 * 60))
         return Date() < gracePeriodEnd
+    }
+
+    /// Hash a license key for privacy-preserving abuse detection
+    private static func hashLicenseKey(_ key: String) -> String {
+        let data = Data(key.utf8)
+        let hash = SHA256.hash(data: data)
+        return hash.compactMap { String(format: "%02x", $0) }.joined()
     }
 
     private func loadCachedState() {

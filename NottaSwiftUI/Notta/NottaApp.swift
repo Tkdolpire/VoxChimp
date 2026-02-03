@@ -123,11 +123,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             await LicenseManager.shared.initialize()
         }
 
+        // Track first launch
+        let isFirstLaunch = !UserDefaults.standard.bool(forKey: "notta.hasLaunchedBefore")
+        if isFirstLaunch {
+            UserDefaults.standard.set(true, forKey: "notta.hasLaunchedBefore")
+        }
+
         // Initialize analytics (start session if already enabled)
         Task { @MainActor in
             let analytics = AnalyticsService.shared
             if analytics.isEnabled {
                 analytics.startSession()
+                if isFirstLaunch {
+                    analytics.track("first_launch")
+                }
             }
         }
 
@@ -277,6 +286,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AVCaptureDevice.requestAccess(for: .audio) { granted in
             if !granted {
                 print("Microphone access denied")
+                Task { @MainActor in
+                    AnalyticsService.shared.track("permission_denied", data: [
+                        "permission": "microphone"
+                    ])
+                }
             }
         }
     }
@@ -303,6 +317,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         if response == .alertFirstButtonReturn {
             hotkeyManager?.openAccessibilitySettings()
+        } else {
+            Task { @MainActor in
+                AnalyticsService.shared.track("permission_denied", data: [
+                    "permission": "accessibility",
+                    "action": "dismissed_later"
+                ])
+            }
         }
     }
 }

@@ -52,7 +52,7 @@ struct HistoryView: View {
                 .tag(transcription)
                 .contextMenu {
                     Button("Copy") {
-                        copyToClipboard(transcription.text)
+                        appState.copyTranscription(transcription)
                     }
                     Divider()
                     Button("Delete", role: .destructive) {
@@ -87,6 +87,7 @@ struct HistoryView: View {
     private var detailContent: some View {
         if let transcription = selectedTranscription {
             TranscriptionDetailView(transcription: transcription)
+                .environmentObject(appState)
         } else {
             ContentUnavailableView(
                 "Select a Transcription",
@@ -96,10 +97,6 @@ struct HistoryView: View {
         }
     }
 
-    private func copyToClipboard(_ text: String) {
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
-    }
 }
 
 // MARK: - Transcription Row
@@ -146,6 +143,7 @@ struct TranscriptionRow: View {
 // MARK: - Detail View
 
 struct TranscriptionDetailView: View {
+    @EnvironmentObject var appState: AppState
     let transcription: Transcription
     @State private var isCopied = false
 
@@ -231,8 +229,7 @@ struct TranscriptionDetailView: View {
     }
 
     private func copyToClipboard() {
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(transcription.text, forType: .string)
+        appState.copyTranscription(transcription)
         isCopied = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             isCopied = false

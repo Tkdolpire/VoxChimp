@@ -36,16 +36,30 @@ class AppState: ObservableObject {
     // MARK: - Recording
 
     private var recordingStartTime: Date?
+    private var recordingSource: String = "button"  // "hotkey" or "button"
 
+    /// Start recording triggered by UI button
     func startRecording() {
+        startRecordingInternal(source: "button")
+    }
+
+    /// Start recording triggered by hotkey
+    func startRecordingFromHotkey() {
+        startRecordingInternal(source: "hotkey")
+    }
+
+    private func startRecordingInternal(source: String) {
         guard !isRecording else { return }
         isRecording = true
         recordingStartTime = Date()
+        recordingSource = source
         postRecordingStateChange()
         recordingStatus = .recording
         showTranscriptionSuccess = false
 
-        AnalyticsService.shared.track("recording_start")
+        AnalyticsService.shared.track("recording_start", data: [
+            "source": source
+        ])
 
         Task {
             do {
@@ -105,7 +119,8 @@ class AppState: ObservableObject {
         }
 
         AnalyticsService.shared.track("recording_stop", data: [
-            "duration_ms": recordingDurationMs
+            "duration_ms": recordingDurationMs,
+            "source": recordingSource
         ])
 
         Task {
@@ -224,6 +239,21 @@ class AppState: ObservableObject {
         if let data = try? JSONEncoder().encode(transcriptionHistory) {
             try? data.write(to: historyURL)
         }
+
+        AnalyticsService.shared.track("history_item_deleted", data: [
+            "had_audio": transcription.audioFilePath != nil,
+            "was_translated": transcription.translatedTo != nil
+        ])
+    }
+
+    func copyTranscription(_ transcription: Transcription) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(transcription.text, forType: .string)
+
+        AnalyticsService.shared.track("history_item_copied", data: [
+            "word_count": transcription.text.split(separator: " ").count,
+            "was_translated": transcription.translatedTo != nil
+        ])
     }
 
     // MARK: - Health Analysis
@@ -341,6 +371,11 @@ class AppState: ObservableObject {
 
         let translated = await TranslationService.shared.translate(text)
         if translated != text {
+            AnalyticsService.shared.track("translation_used", data: [
+                "target_language": settings.targetLanguage.rawValue,
+                "original_word_count": text.split(separator: " ").count,
+                "translated_word_count": translated.split(separator: " ").count
+            ])
             return (translated, text, settings.targetLanguage.rawValue)
         }
         return (text, nil, nil)
@@ -390,6 +425,13 @@ class AppState: ObservableObject {
         let success = NSPasteboard.general.setString(text, forType: .string)
         print("Clipboard set: \(success), text: \(text.prefix(50))...")
 
+        if !success {
+            AnalyticsService.shared.track("auto_paste_failed", data: [
+                "reason": "clipboard_set_failed"
+            ])
+            return
+        }
+
         // Small delay to ensure clipboard is ready
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             // Simulate Cmd+V using CGEvent (more reliable than AppleScript)
@@ -404,6 +446,9 @@ class AppState: ObservableObject {
         // Key down
         guard let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true) else {
             print("Failed to create key down event")
+            AnalyticsService.shared.track("auto_paste_failed", data: [
+                "reason": "keydown_event_failed"
+            ])
             return
         }
         keyDown.flags = .maskCommand
@@ -411,6 +456,9 @@ class AppState: ObservableObject {
         // Key up
         guard let keyUp = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: false) else {
             print("Failed to create key up event")
+            AnalyticsService.shared.track("auto_paste_failed", data: [
+                "reason": "keyup_event_failed"
+            ])
             return
         }
         keyUp.flags = .maskCommand
@@ -419,13 +467,14 @@ class AppState: ObservableObject {
         keyDown.post(tap: .cghidEventTap)
         keyUp.post(tap: .cghidEventTap)
         print("Paste keystroke sent (Cmd+V)")
+        AnalyticsService.shared.track("auto_paste_success")
     }
 
     private func setupHotkeyBinding() {
         NotificationCenter.default.publisher(for: .hotkeyPressed)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.startRecording()
+                self?.startRecordingFromHotkey()
             }
             .store(in: &cancellables)
 
